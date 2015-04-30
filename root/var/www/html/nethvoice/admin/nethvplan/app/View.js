@@ -1,8 +1,9 @@
+var currentDelta = 0;
 example.View = draw2d.Canvas.extend({
 	
 	init: function(id)
     {
-		this._super(id, 10000,10000);
+		this._super(id, 5000,5000);
 
         var canvas = document.getElementById(id);
         var svgElem = canvas.children[0];
@@ -13,6 +14,8 @@ example.View = draw2d.Canvas.extend({
         }
         else canvas.attachEvent("onmousewheel", this.MouseWheelHandler);
         	this.setScrollArea("#"+id);
+
+
 	},
 
     MouseWheelHandler: function(e)
@@ -20,10 +23,19 @@ example.View = draw2d.Canvas.extend({
         var e = window.event || e;
         var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
 
+        var canvas = document.getElementById("canvas");
+        var svgElem = canvas.children[0];
+        
         if(delta > 0)
-            app.view.setZoom(app.view.getZoom()*0.75,true);
+            app.view.setZoom(app.view.getZoom()*0.75, true);
         if(delta < 0)
             app.view.setZoom(app.view.getZoom()*1.25, true);
+
+        setTimeout(function(){
+            if(svgElem.viewBox.baseVal.width < 5000) {
+                app.view.setZoom(1, true);
+            }
+        },10);
 
         return false;
     },
@@ -44,7 +56,7 @@ example.View = draw2d.Canvas.extend({
     onDrop: function(droppedDomNode, x, y, shiftKey, ctrlKey)
     {
         var type = $(droppedDomNode).data("shape");
-        var figure = eval("new "+type+"();");
+        var figure = eval("new "+type+"("+$(droppedDomNode).data("radius")+");");
 
         figure.onDrop(droppedDomNode, x, y);
 

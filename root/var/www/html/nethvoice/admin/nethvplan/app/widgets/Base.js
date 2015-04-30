@@ -4,39 +4,66 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
 	
     init : function(attr)
     {
+        var _this = this;
+
         this.tooltip = null;
-        
+
         this._super($.extend({
-            bgColor: "#dbddde",
             stroke: 0
         }, attr));
 
         this.classLabel = new draw2d.shape.basic.Label({
             text:"ClassName",
             stroke:0,
-            bgColor:"#f7f7f7",
             padding:10,
             resizeable:true,
-            bold: true
+            bold: true,
+            fontColor: "#ffffff",
+            fontSize: 14
         });
 
         this.add(this.classLabel);
     },
 
-    addEntity: function(txt, port, editable, optionalIndex)
+    // onDragStart: function() {
+    //     this._super();
+    //     this.showTooltip();
+    //     // var canvas = document.getElementById('canvas');
+    //     // $(canvas).panzoom("disable");
+    // },
+
+    // onDragEnd: function() {
+    //     // var canvas = document.getElementById('canvas');
+    //     // $(canvas).panzoom("enable");
+    //     this.hideTooltip();
+    // },
+
+    addEntity: function(txt, type, editable, optionalIndex)
     {
         var padding = { left:30, top:5, right:10, bottom:5 };
+        var bgColor = "#f7f7f7";
 
-        if(port == "input") {
+        if(type == "input") {
             padding = { left:10, top:5, right:10, bottom:5 };
         }
+
+        if(type === "list") {
+            if(txt && txt !== "") {
+                var members = txt.match(/-?\d+/g).filter(Number);
+                txt = members.join(",");
+            } else {
+                txt = "No elements found";
+            }
+
+            padding = { left:40, top:5, right:10, bottom:5 };
+            bgColor = "#ffffff";
+        } 
 
         // create label
         var label = new draw2d.shape.basic.Label({
             text:txt,
             stroke:0,
-            radius:0,
-            bgColor:null,
+            bgColor:bgColor,
             padding:padding,
             fontColor:"#4a4a4a",
             resizeable:true
@@ -46,15 +73,15 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
             label.installEditor(new draw2d.ui.LabelInplaceEditor());
         }
 
-        // create port
-        if(port === "input" || port == "output") {
-            var port = label.createPort(port);
-            port.setName(port+"_"+label.id);
+        // create type
+        if(type === "input" || type == "output") {
+            var port = label.createPort(type);
+            port.setName(type+"_"+label.id);
         }
 
         // add context menu
         this.contextMenu(label, this);
-
+        
         if($.isNumeric(optionalIndex)){
             this.add(label, null, optionalIndex+1);
         }
@@ -72,7 +99,7 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
         switch(idType) {
             case "incoming":
                 label.on("contextmenu", function(emitter, event){
-                    if(table.children.data.length > 2) {
+                    if(table.children.data.length > 3) {
                         $.contextMenu({
                             selector: 'body', 
                             events:
@@ -128,42 +155,7 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
             break;
         }
     },
-
-    onMouseEnter: function(){
-        this.showTooltip();
-    },
     
-    onMouseLeave: function(){
-        this.hideTooltip();
-    },
-    
-    setPosition: function(x,y){
-        this._super(x,y);
-        this.positionTooltip();
-    },
-    
-    hideTooltip:function(){          
-        this.tooltip.remove();   
-        this.tooltip = null;
-    },
-    
-    
-    showTooltip:function(){          
-        this.tooltip= $('<div class="tooltip">Tooltip</div>').appendTo('body');
-        this.positionTooltip();        
-    },
-    
-    positionTooltip: function(){
-        if( this.tooltip===null){
-            return;
-        }
-        
-        var width =  this.tooltip.outerWidth(true);
-        var tPosX = this.getAbsoluteX()+this.getWidth()/2-width/2+8;
-        var tPosY = this.getAbsoluteY()+this.getHeight() + 20;
-        this.tooltip.css({'top': tPosY, 'left': tPosX});
-    },
-
     onDrop: function(droppedDomNode, x, y)
     {
         // var type = $(droppedDomNode).data("shape");
@@ -186,11 +178,21 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
         switch (droppedDomNode[0].id) {
 
             case "incoming":
-                templateObj.entities = [{
-                    text: "num / call_num.",
-                    id: "route_num-incoming%"+id,
-                    type: "output"
-                }];
+                templateObj.radius = 20;
+                templateObj.entities = [
+                    {
+                        text: "description",
+                        id: "description-incoming%"+id,
+                        type: "text",
+                        editable: "true"
+                    },
+                    {
+                        text: "num / call_num.",
+                        id: "route_num-incoming%"+id,
+                        type: "output",
+                        editable: "true"
+                    }
+                ];
             break;
 
             case "night":
@@ -284,6 +286,22 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
             $.each(memento.entities, $.proxy(function(i,e){
                 var entity = this.addEntity(e.text, e.type, e.editable);
                 entity.id = e.id;
+
+                // entity.onMouseEnter = function() {
+                //     this.tooltip = $('<div class="tooltip">Tooltip</div>').appendTo('body');
+                //     if( this.tooltip===null){
+                //         return;
+                //     }
+                    
+                //     var width =  this.tooltip.outerWidth(true);
+                //     var tPosX = entity.getAbsoluteX()+entity.getWidth()/2-width/2+8;
+                //     var tPosY = entity.getAbsoluteY()+entity.getHeight() + 20;
+                //     this.tooltip.css({'top': tPosY, 'left': tPosX});
+                // }
+                // entity.onMouseLeave = function() {
+                //     this.tooltip.remove();   
+                //     this.tooltip = null;
+                // }
 
                 if(e.type == "output")
                     entity.getOutputPort(0).setName("output_"+e.id);

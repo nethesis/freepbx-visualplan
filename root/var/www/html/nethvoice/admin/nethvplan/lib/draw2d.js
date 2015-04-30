@@ -10698,8 +10698,9 @@ draw2d.policy.canvas.PanningSelectionPolicy =  draw2d.policy.canvas.SingleSelect
         
         if (this.mouseDraggingElement === null && this.mouseDownElement===null) {
            var area = canvas.getScrollArea();
-           area.scrollTop(area.scrollTop()-dy2);
-           area.scrollLeft(area.scrollLeft()-dx2);
+           var currentZoom = canvas.getZoom();
+           area.scrollTop(area.scrollTop()-dy2/currentZoom);
+           area.scrollLeft(area.scrollLeft()-dx2/currentZoom);
        }
     }
 });

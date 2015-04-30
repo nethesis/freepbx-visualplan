@@ -15,10 +15,11 @@ example.Toolbar = Class.extend({
 		//
         view.on("select", $.proxy(this.onSelectionChanged,this));
 
-        this.zoomInButton  = $("<button  class='gray'>Zoom In</button>");
+        this.zoomInButton  = $("<button  class='gray'><i class='fa fa-search-plus fa-lg'></i></button>");
 		this.html.append(this.zoomInButton);
 		this.zoomInButton.button().click($.proxy(function(){
-		      this.view.setZoom(this.view.getZoom()*0.7,true);
+			if(app.view.getZoom() > 1)
+		      this.view.setZoom(this.view.getZoom()*0.75,true);
 		},this));
 
 		this.delimiter  = $("<span class='toolbar_delimiter'>&nbsp;</span>");
@@ -29,7 +30,7 @@ example.Toolbar = Class.extend({
 		this.resetButton  = $("<button  class='gray'>1:1</button>");
 		this.html.append(this.resetButton);
 		this.resetButton.button().click($.proxy(function(){
-		    this.view.setZoom(1.0, true);
+		    this.view.setZoom(1.2, true);
 		},this));
 
 		this.delimiter  = $("<span class='toolbar_delimiter'>&nbsp;</span>");
@@ -37,10 +38,10 @@ example.Toolbar = Class.extend({
 		
 		// Inject the REDO Button and the callback
 		//
-		this.zoomOutButton  = $("<button  class='gray'>Zoom Out</button>");
+		this.zoomOutButton  = $("<button  class='gray'><i class='fa fa-search-minus fa-lg'></i></button>");
 		this.html.append(this.zoomOutButton);
 		this.zoomOutButton.button().click($.proxy(function(){
-            this.view.setZoom(this.view.getZoom()*1.3, true);
+            this.view.setZoom(this.view.getZoom()*1.25, true);
 		},this));
 
 		this.delimiter  = $("<span class='toolbar_delimiter'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>");
@@ -48,7 +49,7 @@ example.Toolbar = Class.extend({
 		
 		// Inject the UNDO Button and the callbacks
 		//
-		this.undoButton  = $("<button class='gray'>Undo</button>");
+		this.undoButton  = $("<button class='gray'><i class='fa fa-mail-reply fa-lg'></i></button>");
 		this.html.append(this.undoButton);
 		this.undoButton.click($.proxy(function(){
 		       this.view.getCommandStack().undo();
@@ -59,7 +60,7 @@ example.Toolbar = Class.extend({
 
 		// Inject the REDO Button and the callback
 		//
-		this.redoButton  = $("<button class='gray'>Redo</button>");
+		this.redoButton  = $("<button class='gray'><i class='fa fa-mail-forward fa-lg'></i></button>");
 		this.html.append(this.redoButton);
 		this.redoButton.click($.proxy(function(){
 		    this.view.getCommandStack().redo();
@@ -70,7 +71,7 @@ example.Toolbar = Class.extend({
 
 		// Inject the DELETE Button
 		//
-		this.deleteButton  = $("<button class='gray'>Delete</button>");
+		this.deleteButton  = $("<button class='gray'><i class='fa fa-close fa-lg'></i></button>");
 		this.html.append(this.deleteButton);
 		this.deleteButton.click($.proxy(function(){
 			var node = this.view.getCurrentSelection();
@@ -83,14 +84,26 @@ example.Toolbar = Class.extend({
 
 		// Inject the Save Button
 		//
-		this.saveButton  = $("<button class='gray'>Save</button>");
+		this.saveButton  = $("<button class='gray'><i class='fa fa-check fa-lg'></i></button>");
 		this.html.append(this.saveButton);
 		this.saveButton.click($.proxy(function(){
+
+			console.clear();
+
 			var writer = new draw2d.io.json.Writer();
 			writer.marshal(this.view, function(json){
-				//$("#json").text(JSON.stringify(json, null, 2));
-				console.log(JSON.stringify(json, null, 2));
-				alert("TODO: API");
+
+				//console.log(window.btoa(unescape(encodeURIComponent(JSON.stringify(json)))));
+
+				$.ajax({
+			      url: "/nethvoice/admin/nethvplan/create.php?jsonData="+window.btoa(unescape(encodeURIComponent(JSON.stringify(json)))),
+			      context: document.body,
+			      beforeSend: function( xhr ) {
+			        //$('#loader').show();
+			      }
+			    }).done(function(c) {
+			    	console.log(c);
+			    });
 			});
 		},this));
 		

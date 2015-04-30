@@ -1,4 +1,3 @@
-#!/usr/bin/php
 <?php
 
 require('/etc/freepbx.conf');
@@ -20,6 +19,7 @@ foreach ($get_data as $key => $row) {
 	
 	if($row['cidnum'] != "") {
 		$data['incoming'][$row['extension']." / ".$row['cidnum']]['destination'] = $row['destination'];
+		$data['incoming'][$row['extension']." / ".$row['cidnum']]['description'] = $row['description'];
 
 		$night_service = nethnight_get_fromdid($row['extension']."/".$row['cidnum']);
 		if($night_service) {
@@ -27,6 +27,7 @@ foreach ($get_data as $key => $row) {
 		}
 	} else {
 		$data['incoming'][$row['extension']]['destination'] = $row['destination'];
+		$data['incoming'][$row['extension']]['description'] = $row['description'];
 
 		$night_service = nethnight_get_fromdid($row['extension']."/");
 		if($night_service) {
@@ -110,7 +111,7 @@ foreach ($get_data as $key => $row) {
 	$data['ext-queues'][$row[0]] = array( "num" => $row[0],
 										  "descr" => $queues_details['name'],
 										  "dest" => $queues_details['goto'],
-										  "member" => $queues_details['member'],
+										  "members" => $queues_details['member'],
 										  "dynmembers" => $queues_details['dynmembers']
 										);
 }
@@ -135,7 +136,8 @@ $yPos = 10;
 
 $widgetTemplate = array(
 	"userData"=> array(),
-	"bgColor"=> "#dbddde"
+	"bgColor"=> "#95a5a6",
+	"radius"=> "20"
  );
 $connectionTemplate = array(
 	"type"=> "MyConnection",
@@ -156,16 +158,27 @@ $connectionTemplate = array(
  );
 
 // start elaboration
-$id = '9998887776';
+$id = $_GET["id"];
 $destination = $data['incoming'][$id]['destination'];
+$description = $data['incoming'][$id]['description'];
 
 if($id != "") {
 	$widget = $widgetTemplate;
 	$widget['type'] = "Base";
 	$widget['id'] = "incoming%".$id;
+	$widget['radius'] = "20";
+	$widget['bgColor'] = "#87d37c";
 	$widget['x'] = $xPos;
 	$widget['y'] = $yPos;
 	$widget['name'] = "Incoming route";
+	if($description) {
+		$widget['entities'][] = array(
+			"text"=> $description,
+			"id"=> "description-incoming%".$id,
+			"type"=> "text",
+			"editable"=> "true"
+		);
+	}
 	$widget['entities'][] = array(
 		"text"=> $id,
 		"id"=> "route_num-incoming%".$id,
@@ -173,7 +186,7 @@ if($id != "") {
 		"editable"=> "true"
 	);
 
-	// get destination fiedl and id
+	// get destination field and id
 	$res = getDestination($destination);
 	$dest = $res[0];
 	$idDest = $res[1];
@@ -241,7 +254,7 @@ foreach ($merged as $place) {
     }
 }
 $merged = $result;
-print "var jsonDocument = ";
+//print "var jsonDocument = ";
 print_r(json_pretty(json_encode($merged, true)));
 
 function getDestination($destination) {
@@ -299,6 +312,8 @@ function explore($data, $destination, $destArray) {
 				//print "INTERNO: ".$data[$dest][$id]['name']."\n";
 				$widget = $widgetTemplate;
 				$widget['type'] = "Base";
+				$widget['radius'] = "20";
+				$widget['bgColor'] = "#27ae60";
 				$widget['id'] = $dest."%".$id;
 				$widget['x'] = $xPos;
 				$widget['y'] = $yPos;
@@ -317,6 +332,8 @@ function explore($data, $destination, $destArray) {
 				//print "CONFERENZA: ".$data[$dest][$id]['description']."\n";
 				$widget = $widgetTemplate;
 				$widget['type'] = "Base";
+				$widget['radius'] = "20";
+				$widget['bgColor'] = "#65c6bb";
 				$widget['id'] = $dest."%".$id;
 				$widget['x'] = $xPos;
 				$widget['y'] = $yPos;
@@ -335,6 +352,8 @@ function explore($data, $destination, $destArray) {
 				//print "HANGUP\n";
 				$widget = $widgetTemplate;
 				$widget['type'] = "Base";
+				$widget['radius'] = "20";
+				$widget['bgColor'] = "#e74c3c";
 				$widget['id'] = $dest."%".$id;
 				$widget['x'] = $xPos;
 				$widget['y'] = $yPos;
@@ -349,10 +368,47 @@ function explore($data, $destination, $destArray) {
 				// add widget
 				array_push($widgets, $widget);
 			break;
+			case "ext-local":
+				$state = substr($id, 0, 3);
+				$idUsers = substr($id, -3);
+
+				$text = "";
+				switch($state) {
+					case "vmu":
+						$text = "Unavailable";
+					break;
+					case "vmb":
+						$text = "Busy";
+					break;
+					case "vms":
+						$text = "Unavailable";
+					break;
+				}
+
+				$widget = $widgetTemplate;
+				$widget['type'] = "Base";
+				$widget['radius'] = "20";
+				$widget['bgColor'] = "#16a085";
+				$widget['id'] = $dest."%".$id;
+				$widget['x'] = $xPos;
+				$widget['y'] = $yPos;
+				$widget['name'] = "Voice Mail";
+				$widget['entities'][] = array(
+					"text"=> $data['from-did-direct'][$idUsers]['name']." ( ".$idUsers." ) - ".$text,
+					"id"=> $dest."%".$id,
+					"type"=> "input",
+					"editable"=> "true"
+				);
+				
+				// add widget
+				array_push($widgets, $widget);
+			break;
 
 			case "night":
 				$widget = $widgetTemplate;
 				$widget['type'] = "Base";
+				$widget['radius'] = "0";
+				$widget['bgColor'] = "#34495e";
 				$widget['id'] = $dest."%".$id;
 				$widget['x'] = $xPos;
 				$widget['y'] = $yPos;
@@ -416,6 +472,8 @@ function explore($data, $destination, $destArray) {
 				//print "MISC DEST: ".$data[$dest][$id]['description']."\n";
 				$widget = $widgetTemplate;
 				$widget['type'] = "Base";
+				$widget['radius'] = "0";
+				$widget['bgColor'] = "#f4b350";
 				$widget['id'] = $dest."%".$id;
 				$widget['x'] = $xPos;
 				$widget['y'] = $yPos;
@@ -467,6 +525,8 @@ function explore($data, $destination, $destArray) {
 			case "app-daynight":
 				$widget = $widgetTemplate;
 				$widget['type'] = "Base";
+				$widget['radius'] = "0";
+				$widget['bgColor'] = "#2c3e50";
 				$widget['id'] = $dest."%".$id;
 				$widget['x'] = $xPos;
 				$widget['y'] = $yPos;
@@ -540,6 +600,8 @@ function explore($data, $destination, $destArray) {
 				//print "\tCONDZ.TEMP True: ".$data[$dest][$id]['displayname']."--> ";
 				$widget = $widgetTemplate;
 				$widget['type'] = "Base";
+				$widget['radius'] = "0";
+				$widget['bgColor'] = "#D24D57";
 				$widget['id'] = $dest."%".$id;
 				$widget['x'] = $xPos;
 				$widget['y'] = $yPos;
@@ -614,6 +676,8 @@ function explore($data, $destination, $destArray) {
 				//print "IVR: ".$data[$dest][$id]['name']."\n";
 				$widget = $widgetTemplate;
 				$widget['type'] = "Base";
+				$widget['radius'] = "0";
+				$widget['bgColor'] = "#7f8c8d";
 				$widget['id'] = $dest."%".$id;
 				$widget['x'] = $xPos;
 				$widget['y'] = $yPos;
@@ -719,6 +783,8 @@ function explore($data, $destination, $destArray) {
 				//print "CODA: ".$data[$dest][$id]['descr']." --> ";
 				$widget = $widgetTemplate;
 				$widget['type'] = "Base";
+				$widget['radius'] = "0";
+				$widget['bgColor'] = "#9b59b6";
 				$widget['id'] = $dest."%".$id;
 				$widget['x'] = $xPos;
 				$widget['y'] = $yPos;
@@ -731,16 +797,30 @@ function explore($data, $destination, $destArray) {
 				);
 				$widget['entities'][] = array(
 					"text"=> "Static members",
-					"id"=> $dest."%".$id,
+					"id"=> $dest."%".$id."stext",
 					"type"=> "text",
-					"editable"=> "true"
+					"editable"=> "false"
 				);
 				$widget['entities'][] = array(
-					"text"=> "Dynamic members",
-					"id"=> $dest."%".$id,
-					"type"=> "text",
+					"text"=> implode(",", $data[$dest][$id]['members']),
+					"id"=> $dest."%".$id."slist",
+					"type"=> "list",
 					"editable"=> "true"
 				);
+
+				$widget['entities'][] = array(
+					"text"=> "Dynamic members",
+					"id"=> $dest."%".$id."dtext",
+					"type"=> "text",
+					"editable"=> "false"
+				);
+				$widget['entities'][] = array(
+					"text"=> implode(",", $data[$dest][$id]['dynmembers']),
+					"id"=> $dest."%".$id."dlist",
+					"type"=> "list",
+					"editable"=> "true"
+				);
+
 				$widget['entities'][] = array(
 					"text"=> "Fail destination",
 					"id"=> "faildest-".$dest."%".$id,
@@ -777,6 +857,8 @@ function explore($data, $destination, $destArray) {
 				//print "CALL GROUP: ".$data[$dest][$id]['description']." LIST: [".$data[$dest][$id]['grplist']."] --> ";
 				$widget = $widgetTemplate;
 				$widget['type'] = "Base";
+				$widget['radius'] = "0";
+				$widget['bgColor'] = "#2980b9";
 				$widget['id'] = $dest."%".$id;
 				$widget['x'] = $xPos;
 				$widget['y'] = $yPos;
@@ -828,6 +910,7 @@ function explore($data, $destination, $destArray) {
 				$widget = $widgetTemplate;
 				$widget['type'] = "Base";
 				$widget['id'] = $dest."%".$id;
+				$widget['radius'] = "20";
 				$widget['x'] = $xPos;
 				$widget['y'] = $yPos;
 				if($dest != "") {

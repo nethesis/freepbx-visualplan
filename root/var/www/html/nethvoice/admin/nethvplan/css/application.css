@@ -11,12 +11,77 @@ body {
 	padding: 0px;
 	margin: 0px;
 	border: 0px;
-	background-color: #f9f9f9;
+	background-color: #ffffff;
 	color: #212121;
 	-webkit-font-smoothing: antialiased;
 	overflow: hidden;
 	-webkit-text-size-adjust: 100%;
 	text-rendering: optimizeLegibility;
+}
+
+.loading {
+	display: none;
+}
+
+#incoming {
+	color: #ffffff;
+	border: none;
+	background-color: #87d37c;
+}
+#night {
+	color: #ffffff;
+	border: none;
+	background-color: #34495e;
+}
+#ext-group {
+	color: #ffffff;
+	border: none;
+	background-color: #2980b9;
+}
+#ext-queues {
+	color: #ffffff;
+	border: none;
+	background-color: #9b59b6;
+}
+#ivr {
+	color: #ffffff;
+	border: none;
+	background-color: #7f8c8d;
+}
+#app-announcement {
+	color: #ffffff;
+	border: none;
+	background-color: #f4b350;
+}
+#timeconditions {
+	color: #ffffff;
+	border: none;
+	background-color: #D24D57;
+}
+#app-daynight {
+	color: #ffffff;
+	border: none;
+	background-color: #2c3e50;
+}
+#from-did-direct {
+	color: #ffffff;
+	border: none;
+	background-color: #27ae60;
+}
+#ext-local {
+	color: #ffffff;
+	border: none;
+	background-color: #16a085;
+}
+#ext-meetme {
+	color: #ffffff;
+	border: none;
+	background-color: #65c6bb;
+}
+#app-blackhole {
+	color: #ffffff;
+	border: none;
+	background-color: #e74c3c;
 }
 
 #canvas {
@@ -26,11 +91,13 @@ body {
 	position: absolute;
 	top: 64px;
 	right: 0px;
-	left: 190px;
+	left: 225px;
 	bottom: 0px;
 	overflow: scroll;
 	background-color: #FFFFFF;
 	overflow: hidden;
+	/*width: 10000px;
+	height: 10000px;*/
 }
 
 #toolbar {
@@ -39,14 +106,14 @@ body {
 	padding-top: 15px;
 	padding-left: 20px;
 	top: 0px;
-	left: 190px;
+	left: 225px;
 	height: 64px;
 	right: 0px;
 	overflow: hidden !important;
 	z-index: 1000 !important;
 	border: 0 none;
 	border-bottom: 1px solid #d6d6d6;
-	background-color: #258ADF !important;
+	background-color: #7F8C8D !important;
 }
 
 #toolbar_hint {
@@ -68,6 +135,14 @@ body {
 	align: center;
 }
 
+.startWidget {
+	border-radius: 20px;
+}
+
+.endWidget {
+	border-radius: 20px;
+}
+
 #side-nav {
 	border-right: 1px solid #e0e0e0;
 	bottom: 0;
@@ -78,8 +153,9 @@ body {
 	left: 0;
 	position: fixed;
 	top: 0;
-	width: 190px;
+	width: 225px;
 	z-index: 4;
+	overflow-y: auto;
 }
 
 #side-nav #logo {
