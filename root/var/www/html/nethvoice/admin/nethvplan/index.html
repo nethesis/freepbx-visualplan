@@ -1,0 +1,182 @@
+﻿<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+<title>Dialplan</title>
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="viewport" content="width=device-width, minimum-scale=1.0" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <!-- stylesheet include -->
+    <link type="text/css" rel="stylesheet" href="css/application.css" />
+    <link type="text/css" rel="stylesheet" href="css/contextmenu.css" />
+    <!-- js library include -->
+    <script src="lib/shifty.js"></script>
+    <script src="lib/raphael.js"></script>
+    <script src="lib/jquery-1.10.2.min.js"></script>
+    <script src="lib/jquery.autoresize.js"></script>
+    <script src="lib/jquery-touch_punch.js"></script>
+    <script src="lib/jquery.contextmenu.js"></script>
+    <script src="lib/jquery.browser.js"></script>
+    <script src="lib/jquery-ui-1.8.23.custom.min.js"></script>
+    <script src="lib/rgbcolor.js"></script>
+    <script src="lib/canvg.js"></script>
+    <script src="lib/Class.js"></script>
+    <script src="lib/json2.js"></script>
+    <script src="lib/pathfinding-browser.min.js"></script>
+    <script src="lib/draw2d.js"></script>
+    <script src="lib/dagre.min.js"></script>
+    <script src="lib/svg-pan-zoom.min.js"></script>
+    <!-- application js -->
+    <script src="app/Application.js"></script>
+    <script src="app/View.js"></script>
+    <script src="app/Toolbar.js"></script>
+
+    <!-- widgets -->
+    <script src="app/widgets/Base.js"></script>
+    
+    <!-- JSON file -->
+    <script src="document.js"></script>
+	
+<script type="text/javascript">
+
+/**
+ * @method
+ * Factory method to provide a default connection for all drag&drop connections. You
+ * can override this method and customize this for your personal purpose.
+ * 
+ * @param {draw2d.Port} sourcePort port of the source of the connection
+ * @param {draw2d.Port} targetPort port of the target of the connection
+ * @template
+ * @returns {draw2d.Connection}
+ */
+draw2d.Configuration.factory.createConnection=function(sourcePort, targetPort){
+  var c = new draw2d.Connection({
+       targetDecorator: new draw2d.decoration.connection.ArrowDecorator(),
+       color: "#4caf50",
+       stroke: 2,
+       outlineStroke: 1,
+       router: new draw2d.layout.connection.SplineConnectionRouter()
+   });
+  c.targetDecorator.setDimension(10,10);
+  c.targetDecorator.setBackgroundColor("#4caf50");
+
+  return c;
+};
+
+var app = null;
+
+function parse(val) {
+    var result = "Not found",
+        tmp = [];
+    location.search
+    //.replace ( "?", "" ) 
+    // this is better, there might be a question mark inside
+    .substr(1)
+        .split("&")
+        .forEach(function (item) {
+        tmp = item.split("=");
+        if (tmp[0] === val) result = decodeURIComponent(tmp[1]);
+    });
+    return result;
+}
+
+$(window).load(function () {
+
+  console.log(parse(window.location.search.replace("?", "")));
+
+  app = new example.Application();
+
+  var g = new dagre.graphlib.Graph();
+  g.setGraph({});
+  g.setDefaultEdgeLabel(function() { return {}; });
+  g.graph().rankdir = "LR";
+
+  for (var i in jsonDocument) {
+    if(jsonDocument[i].type === "Base") {
+      g.setNode(jsonDocument[i].id, { width: 600, height: 200 });
+    }
+
+    if(jsonDocument[i].type === "MyConnection") {
+      g.setEdge(jsonDocument[i].source.node, jsonDocument[i].target.node);
+    }
+  };
+
+  dagre.layout(g);
+
+  g.nodes().forEach(function(v) {
+    jsonDocument[v].x = g.node(v).x;
+    jsonDocument[v].y = g.node(v).y;
+  });
+
+  var reader = new draw2d.io.json.Reader();
+  reader.unmarshal(app.view, jsonDocument);
+
+  var zoomLevel = g.nodes().length/6.9 > 1 ? g.nodes().length/6.9 : 1.2;
+  app.view.setZoom(zoomLevel, true);
+});
+
+</script>
+
+</head>
+
+<body id="container">
+
+   <div id="toolbar" class="navbar-default">
+   </div>
+   
+   <div id="side-nav" >
+     <span id="logo">NethVPlan</span>
+     <div id="layer_elements"></div>
+     <div id="layer_header" class="highlight panetitle blackgradient">
+            <div data-shape="Base" id="incoming" class="palette_node_element draw2d_droppable" title="drag&amp;drop the table into the canvas..">
+              Incoming routes
+            </div>
+
+            <div data-shape="Base" id="night" class="palette_node_element draw2d_droppable" title="drag&amp;drop the table into the canvas..">
+              Night Service
+            </div>
+
+            <div data-shape="Base" id="from-did-direct" class="palette_node_element draw2d_droppable" title="drag&amp;drop the table into the canvas..">
+              Internal
+            </div>
+
+            <div data-shape="Base" id="ext-local" class="palette_node_element draw2d_droppable" title="drag&amp;drop the table into the canvas..">
+              Voice Mail
+            </div>
+
+            <div data-shape="Base" id="ext-group" class="palette_node_element draw2d_droppable" title="drag&amp;drop the table into the canvas..">
+              Call Groups
+            </div>
+
+            <div data-shape="Base" id="ext-queues" class="palette_node_element draw2d_droppable" title="drag&amp;drop the table into the canvas..">
+              Queues
+            </div>
+
+            <div data-shape="Base" id="ivr" class="palette_node_element draw2d_droppable" title="drag&amp;drop the table into the canvas..">
+              IVR
+            </div>
+
+            <div data-shape="Base" id="app-announcement" class="palette_node_element draw2d_droppable" title="drag&amp;drop the table into the canvas..">
+              Announcements
+            </div>
+
+            <div data-shape="Base" id="timeconditions" class="palette_node_element draw2d_droppable" title="drag&amp;drop the table into the canvas..">
+              Time Conditions
+            </div>
+
+            <div data-shape="Base" id="app-daynight" class="palette_node_element draw2d_droppable" title="drag&amp;drop the table into the canvas..">
+              Flow-Call Control
+            </div>
+
+            <div data-shape="Base" id="ext-meetme" class="palette_node_element draw2d_droppable" title="drag&amp;drop the table into the canvas..">
+              Conference
+            </div>
+
+     </div>
+   </div>
+   
+   <div id="canvas">
+   </div>
+
+   <!-- <pre id="json" style="overflow:auto;position:absolute; top:52px; right:18px; width:550; height:800;background:white;border:1px solid gray"> -->
+</pre>
+</body>
+</html>
