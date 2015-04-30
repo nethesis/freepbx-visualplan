@@ -79,8 +79,21 @@ function parse(val) {
 }
 
 $(window).load(function () {
-
-  console.log(parse(window.location.search.replace("?", "")));
+ 
+  function parse(val) {
+    var result = "Not found",
+        tmp = [];
+    location.search
+    .substr(1)
+        .split("&")
+        .forEach(function (item) {
+        tmp = item.split("=");
+        if (tmp[0] === val) result = decodeURIComponent(tmp[1]);
+    });
+    return result;
+}
+ 
+  console.log(parse(window.location.search.replace( "?", "" )));
 
   app = new example.Application();
 

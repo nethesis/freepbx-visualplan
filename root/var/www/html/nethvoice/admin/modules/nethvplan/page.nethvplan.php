@@ -1,11 +1,10 @@
 <?php 
 foreach (core_did_list() as $key => $row) {
 	if ($row['cidnum'] != "") 
-		$id=$row['extension']." / ".$row['cidnum']];
+		$id=$row['extension']." / ".$row['cidnum'];
 	else 
 		$id=$row['extension'];
-	$id=urlencode($id);
-	echo '<a href="admin/nethvplan/index.html?did='.$id.'"  ><br />'."\n";
+	echo '<a target="_blank" href="nethvplan/index.html?did='.urlencode($id).'"  >'.$id.'</a><br />'."\n";
 
 }
 
