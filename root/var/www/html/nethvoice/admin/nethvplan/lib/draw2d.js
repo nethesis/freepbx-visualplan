@@ -1,4 +1,3 @@
-
 /**
  * @class draw2d
  * global namespace declarations

@@ -40,11 +40,14 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
 
     addEntity: function(txt, type, editable, optionalIndex)
     {
-        var padding = { left:30, top:5, right:10, bottom:5 };
+        var padding = { left:30, top:5, right:30, bottom:5 };
         var bgColor = "#f7f7f7";
 
         if(type == "input") {
-            padding = { left:10, top:5, right:10, bottom:5 };
+            padding = { left:10, top:5, right:50, bottom:5 };
+        }
+        if(type == "output") {
+            padding = { left:50, top:5, right:10, bottom:5 };
         }
 
         if(type === "list") {
@@ -110,7 +113,7 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                             {
                                 switch(key){
                                     case "delete":
-                                        var cmd = new draw2d.command.CommandDelete(table.children.data[2].figure);
+                                        var cmd = new draw2d.command.CommandDelete(table.children.data[3].figure);
                                         emitter.getCanvas().getCommandStack().execute(cmd);
                                     break;
                                     default:
@@ -158,26 +161,21 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
     
     onDrop: function(droppedDomNode, x, y)
     {
-        // var type = $(droppedDomNode).data("shape");
-        // var figure = eval("new "+type+"();");
-
-        console.log(droppedDomNode);
-
         var randLetter = String.fromCharCode(65 + Math.floor(Math.random() * 26));
         var id = randLetter + Date.now();
+        var choose = null;
 
         var templateObj = {
             bgColor: "#dbddde",
             name: droppedDomNode[0].innerText,
             type: "Base",
-            userData: [],
-            id: "incoming%"+id
-
+            userData: []
         };
 
         switch (droppedDomNode[0].id) {
-
             case "incoming":
+                templateObj.id = droppedDomNode[0].id+"%"+id;
+                templateObj.bgColor = "#87d37c";
                 templateObj.radius = 20;
                 templateObj.entities = [
                     {
@@ -196,7 +194,29 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
             break;
 
             case "night":
-
+                templateObj.id = droppedDomNode[0].id+"%"+id;
+                templateObj.bgColor = "#34495e";
+                templateObj.radius = 0;
+                templateObj.entities = [
+                    {
+                        text: "night_service_name",
+                        id: "night_service_name%"+id,
+                        type: "input",
+                        editable: "true"
+                    },
+                    {
+                        text: "night_service_state",
+                        id: "night_service_state%"+id,
+                        type: "text",
+                        editable: "true"
+                    },
+                    {
+                        text: "Destination",
+                        id: "night_service_destination%"+id,
+                        type: "output",
+                        editable: "false"
+                    }
+                ];
             break;
 
             case "from-did-direct":
@@ -234,9 +254,7 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
             case "ext-meetme":
 
             break;
-
         }
-
         this.setPersistentAttributes(templateObj);
     },
 
@@ -313,7 +331,11 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
         }
 
         return this;
-    }  
+    }
+
+    // return {
+    //     setPersistentAttributes: setPersistentAttributes
+    // };
 
 });
 

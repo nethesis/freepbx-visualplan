@@ -46,7 +46,6 @@ foreach ($get_data as $key => $row) {
 
 // voicemail - ext-local,vms201,1
 
-
 // ivr - ivr-id,s,1
 $get_data = ivr_get_details();
 foreach ($get_data as $key => $row) {
@@ -79,7 +78,7 @@ foreach ($get_data as $key => $row) {
 $get_data = announcement_list();
 foreach ($get_data as $key => $row) {
 	$rec_details = recordings_get($row['recording_id']);
-	$data['announcement'][$row['announcement_id']] = array(	"description" => $row['description'],
+	$data['app-announcement'][$row['announcement_id']] = array(	"description" => $row['description'],
 															"postdest" => $row['post_dest'],
 															"rec_name" => $rec_details['displayname']
 														  );
@@ -157,76 +156,49 @@ $connectionTemplate = array(
 	)
  );
 
-// start elaboration
-$id = $_GET["id"];
-$destination = $data['incoming'][$id]['destination'];
-$description = $data['incoming'][$id]['description'];
+$getAll = $_GET["getAll"];
+if($getAll) {
+	print_r(json_pretty(json_encode($data[$getAll], true)));
+} else {
+	// start elaboration
+	$id = $_GET["id"];
+	$destination = $data['incoming'][$id]['destination'];
+	$description = $data['incoming'][$id]['description'];
 
-if($id != "") {
-	$widget = $widgetTemplate;
-	$widget['type'] = "Base";
-	$widget['id'] = "incoming%".$id;
-	$widget['radius'] = "20";
-	$widget['bgColor'] = "#87d37c";
-	$widget['x'] = $xPos;
-	$widget['y'] = $yPos;
-	$widget['name'] = "Incoming route";
-	if($description) {
+	if($id != "") {
+		$widget = $widgetTemplate;
+		$widget['type'] = "Base";
+		$widget['id'] = "incoming%".$id;
+		$widget['radius'] = "20";
+		$widget['bgColor'] = "#87d37c";
+		$widget['x'] = $xPos;
+		$widget['y'] = $yPos;
+		$widget['name'] = "Incoming route";
+		if($description) {
+			$widget['entities'][] = array(
+				"text"=> $description,
+				"id"=> "description-incoming%".$id,
+				"type"=> "text",
+				"editable"=> "true"
+			);
+		}
 		$widget['entities'][] = array(
-			"text"=> $description,
-			"id"=> "description-incoming%".$id,
-			"type"=> "text",
-			"editable"=> "true"
-		);
-	}
-	$widget['entities'][] = array(
-		"text"=> $id,
-		"id"=> "route_num-incoming%".$id,
-		"type"=> "output",
-		"editable"=> "true"
-	);
-
-	// get destination field and id
-	$res = getDestination($destination);
-	$dest = $res[0];
-	$idDest = $res[1];
-
-	$connection = $connectionTemplate;
-	$connection['id'] = "incoming%".$id."=".$destination;
-	$connection['source'] = array(
-		"node"=> "incoming%".$id,
-		"port"=> "output_route_num-incoming%".$id
-	);
-	$connection['target'] = array(
-		"node"=> $dest."%".$idDest,
-		"port"=> "input_".$dest."%".$idDest,
-		"decoration"=> "draw2d.decoration.connection.ArrowDecorator"
-	);
-
-	// add connection
-	array_push($connections, $connection);
-
-	// start exploring of connections
-	explore($data, $destination, $destArray);
-
-	if($data['incoming'][$id]['night']) {
-		$widget['entities'][] = array(
-			"text"=> "Night service",
-			"id"=> "night_service%".$id,
+			"text"=> $id,
+			"id"=> "route_num-incoming%".$id,
 			"type"=> "output",
-			"editable"=> "false"
+			"editable"=> "true"
 		);
 
 		// get destination field and id
-		$res = getDestination("night,8".$data['incoming'][$id]['night']['id']."0,1");
+		$res = getDestination($destination);
 		$dest = $res[0];
 		$idDest = $res[1];
 
 		$connection = $connectionTemplate;
-		$connection['id'] = "incoming%".$id."="."night,8".$data['incoming'][$id]['night']['id']."0,1";
+		$connection['id'] = "incoming%".$id."=".$destination;
 		$connection['source'] = array(
 			"node"=> "incoming%".$id,
-			"port"=> "output_night_service%".$id
+			"port"=> "output_route_num-incoming%".$id
 		);
 		$connection['target'] = array(
 			"node"=> $dest."%".$idDest,
@@ -238,25 +210,55 @@ if($id != "") {
 		array_push($connections, $connection);
 
 		// start exploring of connections
-		explore($data, "night,8".$data['incoming'][$id]['night']['id']."0,1", $destArray);
+		explore($data, $destination, $destArray);
+
+		if($data['incoming'][$id]['night']) {
+			$widget['entities'][] = array(
+				"text"=> "Night service",
+				"id"=> "night_service%".$id,
+				"type"=> "output",
+				"editable"=> "false"
+			);
+
+			// get destination field and id
+			$res = getDestination("night,8".$data['incoming'][$id]['night']['id']."0,1");
+			$dest = $res[0];
+			$idDest = $res[1];
+
+			$connection = $connectionTemplate;
+			$connection['id'] = "incoming%".$id."="."night,8".$data['incoming'][$id]['night']['id']."0,1";
+			$connection['source'] = array(
+				"node"=> "incoming%".$id,
+				"port"=> "output_night_service%".$id
+			);
+			$connection['target'] = array(
+				"node"=> $dest."%".$idDest,
+				"port"=> "input_".$dest."%".$idDest,
+				"decoration"=> "draw2d.decoration.connection.ArrowDecorator"
+			);
+
+			// add connection
+			array_push($connections, $connection);
+
+			// start exploring of connections
+			explore($data, "night,8".$data['incoming'][$id]['night']['id']."0,1", $destArray);
+		}
+
+		// add widget
+		array_push($widgets, $widget);
 	}
 
-	// add widget
-	array_push($widgets, $widget);
+	// print output
+	$merged = array_merge($widgets, $connections);
+	$result = array();
+	foreach ($merged as $place) {
+	    if (!array_key_exists($place['id'], $result)) {
+	        $result[$place['id']] = $place;
+	    }
+	}
+	$merged = $result;
+	print_r(json_pretty(json_encode($merged, true)));
 }
-
-// print output
-$merged = array_merge($widgets, $connections);
-$result = array();
-foreach ($merged as $place) {
-    if (!array_key_exists($place['id'], $result)) {
-        $result[$place['id']] = $place;
-    }
-}
-$merged = $result;
-//print "var jsonDocument = ";
-print_r(json_pretty(json_encode($merged, true)));
-
 function getDestination($destination) {
 	if(preg_match('/ivr-*/', $destination)) {
 		$values = explode(",", $destination);
@@ -266,8 +268,8 @@ function getDestination($destination) {
 	} else if(preg_match('/app-announcement-*/', $destination)) {
 		$values = explode(",", $destination);
 		$dests = explode("-", $values[0]);
-		$dest = $dests[0];
-		$id = $dests[1];
+		$dest = $dests[0]."-".$dests[1];
+		$id = $dests[2];
 	} else if(preg_match('/^night/', $destination)) {
 		$values = explode(",", $destination);
 		$idlong = $values[1];
@@ -353,7 +355,7 @@ function explore($data, $destination, $destArray) {
 				$widget = $widgetTemplate;
 				$widget['type'] = "Base";
 				$widget['radius'] = "20";
-				$widget['bgColor'] = "#e74c3c";
+				$widget['bgColor'] = "#cf000f";
 				$widget['id'] = $dest."%".$id;
 				$widget['x'] = $xPos;
 				$widget['y'] = $yPos;
@@ -421,7 +423,7 @@ function explore($data, $destination, $destArray) {
 				);
 
 				$year = date('Y', strtotime($data[$dest][$id]['timeend']));
-				$content = "Period: ".date('d/m/Y', strtotime($data[$dest][$id]['timebegin']))." - ".date('d/m/Y', strtotime($data[$dest][$id]['timeend']));
+				$content = date('d/m/Y', strtotime($data[$dest][$id]['timebegin']))." - ".date('d/m/Y', strtotime($data[$dest][$id]['timeend']));
 				if($year == 2030) {
 					$content = "Active";
 				}
@@ -601,7 +603,7 @@ function explore($data, $destination, $destArray) {
 				$widget = $widgetTemplate;
 				$widget['type'] = "Base";
 				$widget['radius'] = "0";
-				$widget['bgColor'] = "#D24D57";
+				$widget['bgColor'] = "#D35400";
 				$widget['id'] = $dest."%".$id;
 				$widget['x'] = $xPos;
 				$widget['y'] = $yPos;

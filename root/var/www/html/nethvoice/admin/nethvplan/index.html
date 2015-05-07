@@ -8,7 +8,8 @@
     <link type="text/css" rel="stylesheet" href="css/application.css" />
     <link type="text/css" rel="stylesheet" href="css/spinner.css" />
     <link type="text/css" rel="stylesheet" href="css/contextmenu.css" />
-    <link type="text/css" rel="stylesheet" href="css/font-awesome.css">
+    <link type="text/css" rel="stylesheet" href="css/font-awesome.css" />
+    <link type="text/css" rel="stylesheet" href="css/jquery-ui.css" />
     <!-- js library include -->
     <script src="lib/shifty.js"></script>
     <script src="lib/raphael.js"></script>
@@ -76,7 +77,6 @@ $(window).load(function () {
         $('#loader').show();
       }
     }).done(function(c) {
-
       var jsonDocument = JSON.parse(c);
 
       var g = new dagre.graphlib.Graph();
@@ -201,7 +201,6 @@ $(window).load(function () {
    <div id="canvas">
    </div>
 
-   <!-- <pre id="json" style="overflow:auto;position:absolute; top:52px; right:18px; width:550; height:800;background:white;border:1px solid gray"> -->
 </pre>
 </body>
 </html>

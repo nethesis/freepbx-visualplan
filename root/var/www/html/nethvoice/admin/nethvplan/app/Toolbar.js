@@ -93,25 +93,38 @@ example.Toolbar = Class.extend({
 			var writer = new draw2d.io.json.Writer();
 			writer.marshal(this.view, function(json){
 
-				//console.log(window.btoa(unescape(encodeURIComponent(JSON.stringify(json)))));
-
+				//console.log(/*window.btoa(unescape(encodeURIComponent(*/JSON.stringify(json)/*)))*/);
 				$.ajax({
 			      url: "/nethvoice/admin/nethvplan/create.php?jsonData="+window.btoa(unescape(encodeURIComponent(JSON.stringify(json)))),
 			      context: document.body,
 			      beforeSend: function( xhr ) {
-			        //$('#loader').show();
+			        $('#loader').show();
 			      }
 			    }).done(function(c) {
 			    	console.log(c);
+			    	$('#loader').hide();
+			    	highlight($('#save_button'));
 			    });
+			    
 			});
 		},this));
-		
+
+		this.delimiter  = $("<button id=\"save_button\" class='save_button'><i class='fa fa-circle fa-lg'></i></button>");
+		this.html.append(this.delimiter);
+
         this.disableButton(this.undoButton, true);
         this.disableButton(this.redoButton, true);
         this.disableButton(this.deleteButton, true);
 
         this.html.append($("<div id='toolbar_hint'></div>"));
+
+        function highlight(obj){
+           obj.fadeIn("slow");
+		   obj.css("color", "#87D37C");
+		   setTimeout(function(){
+		        obj.fadeOut("slow");	
+		   }, 2000);
+		}
     },
 
 	/**
