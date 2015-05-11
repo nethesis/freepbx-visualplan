@@ -46,6 +46,16 @@ example.Toolbar = Class.extend({
 
 		this.delimiter  = $("<span class='toolbar_delimiter'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>");
 		this.html.append(this.delimiter);
+
+		this.panButton  = $("<button class='gray'><i class='fa fa-arrows fa-lg'></i></button>");
+		this.html.append(this.panButton	);
+		this.panButton.click($.proxy(function(){
+			var policy = new draw2d.policy.canvas.BoundingboxSelectionPolicy;
+            this.view.installEditPolicy(policy);
+		},this));
+
+		this.delimiter  = $("<span class='toolbar_delimiter'>&nbsp;&nbsp;&nbsp;</span>");
+		this.html.append(this.delimiter);
 		
 		// Inject the UNDO Button and the callbacks
 		//
@@ -93,18 +103,18 @@ example.Toolbar = Class.extend({
 			var writer = new draw2d.io.json.Writer();
 			writer.marshal(this.view, function(json){
 
-				//console.log(/*window.btoa(unescape(encodeURIComponent(*/JSON.stringify(json)/*)))*/);
-				$.ajax({
-			      url: "/nethvoice/admin/nethvplan/create.php?jsonData="+window.btoa(unescape(encodeURIComponent(JSON.stringify(json)))),
-			      context: document.body,
-			      beforeSend: function( xhr ) {
-			        $('#loader').show();
-			      }
-			    }).done(function(c) {
-			    	console.log(c);
-			    	$('#loader').hide();
-			    	highlight($('#save_button'));
-			    });
+				console.log(/*window.btoa(unescape(encodeURIComponent(*/JSON.stringify(json)/*)))*/);
+				// $.ajax({
+			 //      url: "/nethvoice/admin/nethvplan/create.php?jsonData="+window.btoa(unescape(encodeURIComponent(JSON.stringify(json)))),
+			 //      context: document.body,
+			 //      beforeSend: function( xhr ) {
+			 //        $('#loader').show();
+			 //      }
+			 //    }).done(function(c) {
+			 //    	console.log(c);
+			 //    	$('#loader').hide();
+			 //    	highlight($('#save_button'));
+			 //    });
 			    
 			});
 		},this));

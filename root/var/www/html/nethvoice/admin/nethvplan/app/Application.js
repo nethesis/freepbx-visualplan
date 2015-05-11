@@ -25,5 +25,4 @@ example.Application = Class.extend(
 
         this.toolbar = new example.Toolbar("toolbar",  this.view );
 	}
-
 });

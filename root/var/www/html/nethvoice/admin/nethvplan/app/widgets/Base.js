@@ -38,7 +38,7 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
     //     this.hideTooltip();
     // },
 
-    addEntity: function(txt, type, editable, optionalIndex)
+    addEntity: function(txt, type, optionalIndex)
     {
         var padding = { left:30, top:5, right:30, bottom:5 };
         var bgColor = "#f7f7f7";
@@ -71,10 +71,6 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
             fontColor:"#4a4a4a",
             resizeable:true
         });
-
-        if(editable == "true") {
-            label.installEditor(new draw2d.ui.LabelInplaceEditor());
-        }
 
         // create type
         if(type === "input" || type == "output") {
@@ -159,64 +155,93 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
         }
     },
     
-    onDrop: function(droppedDomNode, x, y)
+    onDrop: function(droppedDomNode, x, y, elements)
     {
+        this.creationSwitch(elements, droppedDomNode[0].id, droppedDomNode[0].innerText);
+    },
+
+    creationSwitch: function(elem, type, title) {
         var randLetter = String.fromCharCode(65 + Math.floor(Math.random() * 26));
         var id = randLetter + Date.now();
-        var choose = null;
 
         var templateObj = {
             bgColor: "#dbddde",
-            name: droppedDomNode[0].innerText,
+            name: title,
             type: "Base",
             userData: []
         };
 
-        switch (droppedDomNode[0].id) {
+        console.log(elem);
+
+        switch (type) {
+            case "app-blackhole":
+                templateObj.id = type+"%"+id;
+                templateObj.bgColor = "#cf000f";
+                templateObj.radius = 20;
+                templateObj.entities = [
+                    {
+                        text: "Hangup",
+                        id: "hangup_dest%"+id,
+                        type: "input"
+                    }
+                ];
+            break;
             case "incoming":
-                templateObj.id = droppedDomNode[0].id+"%"+id;
+                templateObj.id = type+"%"+id;
                 templateObj.bgColor = "#87d37c";
                 templateObj.radius = 20;
                 templateObj.entities = [
                     {
-                        text: "description",
-                        id: "description-incoming%"+id,
-                        type: "text",
-                        editable: "true"
+                        text: elem[1].value,
+                        id: "incoming_description%"+id,
+                        type: "text"
                     },
                     {
-                        text: "num / call_num.",
-                        id: "route_num-incoming%"+id,
-                        type: "output",
-                        editable: "true"
+                        text: elem[0].value,
+                        id: "incoming_route-num%"+id,
+                        type: "output"
                     }
                 ];
+
+                if(parseInt(elem[2].value)) {
+                    templateObj.entities.push({
+                        text: "Night service",
+                        id: "night_service%"+id,
+                        type: "output"
+                    });
+                }
             break;
 
             case "night":
-                templateObj.id = droppedDomNode[0].id+"%"+id;
+                templateObj.id = type+"%"+id;
                 templateObj.bgColor = "#34495e";
                 templateObj.radius = 0;
                 templateObj.entities = [
                     {
-                        text: "night_service_name",
-                        id: "night_service_name%"+id,
-                        type: "input",
-                        editable: "true"
-                    },
-                    {
-                        text: "night_service_state",
-                        id: "night_service_state%"+id,
-                        type: "text",
-                        editable: "true"
-                    },
-                    {
-                        text: "Destination",
-                        id: "night_service_destination%"+id,
-                        type: "output",
-                        editable: "false"
+                        text: elem[0].value,
+                        id: "night-service_name%"+id,
+                        type: "input"
                     }
                 ];
+
+                if(parseInt(elem[1].value)) text = "Active";
+                if(!parseInt(elem[1].value)) text = "Not Active";
+                if(elem[1].value == "period") {
+                    var from = elem[2].children[1].value;
+                    var to = elem[2].children[3].value;
+                    text = from +" - "+ to;
+                }
+                templateObj.entities.push({
+                    text: text,
+                    id: "night-service_state%"+id,
+                    type: "text"
+                });
+
+                templateObj.entities.push({
+                    text: "Destination",
+                    id: "night-service_destination%"+id,
+                    type: "output"
+                });
             break;
 
             case "from-did-direct":
@@ -228,11 +253,69 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
             break;
 
             case "ext-group":
-
+                templateObj.id = type+"%"+id;
+                templateObj.bgColor = "#2980b9";
+                templateObj.radius = 0;
+                templateObj.entities = [
+                    {
+                        text: elem[1].value + " ( "+elem[0].value+" )",
+                        id: "groups_name%"+id,
+                        type: "input"
+                    },
+                    {
+                        text: "Extensions list",
+                        id: "groups_listtext%"+id,
+                        type: "text"
+                    },
+                    {
+                        text: elem[2].value,
+                        id: "groups_lists%"+id,
+                        type: "list"
+                    },
+                    {
+                        text: "Fail destination",
+                        id: "groups_output%"+id,
+                        type: "output"
+                    }
+                ];
             break;
 
             case "ext-queues":
-
+                templateObj.id = type+"%"+id;
+                templateObj.bgColor = "#9b59b6";
+                templateObj.radius = 0;
+                templateObj.entities = [
+                    {
+                        text: elem[1].value + " ( "+elem[0].value+" )",
+                        id: "queues_name%"+id,
+                        type: "input"
+                    },
+                    {
+                        text: "Static members",
+                        id: "queues_statictext%"+id,
+                        type: "text"
+                    },
+                    {
+                        text: elem[2].value,
+                        id: "queues_staticlist%"+id,
+                        type: "list"
+                    },
+                    {
+                        text: "Dynamic members",
+                        id: "queues_dynamictext%"+id,
+                        type: "text"
+                    },
+                    {
+                        text: elem[3].value,
+                        id: "queues_dynamiclist%"+id,
+                        type: "list"
+                    },
+                    {
+                        text: "Fail destination",
+                        id: "queues_output%"+id,
+                        type: "output"
+                    }
+                ];
             break;
 
             case "ivr":
@@ -240,7 +323,26 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
             break;
 
             case "app-announcement":
-
+                templateObj.id = type+"%"+id;
+                templateObj.bgColor = "#f4b350";
+                templateObj.radius = 0;
+                templateObj.entities = [
+                    {
+                        text: elem[0].value,
+                        id: "announcement_name%"+id,
+                        type: "input"
+                    },
+                    {
+                        text: elem[1].value,
+                        id: "announcement_record%"+id,
+                        type: "text"
+                    },
+                    {
+                        text: "Destination",
+                        id: "announcement_output%"+id,
+                        type: "output"
+                    }
+                ];
             break;
 
             case "timeconditions":
@@ -302,7 +404,7 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
 
         if(typeof memento.entities !== "undefined"){
             $.each(memento.entities, $.proxy(function(i,e){
-                var entity = this.addEntity(e.text, e.type, e.editable);
+                var entity = this.addEntity(e.text, e.type);
                 entity.id = e.id;
 
                 // entity.onMouseEnter = function() {
@@ -332,13 +434,7 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
 
         return this;
     }
-
-    // return {
-    //     setPersistentAttributes: setPersistentAttributes
-    // };
-
 });
-
 
 MyConnection = draw2d.Connection.extend({
     NAME: "MyConnection",
