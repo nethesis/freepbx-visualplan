@@ -338,15 +338,8 @@ function bindData($data, $dest, $id) {
 			$widget['x'] = $xPos;
 			$widget['y'] = $yPos;
 			$widget['name'] = "Incoming route";
-			if($description) {
-				$widget['entities'][] = array(
-					"text"=> $description,
-					"id"=> "description-incoming%".$id,
-					"type"=> "text"
-				);
-			}
 			$widget['entities'][] = array(
-				"text"=> $id,
+				"text"=> $id." ( ".$data[$dest][$id]['description']." )",
 				"id"=> "route_num-incoming%".$id,
 				"type"=> "output",
 				"destination"=> $data[$dest][$id]['destination']
@@ -416,7 +409,7 @@ function bindData($data, $dest, $id) {
 					$text = "Busy";
 				break;
 				case "vms":
-					$text = "Unavailable";
+					$text = "No Message";
 				break;
 			}
 
@@ -566,7 +559,7 @@ function bindData($data, $dest, $id) {
 			$widget['y'] = $yPos;
 			$widget['name'] = "IVR";
 			$widget['entities'][] = array(
-				"text"=> $data[$dest][$id]['name'],
+				"text"=> $data[$dest][$id]['name']." ( ".$data[$dest][$id]['description']." )",
 				"id"=> $dest."%".$id,
 				"type"=> "input"
 			);

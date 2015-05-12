@@ -173,7 +173,9 @@ example.View = draw2d.Canvas.extend({
                     }
                 },this),
                 position: function(opt, x, y){
-                    opt.$menu.css({top: event.y/app.view.getZoom()+25, left: event.x/app.view.getZoom()+95});
+                    var scrollTopVal = app.view.getScrollArea().scrollTop();
+                    var scrollLeftVal = app.view.getScrollArea().scrollLeft();
+                    opt.$menu.css({ top: event.y/app.view.getZoom()+25-scrollTopVal, left: event.x/app.view.getZoom()+95-scrollLeftVal });
                 },
                 items: 
                 {
@@ -201,15 +203,23 @@ example.View = draw2d.Canvas.extend({
                     },
                     Save: function() {
                         var usableElem = event.context.getElemByAttr("usable");
-                        var type = $(event.dropped).data("shape");
-                        var figure = eval("new "+type+"();");
 
-                        figure.onDrop(event.dropped, event.x, event.y, usableElem);
+                        // check existing data
+                        // var result = event.context.checkData(usableElem, event.dropped[0].id);
 
-                        var command = new draw2d.command.CommandAdd(event.context, figure, event.x-figure.width-75, event.y-25);
-                        event.context.getCommandStack().execute(command);
+                        //if(result) {
+                            var type = $(event.dropped).data("shape");
+                            var figure = eval("new "+type+"();");
 
-                        $(this).dialog('destroy').remove();
+                            figure.onDrop(event.dropped, event.x, event.y, usableElem);
+
+                            var command = new draw2d.command.CommandAdd(event.context, figure, event.x-figure.width-75, event.y-25);
+                            event.context.getCommandStack().execute(command);
+
+                            $(this).dialog('destroy').remove();
+                        // } else {
+                        //     console.log("esiste");
+                        // }
                     }
                 },
                 title: event.dropped[0].innerText + " creation"
@@ -237,6 +247,23 @@ example.View = draw2d.Canvas.extend({
         return matchingElements;
     },
 
+    checkData: function(elem, type) {
+        var number = elem[0].value;
+        
+        $.ajax({
+          url: "/nethvoice/admin/nethvplan/visualize.php?readData="+type,
+          context: document.body,
+          beforeSend: function( xhr ) {
+            $('#loader').show();
+          }
+        }).done(function(c) {
+            $('#loader').hide();
+            var data = JSON.parse(c);
+            console.log(data);
+        });
+
+    },
+
     modalCreate: function(elem) {
         var html = "";
         switch (elem.id) {
@@ -257,11 +284,19 @@ example.View = draw2d.Canvas.extend({
             break;
 
             case "from-did-direct":
-
+                html += '<label class="label-creation">Number: </label>';
+                html += '<input usable id="'+elem.id+'-number" class="input-creation"></input>';
+                html += '<label class="label-creation">Name: </label>';
+                html += '<input usable id="'+elem.id+'-name" class="input-creation"></input>';
             break;
 
             case "ext-local":
-
+                html += '<label class="label-creation">Number: </label>';
+                html += '<input usable id="'+elem.id+'-number" class="input-creation"></input>';
+                html += '<label class="label-creation">Name: </label>';
+                html += '<input usable id="'+elem.id+'-name" class="input-creation"></input>';
+                html += '<label class="label-creation">State: </label>';
+                html += '<select usable id="'+elem.id+'-state" class="input-creation"><option value="0">Busy</option><option value="1">No Message</option><option value="2">Unavailable</option></select>';
             break;
 
             case "ext-group":
@@ -285,7 +320,10 @@ example.View = draw2d.Canvas.extend({
             break;
 
             case "ivr":
-
+                html += '<label class="label-creation">Name: </label>';
+                html += '<input usable id="'+elem.id+'-name" class="input-creation"></input>';
+                html += '<label class="label-creation">Description: </label>';
+                html += '<input usable id="'+elem.id+'-description" class="input-creation"></input>';
             break;
 
             case "app-announcement":
@@ -324,7 +362,7 @@ example.View = draw2d.Canvas.extend({
                     var data = JSON.parse(c);
                     var htmlSelect = "";
                     for(e in data) {
-                        htmlSelect += '<option value="'+e+'">'+data[e].description+'</option>';
+                        htmlSelect += '<option value="'+data[e].description +' ( '+e+' )">'+data[e].description+'</option>';
                     }
                     html += '<label class="label-creation">Name: </label>';
                     html += '<input usable id="'+elem.id+'-name" class="input-creation"></input>';
@@ -343,7 +381,10 @@ example.View = draw2d.Canvas.extend({
             break;
 
             case "ext-meetme":
-
+                html += '<label class="label-creation">Number: </label>';
+                html += '<input usable id="'+elem.id+'-number" class="input-creation"></input>';
+                html += '<label class="label-creation">Name: </label>';
+                html += '<input usable id="'+elem.id+'-name" class="input-creation"></input>';
             break;
         }
 
@@ -383,59 +424,6 @@ example.View = draw2d.Canvas.extend({
         for(elem in dataArray) {
             htmlInj += '<div><button elemDest="'+dataArray[elem].entities[dataArray[elem].entities.length-1].destination+'" elemId="'+elem+'" class="button-elem-list">'+elem+' - '+dataArray[elem].entities[0].text+'</button></div>';
         }
-        // switch(type) {
-        //     case "incoming":
-        //         for(elem in dataArray) {
-        //             htmlInj += '<div><button elemId="'+elem+'" class="button-elem-list">'+elem+' - '+dataArray[elem].entities[0].text+'</button></div>';
-        //         }
-        //     break;
-        //     case "night":
-        //         for(elem in dataArray) {
-        //             htmlInj += '<div><button elemId="'+elem+'" class="button-elem-list">'+elem+' - '+dataArray[elem].entities[0].text+'</button></div>';
-        //         }
-        //     break;
-        //     case "from-did-direct":
-        //         for(elem in dataArray) {
-        //             htmlInj += '<div><button elemId="'+elem+'" class="button-elem-list">'+elem+' - '+dataArray[elem].entities[0].text+'</button></div>';
-        //         }
-        //     break;
-        //     case "ivr":
-        //         for(elem in dataArray) {
-        //             htmlInj += '<div><button elemId="'+elem+'" class="button-elem-list">'+elem+' - '+dataArray[elem].entities[0].text+'</button></div>';
-        //         }
-        //     break;
-        //     case "timeconditions":
-        //         for(elem in dataArray) {
-        //             htmlInj += '<div><button elemId="'+elem+'" class="button-elem-list">'+elem+' - '+dataArray[elem].entities[0].text+'</button></div>';
-        //         }
-        //     break;
-        //     case "app-announcement":
-        //         for(elem in dataArray) {
-        //             htmlInj += '<div><button elemId="'+elem+'" class="button-elem-list">'+elem+' - '+dataArray[elem].entities[0].text+'</button></div>';
-        //         }
-        //     break;
-        //     case "ext-group":
-        //         for(elem in dataArray) {
-        //             htmlInj += '<div><button elemId="'+elem+'" class="button-elem-list">'+elem+' - '+dataArray[elem].entities[0].text+'</button></div>';
-        //         }
-        //     break;
-        //     case "ext-meetme":
-        //         for(elem in dataArray) {
-        //             htmlInj += '<div><button elemId="'+elem+'" class="button-elem-list">'+elem+' - '+dataArray[elem].entities[0].text+'</button></div>';
-        //         }
-        //     break;
-        //     case "ext-queues":
-        //         for(elem in dataArray) {
-        //             htmlInj += '<div><button elemId="'+elem+'" class="button-elem-list">'+elem+' - '+dataArray[elem].entities[0].text+'</button></div>';
-        //         }
-        //     break;
-        //     case "app-daynight":
-        //         for(elem in dataArray) {
-        //             htmlInj += '<div><button elemId="'+elem+'" class="button-elem-list">'+elem+' - '+dataArray[elem].entities[0].text+'</button></div>';
-        //         }
-        //     break;
-        // }
-
         return htmlInj;
     },
     
