@@ -44,7 +44,16 @@ foreach ($get_data as $key => $row) {
 											 );
 }
 
-// voicemail - ext-local,vms201,1
+// voicemail - ext-local,vm(b|s|u)201,1
+$get_data = core_users_list();
+foreach ($get_data as $key => $row) {
+	if($row[2] != "novm") {
+		$data['ext-local'][$row[0]] = array("name" => $row[1],
+											  "voicemail" => $row[2]
+											);
+	}
+	
+}
 
 // ivr - ivr-id,s,1
 $get_data = ivr_get_details();
@@ -397,21 +406,7 @@ function bindData($data, $dest, $id) {
 			);
 		break;
 		case "ext-local":
-			$state = substr($id, 0, 3);
 			$idUsers = substr($id, -3);
-
-			$text = "";
-			switch($state) {
-				case "vmu":
-					$text = "Unavailable";
-				break;
-				case "vmb":
-					$text = "Busy";
-				break;
-				case "vms":
-					$text = "No Message";
-				break;
-			}
 
 			$widget = $widgetTemplate;
 			$widget['type'] = "Base";
@@ -422,8 +417,18 @@ function bindData($data, $dest, $id) {
 			$widget['y'] = $yPos;
 			$widget['name'] = "Voice Mail";
 			$widget['entities'][] = array(
-				"text"=> $data['from-did-direct'][$idUsers]['name']." ( ".$idUsers." ) - ".$text,
-				"id"=> $dest."%".$id,
+				"text"=> $data['from-did-direct'][$idUsers]['name']." ( ".$idUsers." ) - Busy",
+				"id"=> $dest."%vmb".$idUsers,
+				"type"=> "input"
+			);
+			$widget['entities'][] = array(
+				"text"=> $data['from-did-direct'][$idUsers]['name']." ( ".$idUsers." ) - No Message",
+				"id"=> $dest."%vms".$idUsers,
+				"type"=> "input"
+			);
+			$widget['entities'][] = array(
+				"text"=> $data['from-did-direct'][$idUsers]['name']." ( ".$idUsers." ) - Unavailable",
+				"id"=> $dest."%vmu".$idUsers,
 				"type"=> "input"
 			);
 		break;
@@ -564,6 +569,11 @@ function bindData($data, $dest, $id) {
 				"type"=> "input"
 			);
 			$widget['entities'][] = array(
+				"text"=> "Announcement: ".$data['recordings'][$data[$dest][$id]['announcement']]['name'],
+				"id"=> "announcement-".$dest."%".$id,
+				"type"=> "text"
+			);
+			$widget['entities'][] = array(
 				"text"=> "Invalid destination",
 				"id"=> "invalid_destination-".$dest."%".$id,
 				"type"=> "output",
@@ -577,7 +587,7 @@ function bindData($data, $dest, $id) {
 			);
 			foreach ($data[$dest][$id]['selections'] as $value) {
 				$widget['entities'][] = array(
-					"text"=> "Selection ".$value['selection'],
+					"text"=> $value['selection'],
 					"id"=> "selection_".$value['selection']."-".$dest."%".$id,
 					"type"=> "output",
 					"destination"=> $value['dest']

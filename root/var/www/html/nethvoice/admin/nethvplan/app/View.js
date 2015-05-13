@@ -92,7 +92,7 @@ example.View = draw2d.Canvas.extend({
                                         close: function(ev, ui) {
                                             $(this).dialog('destroy').remove();
                                         },
-                                        title: event.dropped[0].innerText + " selection"
+                                        title: $(event.dropped[0]).text() + " selection"
                                     });
                                 $(".ui-dialog-titlebar").css("background", event.dropped.css("backgroundColor"));
 
@@ -205,24 +205,10 @@ example.View = draw2d.Canvas.extend({
                         var usableElem = event.context.getElemByAttr("usable");
 
                         // check existing data
-                        // var result = event.context.checkData(usableElem, event.dropped[0].id);
-
-                        //if(result) {
-                            var type = $(event.dropped).data("shape");
-                            var figure = eval("new "+type+"();");
-
-                            figure.onDrop(event.dropped, event.x, event.y, usableElem);
-
-                            var command = new draw2d.command.CommandAdd(event.context, figure, event.x-figure.width-75, event.y-25);
-                            event.context.getCommandStack().execute(command);
-
-                            $(this).dialog('destroy').remove();
-                        // } else {
-                        //     console.log("esiste");
-                        // }
+                        var result = event.context.checkData(usableElem, event.dropped[0].id, event);
                     }
                 },
-                title: event.dropped[0].innerText + " creation"
+                title: $(event.dropped[0]).text() + " creation"
             });
         $(".ui-dialog-titlebar").css("background", $(event.dropped[0]).css("backgroundColor"));
 
@@ -247,9 +233,9 @@ example.View = draw2d.Canvas.extend({
         return matchingElements;
     },
 
-    checkData: function(elem, type) {
+    checkData: function(elem, type, event) {
         var number = elem[0].value;
-        
+
         $.ajax({
           url: "/nethvoice/admin/nethvplan/visualize.php?readData="+type,
           context: document.body,
@@ -259,9 +245,32 @@ example.View = draw2d.Canvas.extend({
         }).done(function(c) {
             $('#loader').hide();
             var data = JSON.parse(c);
-            console.log(data);
-        });
+            var missing = false;
+            
+            if(type !== "ext-local" && !(number in data)) {
+                missing = true;
+            } else {
+                $(".error-message").html("");
+                $(elem[0]).css("border", "1px solid rgb(255, 97, 97)");
+                $('#modalCreation').append('<p class="error-message">Error: The inserted number is used.</p>');
+            }
 
+            if(type === "ext-local") {
+                missing = true;
+            }
+
+            if(missing) {
+                var typeFig = $(event.dropped).data("shape");
+                var figure = eval("new "+typeFig+"();");
+
+                figure.onDrop(event.dropped, event.x, event.y, elem);
+
+                var command = new draw2d.command.CommandAdd(event.context, figure, event.x-figure.width-75, event.y-25);
+                event.context.getCommandStack().execute(command);
+
+                $('#modalCreation').dialog('destroy').remove();
+            }
+        });
     },
 
     modalCreate: function(elem) {
@@ -269,7 +278,9 @@ example.View = draw2d.Canvas.extend({
         switch (elem.id) {
             case "incoming":
                 html += '<label class="label-creation">Number: </label>';
-                html += '<input usable id="'+elem.id+'-number" class="input-creation"></input>';
+                html += '<input usable id="'+elem.id+'-number" class="input-creation-mini"></input>';
+                html += ' / ';
+                html += '<input usable id="'+elem.id+'-cidnum" class="input-creation-mini"></input>';
                 html += '<label class="label-creation">Description: </label>';
                 html += '<input usable id="'+elem.id+'-description" class="input-creation"></input>';
                 html += '<label class="label-creation">Night Service: </label>';
@@ -291,12 +302,25 @@ example.View = draw2d.Canvas.extend({
             break;
 
             case "ext-local":
-                html += '<label class="label-creation">Number: </label>';
-                html += '<input usable id="'+elem.id+'-number" class="input-creation"></input>';
-                html += '<label class="label-creation">Name: </label>';
-                html += '<input usable id="'+elem.id+'-name" class="input-creation"></input>';
-                html += '<label class="label-creation">State: </label>';
-                html += '<select usable id="'+elem.id+'-state" class="input-creation"><option value="0">Busy</option><option value="1">No Message</option><option value="2">Unavailable</option></select>';
+                $.ajax({
+                  url: "/nethvoice/admin/nethvplan/visualize.php?readData=from-did-direct",
+                  context: document.body,
+                  beforeSend: function( xhr ) {
+                    $('#loader').show();
+                  }
+                }).done(function(c) {
+                    $('#loader').hide();
+                    var data = JSON.parse(c);
+                    var htmlSelect = "";
+                    for(e in data) {
+                        if(data[e].voicemail === "novm")
+                            htmlSelect += '<option value="'+data[e].name +' ( '+e+' )">'+data[e].name+' ( '+e+' )</option>';
+                    }
+                    html += '<label class="label-creation">Enable Voice Mail for: </label>';
+                    html += '<select usable id="'+elem.id+'-voicenum" class="input-creation">'+htmlSelect+'</select>';
+
+                    $("#modalCreation").html(html);
+                });
             break;
 
             case "ext-group":
@@ -320,10 +344,28 @@ example.View = draw2d.Canvas.extend({
             break;
 
             case "ivr":
-                html += '<label class="label-creation">Name: </label>';
-                html += '<input usable id="'+elem.id+'-name" class="input-creation"></input>';
-                html += '<label class="label-creation">Description: </label>';
-                html += '<input usable id="'+elem.id+'-description" class="input-creation"></input>';
+                $.ajax({
+                  url: "/nethvoice/admin/nethvplan/visualize.php?readData=recordings",
+                  context: document.body,
+                  beforeSend: function( xhr ) {
+                    $('#loader').show();
+                  }
+                }).done(function(c) {
+                    $('#loader').hide();
+                    var data = JSON.parse(c);
+                    var htmlSelect = "";
+                    for(e in data) {
+                        htmlSelect += '<option value="'+data[e].name +' ( '+e+' )">'+data[e].name+'</option>';
+                    }
+                    html += '<label class="label-creation">Name: </label>';
+                    html += '<input usable id="'+elem.id+'-name" class="input-creation"></input>';
+                    html += '<label class="label-creation">Description: </label>';
+                    html += '<input usable id="'+elem.id+'-description" class="input-creation"></input>';
+                    html += '<label class="label-creation">Recording: </label>';
+                    html += '<select usable id="'+elem.id+'-recording" class="input-creation">'+htmlSelect+'</select>';
+
+                    $("#modalCreation").html(html);
+                });
             break;
 
             case "app-announcement":
@@ -422,7 +464,11 @@ example.View = draw2d.Canvas.extend({
     switchDescription: function(dataArray, type) {
         var htmlInj = "";
         for(elem in dataArray) {
-            htmlInj += '<div><button elemDest="'+dataArray[elem].entities[dataArray[elem].entities.length-1].destination+'" elemId="'+elem+'" class="button-elem-list">'+elem+' - '+dataArray[elem].entities[0].text+'</button></div>';
+            var text = dataArray[elem].entities[0].text;
+            if(type === "ext-local") {
+                text = dataArray[elem].entities[0].text.split("-")[0];
+            }
+            htmlInj += '<div><button elemDest="'+dataArray[elem].entities[dataArray[elem].entities.length-1].destination+'" elemId="'+elem+'" class="button-elem-list">'+elem+' - '+text+'</button></div>';
         }
         return htmlInj;
     },

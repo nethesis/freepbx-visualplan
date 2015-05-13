@@ -47,11 +47,24 @@ example.Toolbar = Class.extend({
 		this.delimiter  = $("<span class='toolbar_delimiter'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>");
 		this.html.append(this.delimiter);
 
-		this.panButton  = $("<button class='gray'><i class='fa fa-arrows fa-lg'></i></button>");
+		this.panButton  = $("<button currentBtn='pan' class='gray'><i class='fa fa-arrows fa-lg'></i></button>");
 		this.html.append(this.panButton	);
-		this.panButton.click($.proxy(function(){
-			var policy = new draw2d.policy.canvas.BoundingboxSelectionPolicy;
-            this.view.installEditPolicy(policy);
+		this.panButton.click($.proxy(function(e){
+			var currentBtn = e.currentTarget.attributes.currentBtn.value;
+
+			if(currentBtn === "pan") {
+				e.currentTarget.attributes.currentBtn.value = "box";
+				$(e.currentTarget.children[0]).removeAttr('class');
+				$(e.currentTarget.children[0]).attr('class', 'fa fa-square-o fa-lg');
+				var policy = new draw2d.policy.canvas.BoundingboxSelectionPolicy;
+            	this.view.installEditPolicy(policy);
+			} else {
+				e.currentTarget.attributes.currentBtn.value = "pan";
+				$(e.currentTarget.children[0]).removeAttr('class');
+				$(e.currentTarget.children[0]).attr('class', 'fa fa-arrows fa-lg');
+				var policy = new draw2d.policy.canvas.PanningSelectionPolicy;
+            	this.view.installEditPolicy(policy);
+			}
 		},this));
 
 		this.delimiter  = $("<span class='toolbar_delimiter'>&nbsp;&nbsp;&nbsp;</span>");
@@ -103,18 +116,49 @@ example.Toolbar = Class.extend({
 			var writer = new draw2d.io.json.Writer();
 			writer.marshal(this.view, function(json){
 
-				console.log(/*window.btoa(unescape(encodeURIComponent(*/JSON.stringify(json)/*)))*/);
-				// $.ajax({
-			 //      url: "/nethvoice/admin/nethvplan/create.php?jsonData="+window.btoa(unescape(encodeURIComponent(JSON.stringify(json)))),
-			 //      context: document.body,
-			 //      beforeSend: function( xhr ) {
-			 //        $('#loader').show();
-			 //      }
-			 //    }).done(function(c) {
-			 //    	console.log(c);
-			 //    	$('#loader').hide();
-			 //    	highlight($('#save_button'));
-			 //    });
+				// simply data
+				for(item in json) {
+					if(json[item].type == "Base") {
+						delete json[item].width;
+						delete json[item].height;
+						delete json[item].name;
+						delete json[item].alpha;
+						delete json[item].userData;
+						delete json[item].cssClass;
+						delete json[item].bgColor;
+						delete json[item].color;
+						delete json[item].stroke;
+						delete json[item].radius;
+						delete json[item].ports;
+					}
+					if(json[item].type == "MyConnection") {
+						delete json[item].outlineStroke;
+						delete json[item].alpha;
+						delete json[item].userData;
+						delete json[item].cssClass;
+						delete json[item].color;
+						delete json[item].stroke;
+						delete json[item].outlineColor;
+						delete json[item].radius;
+						delete json[item].policy;
+						delete json[item].router;
+						delete json[item].target.decoration;
+					}
+				}
+
+				console.log(/*window.btoa(unescape(encodeURIComponent(*/JSON.stringify(json, null, 2)/*)))*/);
+				$.ajax({
+			      url: "/nethvoice/admin/nethvplan/create.php?",
+			      type: "POST",
+			      data: "jsonData="+window.btoa(unescape(encodeURIComponent(JSON.stringify(json)))),
+			      beforeSend: function( xhr ) {
+			        $('#loader').show();
+			      }
+			    }).done(function(c) {
+			    	console.log(c);
+			    	$('#loader').hide();
+			    	highlight($('#save_button'));
+			    });
 			    
 			});
 		},this));

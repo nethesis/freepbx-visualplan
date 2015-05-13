@@ -167,9 +167,9 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                         {
                             switch(key){
                                 case "add":
-                                    var cNum = table.children.data.length-3;
+                                    var cNum = table.children.data.length-5;
                                     setTimeout(function(){
-                                        table.addEntity("Selection "+cNum, "output", "false");
+                                        table.addEntity(cNum, "output", "false");
                                     },10);
                                 break;
                                 case "delete":
@@ -223,18 +223,18 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                 ];
             break;
             case "incoming":
-                templateObj.id = type+"%"+id;
+                templateObj.id = type+"%"+elem[0].value+" / "+elem[1].value;
                 templateObj.bgColor = "#87d37c";
                 templateObj.radius = 20;
                 templateObj.entities = [
                     {
-                        text: elem[0].value+" ( "+elem[1].value+" )",
+                        text: elem[0].value+" / "+elem[1].value+" ( "+elem[2].value +" )",
                         id: "incoming_route-num%"+id,
                         type: "output"
                     }
                 ];
 
-                if(parseInt(elem[2].value)) {
+                if(parseInt(elem[3].value)) {
                     templateObj.entities.push({
                         text: "Night service",
                         id: "night_service%"+id,
@@ -276,7 +276,7 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
             break;
 
             case "from-did-direct":
-                templateObj.id = type+"%"+id;
+                templateObj.id = type+"%"+elem[0].value;
                 templateObj.bgColor = "#27ae60";
                 templateObj.radius = 20;
                 templateObj.entities = [
@@ -292,29 +292,28 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                 templateObj.id = type+"%"+id;
                 templateObj.bgColor = "#16a085";
                 templateObj.radius = 20;
-                var state = "";
-                switch(elem[2].value) {
-                    case "0":
-                        state = "- Busy";
-                    break;
-                    case "1":
-                        state = "- No Message";
-                    break;
-                    case "2":
-                        state = "- Unavailable";
-                    break;
-                }
+                var dynId = (elem[0].value.split("(")[1]).split(")")[0].trim();
                 templateObj.entities = [
                     {
-                        text: elem[1].value + " ( "+elem[0].value+" ) "+state,
-                        id: "ext-local_dest%"+id,
+                        text: elem[0].value +" - Busy",
+                        id: "ext-local%vmb"+dynId,
+                        type: "input"
+                    },
+                    {
+                        text: elem[0].value +" - No Message",
+                        id: "ext-local%vms"+dynId,
+                        type: "input"
+                    },
+                    {
+                        text: elem[0].value +" - Unavailable",
+                        id: "ext-local%vmu"+dynId,
                         type: "input"
                     }
                 ];
             break;
 
             case "ext-group":
-                templateObj.id = type+"%"+id;
+                templateObj.id = type+"%"+elem[0].value;
                 templateObj.bgColor = "#2980b9";
                 templateObj.radius = 0;
                 templateObj.entities = [
@@ -342,7 +341,7 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
             break;
 
             case "ext-queues":
-                templateObj.id = type+"%"+id;
+                templateObj.id = type+"%"+elem[0].value;
                 templateObj.bgColor = "#9b59b6";
                 templateObj.radius = 0;
                 templateObj.entities = [
@@ -388,6 +387,11 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                         text: elem[0].value + " ( "+elem[1].value+" )",
                         id: "ivr_name%"+id,
                         type: "input"
+                    },
+                    {
+                        text: "Announcement: "+elem[2].value,
+                        id: "ivr_announc%"+id,
+                        type: "text"
                     },
                     {
                         text: "Invalid destination",
@@ -477,7 +481,7 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
             break;
 
             case "ext-meetme":
-                templateObj.id = type+"%"+id;
+                templateObj.id = type+"%"+elem[0].value;
                 templateObj.bgColor = "#65c6bb";
                 templateObj.radius = 20;
                 templateObj.entities = [
@@ -598,8 +602,8 @@ MyConnection = draw2d.Connection.extend({
             this.targetDecorator.setBackgroundColor("#4caf50");
         }
 
-        if (typeof memento.source.decoration !== "undefined" && memento.source.decoration != null) {
-            this.setSourceDecorator(eval("new " + memento.source.decoration));
-        }
+        // if (typeof memento.source.decoration !== "undefined" && memento.source.decoration != null) {
+        //     this.setSourceDecorator(eval("new " + memento.source.decoration));
+        // }
     }
 });
