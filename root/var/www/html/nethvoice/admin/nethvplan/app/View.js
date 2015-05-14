@@ -235,6 +235,11 @@ example.View = draw2d.Canvas.extend({
 
     checkData: function(elem, type, event) {
         var number = elem[0].value;
+        if(type === "incoming") {
+            var sufx = elem[1].value;
+            if(sufx.slice(-1) !== ".") sufx = sufx+".";
+            number = elem[0].value + " / " + sufx;
+        }
 
         $.ajax({
           url: "/nethvoice/admin/nethvplan/visualize.php?readData="+type,
@@ -416,10 +421,26 @@ example.View = draw2d.Canvas.extend({
             break;
 
             case "app-daynight":
-                html += '<label class="label-creation">Name: </label>';
-                html += '<input usable id="'+elem.id+'-name" class="input-creation"></input>';
-                html += '<label class="label-creation">Control Code: </label>';
-                html += '<input usable id="'+elem.id+'-controlcode" class="input-creation"></input>';
+                $.ajax({
+                    url: "/nethvoice/admin/nethvplan/visualize.php?readData=codeavailable",
+                    context: document.body,
+                    beforeSend: function( xhr ) {
+                        $('#loader').show();
+                    }
+                }).done(function(c) {
+                    $('#loader').hide();
+                    var data = JSON.parse(c);
+                    var htmlSelect = "";
+                    for(e in data) {
+                        htmlSelect += '<option value="'+data[e]+'">'+data[e]+'</option>';
+                    }
+                    html += '<label class="label-creation">Name: </label>';
+                    html += '<input usable id="'+elem.id+'-name" class="input-creation"></input>';
+                    html += '<label class="label-creation">Control Code: </label>';
+                    html += '<select usable id="'+elem.id+'-controlcode" class="input-creation">'+htmlSelect+'</select>';
+
+                    $("#modalCreation").html(html);
+                });
             break;
 
             case "ext-meetme":

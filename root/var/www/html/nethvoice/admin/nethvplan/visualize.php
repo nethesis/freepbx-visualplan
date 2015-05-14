@@ -59,6 +59,7 @@ foreach ($get_data as $key => $row) {
 $get_data = ivr_get_details();
 foreach ($get_data as $key => $row) {
 	$data['ivr'][$row['id']]["name"] = $row['name'];
+	$data['ivr'][$row['id']]["id"] = $row['id'];
 	$data['ivr'][$row['id']]["description"] = $row['description'];
 	$data['ivr'][$row['id']]["announcement"] = $row['announcement'];
 	$data['ivr'][$row['id']]["invalid_destination"] = $row['invalid_destination'];
@@ -147,6 +148,7 @@ foreach ($get_data as $key => $row) {
 												"red_flow"=> $daynight_obj['night']
 											  );
 }
+$data['codeavailable'] = daynight_get_avail();
 
 $widgets = array();
 $connections = array();
@@ -182,7 +184,7 @@ foreach ($_GET as $key => $value) {
 	switch ($key) {
 
 		case "readData":
-			$name = $_GET["readData"];
+			$name = trim($_GET["readData"]);
 			print_r(json_pretty(json_encode($data[$name], true)));
 		break;
 
@@ -564,7 +566,7 @@ function bindData($data, $dest, $id) {
 			$widget['y'] = $yPos;
 			$widget['name'] = "IVR";
 			$widget['entities'][] = array(
-				"text"=> $data[$dest][$id]['name']." ( ".$data[$dest][$id]['description']." )",
+				"text"=> $data[$dest][$id]['name']." ( ".$data[$dest][$id]['description']." ) - ".$data[$dest][$id]['id'],
 				"id"=> $dest."%".$id,
 				"type"=> "input"
 			);

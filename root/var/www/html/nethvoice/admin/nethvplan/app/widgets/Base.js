@@ -223,12 +223,16 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                 ];
             break;
             case "incoming":
-                templateObj.id = type+"%"+elem[0].value+" / "+elem[1].value;
+                var sufx = elem[1].value;
+                if(sufx.slice(-1) !== ".")
+                    sufx = sufx+".";
+
+                templateObj.id = type+"%"+elem[0].value+" / "+sufx;
                 templateObj.bgColor = "#87d37c";
                 templateObj.radius = 20;
                 templateObj.entities = [
                     {
-                        text: elem[0].value+" / "+elem[1].value+" ( "+elem[2].value +" )",
+                        text: elem[0].value+" / "+sufx+" ( "+elem[2].value +" )",
                         id: "incoming_route-num%"+id,
                         type: "output"
                     }
@@ -458,7 +462,7 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
             break;
 
             case "app-daynight":
-                templateObj.id = type+"%"+id;
+                templateObj.id = type+"%"+elem[1].value;
                 templateObj.bgColor = "#2c3e50";
                 templateObj.radius = 0;
                 templateObj.entities = [
