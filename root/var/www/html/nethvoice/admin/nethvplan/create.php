@@ -13,6 +13,7 @@ $widgetArray = array_filter(
         return $w['type'] == "Base";
     }
 );
+
 $connectionArray = array_filter(
     $jsonArray,
     function ($w) {
@@ -25,192 +26,214 @@ $currentCreated = array();
 extraction($widgetArray, $connectionArray);
 
 function extraction($dataArray, $connectionArray) {
-	print_r($dataArray);
 	foreach ($dataArray as $key => $value) {
 		// get type of widget
 		$explodeId = explode("%", $value['id']);
 		$wType = $explodeId[0];
 
-		switch($wType) {
-			case "incoming":
-				$partsNum = explode("(", $value['entities'][0]['text']);
-				$extensionParts = explode("/", $partsNum[0]);
-				$extension = trim($extensionParts[0]);
-				$cidnum = trim($extensionParts[1]);
-				$descriptionParts = explode(")", $partsNum[1]);
-				$description = trim($descriptionParts[0]);
+		// create object
+		switchCreate($wType, $value, $connectionArray);
+	}
+}
 
-				if($cidnum && substr($cidnum, -1) != ".") {
-					$cidnum = $cidnum.".";
-				}
+function switchCreate($wType, $value, $connectionArray) {
+	$idReturn = "";
+	global $currentCreated;
+	switch($wType) {
+		case "incoming":
+			$partsNum = explode("(", $value['entities'][0]['text']);
+			$extensionParts = explode("/", $partsNum[0]);
+			$extension = trim($extensionParts[0]);
+			$cidnum = trim($extensionParts[1]);
+			$descriptionParts = explode(")", $partsNum[1]);
+			$description = trim($descriptionParts[0]);
 
-				$destinations = getDestination($value['id'], $connectionArray);
-				$destination = trim($destinations["output_".$value['entities'][0]['id']]);
-				$exists = core_did_get($extension, $cidnum);
+			if($cidnum && substr($cidnum, -1) != ".") {
+				$cidnum = $cidnum.".";
+			}
 
-				if($exists) {
-					core_did_del($extension, $cidnum);
-					core_did_add(array(
-						"extension" => $extension,
-						"cidnum" => $cidnum,
-						"description" => $description,
-						"destination" => $$destination
-					), $destination);
-				} else {
-					core_did_add(array(
-						"extension" => $extension,
-						"cidnum" => $cidnum,
-						"description" => $description,
-						"destination" => $$destination
-					), $destination);
-				}
-			break;
+			$destinations = getDestination($value, $connectionArray);
+			$destination = trim($destinations["output_".$value['entities'][0]['id']]);
 
-			case "night":
-				$name = trim($value['entities'][0]['text']);
-				$state = trim($value['entities'][1]['text']);
+			$exists = core_did_get($extension, $cidnum);
 
-				if (strcasecmp($state, "active") == 0) {
-					$date = "attivo";
-				} else if (strcasecmp($state, "not active") == 0) {
-					$date = "inattivo";
-				} else {
-					$dateparts = explode("-", $state);
+			if($exists) {
+				core_did_del($extension, $cidnum);
+				core_did_add(array(
+					"extension" => $extension,
+					"cidnum" => $cidnum,
+					"description" => $description,
+					"destination" => $destination
+				), $destination);
+			} else {
+				core_did_add(array(
+					"extension" => $extension,
+					"cidnum" => $cidnum,
+					"description" => $description,
+					"destination" => $destination
+				), $destination);
+			}
+		break;
 
-					$timebegin = trim($dateparts[0]);
-					$timestampBeg = strtotime(str_replace('/', '-', $timebegin));
-					$timebegin = date("Y-m-d H:i:s", $timestampBeg);
+		case "night":
+			$name = trim($value['entities'][0]['text']);
+			$state = trim($value['entities'][1]['text']);
 
-					$timeend = trim($dateparts[1]);
-					$timestampEnd = strtotime(str_replace('/', '-', $timeend));
-					$timeend = date("Y-m-d H:i:s", $timestampEnd);
-				}
+			if (strcasecmp($state, "active") == 0) {
+				$date = "attivo";
+			} else if (strcasecmp($state, "not active") == 0) {
+				$date = "inattivo";
+			} else {
+				$dateparts = explode("-", $state);
 
-				$destinations = getDestination($value['id'], $connectionArray);
-				$destination = trim($destinations["output_".$value['entities'][2]['id']]);
+				$timebegin = trim($dateparts[0]);
+				$timestampBeg = strtotime(str_replace('/', '-', $timebegin));
+				$timebegin = date("Y-m-d H:i:s", $timestampBeg);
 
-				$nethNightId = nethnight_add(array(
-					"description" => $name,
-					"date" => $date,
-					"timebegin" => $timebegin,
-					"timeend" => $timeend,
-					"goto0" => "dest",
-					"dest0" => $destination
+				$timeend = trim($dateparts[1]);
+				$timestampEnd = strtotime(str_replace('/', '-', $timeend));
+				$timeend = date("Y-m-d H:i:s", $timestampEnd);
+				$date = 'custom';
+			}
+
+			$destinations = getDestination($value, $connectionArray, $currentCreated, $wType);
+			$destination = trim($destinations["output_".$value['entities'][2]['id']]);
+
+			$nethNightId = nethnight_add(array(
+				"description" => $name,
+				"date" => $date,
+				"tsbegin" => $timebegin,
+				"tsend" => $timeend,
+				"goto0" => "dest",
+				"dest0" => $destination,
+				"enabled" => ""
+			));
+			nightGetSource($value['id'], $connectionArray, $nethNightId);
+		break;
+
+		case "from-did-direct":
+			$parts = explode("(", $value['entities'][0]['text']);
+			$name = trim($parts[0]);
+			$extParts = explode(")", $parts[1]);
+			$extension = trim($extParts[0]);
+
+			$exists = core_users_get($extension);
+			if(empty($exists)) {
+				core_users_add(array(
+					"extension" => $extension,
+					"name" => $name
 				));
+			}
+		break;
+		case "ext-local":
+			$parts = explode("-", $value['entities'][0]['text']);
+			$parts = explode("(", $parts[0]);
+			$name = trim($parts[0]);
+			$extParts = explode(")", $parts[1]);
+			$extension = trim($extParts[0]);
 
-				nightGetSource($value['id'], $connectionArray, $nethNightId);
-			break;
+			$exists = voicemail_mailbox_get($extension);
+			if(empty($exists)) {
+				voicemail_mailbox_add($extension, array(
+					"vm" => "enabled",
+					"action" => "add",
+					"hardware" => "generic",
+					"tech" => "sip",
+					"vmcontext" => "default",
+					"extension" => $extension,
+					"name" => $name,
+					"vmx_option_0_system_default" => "checked",
+					"attach" => "attach=yes",
+					"saycid" => "saycid=yes",
+					"envelope" => "envelope=yes",
+					"delete" => "delete=no"
+				));
+				$user = core_users_get($extension);
+				core_users_del($extension);
+				core_users_add($user);
+			}
+		break;
+		case "ext-meetme":
+			$parts = explode("(", $value['entities'][0]['text']);
+			$name = trim($parts[0]);
+			$extParts = explode(")", $parts[1]);
+			$extension = trim($extParts[0]);
 
-			case "from-did-direct":
-				$parts = explode("(", $value['entities'][0]['text']);
-				$name = trim($parts[0]);
-				$extParts = explode(")", $parts[1]);
-				$extension = trim($extParts[0]);
+			$exists = conferences_get($extension);
+			if(empty($exists)) {
+				conferences_add($extension, $name);
+			}
+		break;
+		case "ext-group":
+			$parts = explode("(", $value['entities'][0]['text']);
+			$name = trim($parts[0]);
+			$extParts = explode(")", $parts[1]);
+			$extension = trim($extParts[0]);
+			$list = str_replace(',', '-', $value['entities'][2]['text']);
 
-				$exists = core_users_get($extension);
-				if(empty($exists)) {
-					core_users_add(array(
-						"extension" => $extension,
-						"name" => $name
-					));
-				}
-			break;
-			case "ext-local":
-				$parts = explode("-", $value['entities'][0]['text']);
-				$parts = explode("(", $parts[0]);
-				$name = trim($parts[0]);
-				$extParts = explode(")", $parts[1]);
-				$extension = trim($extParts[0]);
+			$destinations = getDestination($value, $connectionArray, $currentCreated, $wType);
+			$destination = trim($destinations["output_".$value['entities'][3]['id']]);
+			$exists = ringgroups_get($extension);
+			if(count($exists) <= 2 ) {
+				ringgroups_add($extension, "ringall", "300", $list, $destination, $name);
+			} else {
+				ringgroups_del($extension);
+				ringgroups_add($extension, "ringall", "300", $list, $destination, $name);
+			}
+		break;
+		case "ext-queues":
+			$parts = explode("(", $value['entities'][0]['text']);
+			$name = trim($parts[0]);
+			$extParts = explode(")", $parts[1]);
+			$extension = trim($extParts[0]);
+			$listStatic = explode(',', $value['entities'][2]['text']);
+			foreach ($listStatic as $k => $v) {
+				$listStatic[$k] = "Local/".$v."@from-queue/n,0";
+			}
+			$listDynamic = explode(',', $value['entities'][4]['text']);
 
-				$exists = voicemail_mailbox_get($extension);
-				if(empty($exists)) {
-					voicemail_mailbox_add($extension, array(
-						"vm" => "enabled",
-						"vmcontext" => "default",
-						"extension" => $extension,
-						"name" => $name,
-						"attach" => "attach=yes",
-						"saycid" => "saycid=yes",
-						"envelope" => "envelope=yes",
-						"delete" => "delete=no"
-					));
-				}
-			break;
-			case "ext-meetme":
-				$parts = explode("(", $value['entities'][0]['text']);
-				$name = trim($parts[0]);
-				$extParts = explode(")", $parts[1]);
-				$extension = trim($extParts[0]);
+			$destinations = getDestination($value, $connectionArray, $currentCreated, $wType);
+			$destination = trim($destinations["output_".$value['entities'][5]['id']]);
+			$exists = queues_get($extension);
+			if(empty($exists)) {
+				queues_add($extension, $name, "", "", $destination, "", $listStatic, "","","","","","","0", $listDynamic, "","","","","","", "", "", "");
+			} else {
+				queues_del($extension);
+				queues_add($extension, $name, "", "", $destination, "", $listStatic, "","","","","","","0", $listDynamic, "","","","","","", "", "", "");
+			}
+		break;
+		case "app-announcement":
+			$name = trim($value['entities'][0]['text']);
+			$parts = explode("(", $value['entities'][1]['text']);
+			$extParts = explode(")", $parts[1]);
+			$rec_id = trim($extParts[0]);
 
-				$exists = conferences_get($extension);
-				if(empty($exists)) {
-					conferences_add($extension, $name);
-				}
-			break;
-			case "ext-group":
-				$parts = explode("(", $value['entities'][0]['text']);
-				$name = trim($parts[0]);
-				$extParts = explode(")", $parts[1]);
-				$extension = trim($extParts[0]);
-				$list = str_replace(',', '-', $value['entities'][2]['text']);
-
-				$destinations = getDestination($value['id'], $connectionArray);
-				$destination = trim($destinations["output_".$value['entities'][3]['id']]);
-				$exists = ringgroups_get($extension);
-				if(count($exists) <= 2 ) {
-					ringgroups_add($extension, "ringall", "300", $list, $destination, $name);
-				} else {
-					ringgroups_del($extension);
-					ringgroups_add($extension, "ringall", "300", $list, $destination, $name);
-				}
-			break;
-			case "ext-queues":
-				$parts = explode("(", $value['entities'][0]['text']);
-				$name = trim($parts[0]);
-				$extParts = explode(")", $parts[1]);
-				$extension = trim($extParts[0]);
-				$listStatic = explode(',', $value['entities'][2]['text']);
-				$listDynamic = explode(',', $value['entities'][4]['text']);
-
-				$destinations = getDestination($value['id'], $connectionArray);
-				$destination = trim($destinations["output_".$value['entities'][5]['id']]);
-				$exists = queues_get($extension);
-				if(empty($exists)) {
-					queues_add($extension, $name, "", "", $destination, "", $listStatic, "","","","","","","", $listDynamic);
-				} else {
-					queues_del($extension);
-					queues_add($extension, $name, "", "", $destination, "", $listStatic, "","","","","","","", $listDynamic);
-				}
-			break;
-			case "app-announcement":
-				$name = trim($value['entities'][0]['text']);
-				$parts = explode("(", $value['entities'][1]['text']);
-				$extParts = explode(")", $parts[1]);
-				$rec_id = trim($extParts[0]);
-
-				$destinations = getDestination($value['id'], $connectionArray);
+			if(!array_key_exists($value['id'], $currentCreated)) {
+				$destinations = getDestination($value, $connectionArray);
 				$destination = trim($destinations["output_".$value['entities'][2]['id']]);
-
 				announcement_add($name, $rec_id, "", $destination);
 				$result = announcement_list();
-				asort($result);
+				usort($result, "cmpAnnun");
 				$idAnn = $result[count($result)-1]['announcement_id'];
-			break;
+				$idReturn = $idAnn;
+			}
+		break;
 
-			case "ivr":
-				$parts = explode("(", $value['entities'][0]['text']);
-				$name = trim($parts[0]);
-				$extParts = explode(")", $parts[1]);
-				$description = trim($extParts[0]);
+		case "ivr":
+			$parts = explode("(", $value['entities'][0]['text']);
+			$name = trim($parts[0]);
+			$extParts = explode(")", $parts[1]);
+			$description = trim($extParts[0]);
 
-				$idParts = explode("-", $value['entities'][0]['text']);
-				$id = trim($idParts[1]);
+			$idParts = explode("-", $value['entities'][0]['text']);
+			$id = trim($idParts[1]);
 
-				$annParts = explode("(", $value['entities'][1]['text']);
-				$annExParts = explode(")", $annParts[1]);
-				$announcement = trim($annExParts[0]);
+			$annParts = explode("(", $value['entities'][1]['text']);
+			$annExParts = explode(")", $annParts[1]);
+			$announcement = trim($annExParts[0]);
 
-				$destinations = getDestination($value['id'], $connectionArray);
+			if(!array_key_exists($value['id'], $currentCreated)) {
+				$destinations = getDestination($value, $connectionArray, $currentCreated, $wType);
 
 				$invDest = trim($destinations["output_".$value['entities'][2]['id']]);
 				$timeDest = trim($destinations["output_".$value['entities'][3]['id']]);
@@ -255,14 +278,17 @@ function extraction($dataArray, $connectionArray) {
 				$ivrArray['goto'] = $goto;
 
 				ivr_save_entries($idIVR, $ivrArray);
-			break;
-			case "timeconditions":
-				$name = $value['entities'][0]['text'];
-				$parts = explode("(", $value['entities'][1]['text']);
-				$extParts = explode(")", $parts[1]);
-				$time = trim($extParts[0]);
+				$idReturn = $idIVR;
+			}
+		break;
+		case "timeconditions":
+			$name = $value['entities'][0]['text'];
+			$parts = explode("(", $value['entities'][1]['text']);
+			$extParts = explode(")", $parts[1]);
+			$time = trim($extParts[0]);
 
-				$destinations = getDestination($value['id'], $connectionArray);
+			if(!array_key_exists($value['id'], $currentCreated)) {
+				$destinations = getDestination($value, $connectionArray, $currentCreated, $wType);
 
 				timeconditions_add(array(
 					"displayname" => $name,
@@ -274,57 +300,86 @@ function extraction($dataArray, $connectionArray) {
 					"deptname" => ""
 				));
 				$result = timeconditions_list();
-				asort($result);
+				usort($result, "cmpTime");
 				$idTime = $result[count($result)-1]['timeconditions_id'];
-			break;
-			case "app-daynight":
-				$parts = explode("(", $value['entities'][0]['text']);
-				$name = trim($parts[0]);
-				$extParts = explode(")", $parts[1]);
-				$controlCode = substr(trim($extParts[0]), -1);
+				$idReturn = $idTime;
+			}
+		break;
+		case "app-daynight":
+			$parts = explode("(", $value['entities'][0]['text']);
+			$name = trim($parts[0]);
+			$extParts = explode(")", $parts[1]);
+			$controlCode = substr(trim($extParts[0]), -1);
 
-				$destinations = getDestination($value['id'], $connectionArray);
+			$destinations = getDestination($value, $connectionArray, $currentCreated, $wType);
 
-				daynight_edit(array(
-					"day_recording_id" => "0",
-					"night_recording_id" => "0",
-					"state" => "DAY",
-					"fc_description" => $name,
-					"goto1" => "truegoto",
-					"goto0" => "falsegoto",
-					"truegoto1" => trim($destinations["output_".$value['entities'][1]['id']]),
-					"falsegoto0" => trim($destinations["output_".$value['entities'][2]['id']]),
-				), $controlCode);
+			daynight_edit(array(
+				"day_recording_id" => "0",
+				"night_recording_id" => "0",
+				"state" => "DAY",
+				"fc_description" => $name,
+				"goto1" => "truegoto",
+				"goto0" => "falsegoto",
+				"truegoto1" => trim($destinations["output_".$value['entities'][1]['id']]),
+				"falsegoto0" => trim($destinations["output_".$value['entities'][2]['id']]),
+			), $controlCode);
+		break;
+	}
+	return $idReturn;
+}
 
-			break;
+function cmpAnnun($a, $b) {
+    if ($a['announcement_id'] == $b['announcement_id']) {
+        return 0;
+    }
+    return ($a['announcement_id'] < $b['announcement_id']) ? -1 : 1;
+}
+function cmpTime($a, $b) {
+    if ($a['timeconditions_id'] == $b['timeconditions_id']) {
+        return 0;
+    }
+    return ($a['timeconditions_id'] < $b['timeconditions_id']) ? -1 : 1;
+}
+
+function checkDestination($destination, $type, $value, $connectionArray) {
+	global $widgetArray;
+	global $currentCreated;
+	$currentVals = array();
+
+	foreach ($widgetArray as $k => $v) {
+		if($v['id'] == $destination) {
+			$currentVals = $widgetArray[$k];
 		}
+	}
+	if(!array_key_exists($destination, $currentCreated)) {//if(!in_array($destination, $currentCreated)) {
+		$result = switchCreate($type, $currentVals, $connectionArray);
+		$currentCreated[$destination] = $result;
+		return $result;
+	} else {
+		$id = $currentCreated[$destination];
+		return $id;
 	}
 }
 
-function nightGetSource($id, $connectionArray, $nightId) {
-	foreach ($connectionArray as $key => $value) {
-		if($value['target']['node'] == $id) {
-			$parts = explode("%", $value['source']['node']);
-			$incomingId = str_replace(' ', '', $parts[1]);
-			nethnigh_set_destination($incomingId, $nightId);
-		}
-	}
-}
-
-function getDestination($id, $connectionArray) {
+function getDestination($values, $connectionArray) {
+	$id = $values['id'];
 	foreach ($connectionArray as $key => $value) {
 		if($value['source']['node'] == $id) {
 			$destination = $value['target']['node'];
 			$parts = explode("%", $destination);
 
+			if($parts[0] === "app-announcement" || $parts[0] === "ivr" || $parts[0] === "timeconditions") {
+				$result = checkDestination($destination, $parts[0], $values, $connectionArray);			
+			}
+
 			switch ($parts[0]) {
 				case "app-blackhole":
 					$destAsterisk[$value['source']['port']] = "app-blackhole,hangup,1";
 				break;
-				case 'from-did-direct':
+				case "from-did-direct":
 					$destAsterisk[$value['source']['port']] = trim($parts[0]).",".trim($parts[1]).",1";
 				break;
-				case 'night':
+				case "night":
 					$destAsterisk[$value['source']['port']] = trim($parts[1]);//$parts[0].",8".$parts[1]."0,1";
 				break;
 				case "ext-local":
@@ -342,13 +397,13 @@ function getDestination($id, $connectionArray) {
 					$destAsterisk[$value['source']['port']] = trim($parts[0]).",".trim($parts[1]).",1";
 				break;
 				case "app-announcement":
-					$destAsterisk[$value['source']['port']] = trim($parts[0])."-".trim($parts[1]).",s,1";
+					$destAsterisk[$value['source']['port']] = trim($parts[0])."-".trim($result).",s,1";
 				break;
 				case "ivr":
-					$destAsterisk[$value['source']['port']] = trim($parts[0])."-".trim($parts[1]).",s,1";
+					$destAsterisk[$value['source']['port']] = trim($parts[0])."-".trim($result).",s,1";
 				break;
 				case "timeconditions":
-					$destAsterisk[$value['source']['port']] = trim($parts[0]).",".trim($parts[1]).",1";
+					$destAsterisk[$value['source']['port']] = trim($parts[0]).",".trim($result).",1";
 				break;
 				case "app-daynight":
 					$destAsterisk[$value['source']['port']] = trim($parts[0]).",".trim($parts[1]).",1";
@@ -360,3 +415,12 @@ function getDestination($id, $connectionArray) {
 	return $destAsterisk;
 }
 
+function nightGetSource($id, $connectionArray, $nightId) {
+	foreach ($connectionArray as $key => $value) {
+		if($value['target']['node'] == $id) {
+			$parts = explode("%", $value['source']['node']);
+			$incomingId = str_replace(' ', '', $parts[1]);
+			nethnigh_set_destination($incomingId, $nightId);
+		}
+	}
+}

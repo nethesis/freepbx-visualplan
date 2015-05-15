@@ -25,6 +25,25 @@ example.View = draw2d.Canvas.extend({
     //     }
     // },
 
+    onDoubleClick: function( the, mouseX, mouseY, shiftKey, ctrlKey) {
+        var e = document.getElementById('canvasPolicy');
+        var currentBtn = e.attributes.currentBtn.value;
+
+        if(currentBtn === "pan") {
+            e.attributes.currentBtn.value = "box";
+            $(e.children[0]).removeAttr('class');
+            $(e.children[0]).attr('class', 'fa fa-chain-broken fa-lg');
+            var policy = new draw2d.policy.canvas.BoundingboxSelectionPolicy;
+            app.view.installEditPolicy(policy);
+        } else {
+            e.attributes.currentBtn.value = "pan";
+            $(e.children[0]).removeAttr('class');
+            $(e.children[0]).attr('class', 'fa fa-arrows fa-lg');
+            var policy = new draw2d.policy.canvas.PanningSelectionPolicy;
+            app.view.installEditPolicy(policy);
+        }
+    },
+
     MouseWheelHandler: function(e)
     {
         var e = window.event || e;
@@ -251,13 +270,17 @@ example.View = draw2d.Canvas.extend({
             $('#loader').hide();
             var data = JSON.parse(c);
             var missing = false;
-            
-            if(type !== "ext-local" && !(number in data)) {
-                missing = true;
+
+            if(data) {
+                if(type !== "ext-local" && !(number in data)) {
+                    missing = true;
+                } else {
+                    $(".error-message").html("");
+                    $(elem[0]).css("border", "1px solid rgb(255, 97, 97)");
+                    $('#modalCreation').append('<p class="error-message">Error: The inserted number is used.</p>');
+                }
             } else {
-                $(".error-message").html("");
-                $(elem[0]).css("border", "1px solid rgb(255, 97, 97)");
-                $('#modalCreation').append('<p class="error-message">Error: The inserted number is used.</p>');
+                missing = true;
             }
 
             if(type === "ext-local") {
@@ -491,6 +514,7 @@ example.View = draw2d.Canvas.extend({
             }
             htmlInj += '<div><button elemDest="'+dataArray[elem].entities[dataArray[elem].entities.length-1].destination+'" elemId="'+elem+'" class="button-elem-list">'+elem+' - '+text+'</button></div>';
         }
+        if(htmlInj === "") htmlInj = "No elements found.";
         return htmlInj;
     },
     

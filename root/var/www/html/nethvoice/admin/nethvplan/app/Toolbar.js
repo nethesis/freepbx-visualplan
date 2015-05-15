@@ -47,7 +47,7 @@ example.Toolbar = Class.extend({
 		this.delimiter  = $("<span class='toolbar_delimiter'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>");
 		this.html.append(this.delimiter);
 
-		this.panButton  = $("<button currentBtn='pan' class='gray'><i class='fa fa-arrows fa-lg'></i></button>");
+		this.panButton  = $("<button id='canvasPolicy' currentBtn='pan' class='gray'><i class='fa fa-arrows fa-lg'></i></button>");
 		this.html.append(this.panButton	);
 		this.panButton.click($.proxy(function(e){
 			var currentBtn = e.currentTarget.attributes.currentBtn.value;
@@ -55,7 +55,7 @@ example.Toolbar = Class.extend({
 			if(currentBtn === "pan") {
 				e.currentTarget.attributes.currentBtn.value = "box";
 				$(e.currentTarget.children[0]).removeAttr('class');
-				$(e.currentTarget.children[0]).attr('class', 'fa fa-square-o fa-lg');
+				$(e.currentTarget.children[0]).attr('class', 'fa fa-chain-broken fa-lg');
 				var policy = new draw2d.policy.canvas.BoundingboxSelectionPolicy;
             	this.view.installEditPolicy(policy);
 			} else {
@@ -111,8 +111,6 @@ example.Toolbar = Class.extend({
 		this.html.append(this.saveButton);
 		this.saveButton.click($.proxy(function(){
 
-			console.clear();
-
 			var writer = new draw2d.io.json.Writer();
 			writer.marshal(this.view, function(json){
 
@@ -146,7 +144,7 @@ example.Toolbar = Class.extend({
 					}
 				}
 
-				console.log(/*window.btoa(unescape(encodeURIComponent(*/JSON.stringify(json, null, 2)/*)))*/);
+				//console.log(/*window.btoa(unescape(encodeURIComponent(*/JSON.stringify(json, null, 2)/*)))*/);
 				$.ajax({
 			      url: "/nethvoice/admin/nethvplan/create.php?",
 			      type: "POST",
@@ -155,9 +153,20 @@ example.Toolbar = Class.extend({
 			        $('#loader').show();
 			      }
 			    }).done(function(c) {
-			    	console.log(c);
 			    	$('#loader').hide();
-			    	highlight($('#save_button'));
+
+			    	if(c === "") {
+				    	$('#saver').fadeIn("slow");
+					    setTimeout(function(){
+					    	$('#saver').fadeOut("slow");	
+					    }, 3000);
+				    	highlight($('#save_button'));
+			    	} else {
+			    		$('#errorer').fadeIn("slow");
+					    setTimeout(function(){
+					    	$('#errorer').fadeOut("slow");	
+					    }, 5000);
+			    	}
 			    });
 			    
 			});
@@ -177,7 +186,7 @@ example.Toolbar = Class.extend({
 		   obj.css("color", "#87D37C");
 		   setTimeout(function(){
 		        obj.fadeOut("slow");	
-		   }, 2000);
+		   }, 3000);
 		}
     },
 

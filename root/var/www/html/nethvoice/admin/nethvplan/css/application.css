@@ -24,6 +24,47 @@ body {
 .loading {
 	display: none;
 }
+.saving {
+  display: none;
+  width: 300px;
+  height: 100px;
+  border: 2px solid rgb(135, 211, 124);
+  background: rgba(255, 255, 255, 0.5);
+  z-index: 1001;
+  position: absolute;
+  right: 1px;
+  top: 64px;
+}
+.erroring {
+  display: none;
+  width: 300px;
+  height: 100px;
+  border: 2px solid rgb(255, 113, 123);
+  background: rgba(255, 255, 255, 0.5);
+  z-index: 1001;
+  position: absolute;
+  right: 1px;
+  top: 64px;
+  font-size: 12px;
+}
+.error-par {
+  position: absolute;
+  top: 60px;
+  left: 26px;
+  color: #4A4A4A;
+}
+.saving-icon {
+  position: absolute;
+  left: 25px;
+  top: 24px;
+  color: rgb(135, 211, 124);
+}
+.close-icon {
+  position: absolute;
+  left: 25px;
+  top: 30px;
+  color: rgb(255, 113, 123);
+}
 
 .save_button {
 	display: none;
