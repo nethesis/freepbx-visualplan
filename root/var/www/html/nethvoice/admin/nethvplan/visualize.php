@@ -2,6 +2,19 @@
 
 require('/etc/freepbx.conf');
 
+// read i18n data
+$lang = $_COOKIE['lang'];
+if(empty($lang)) {
+	$lang = "en";
+}
+$langParts = explode("_", $lang);
+$languages = file_get_contents("i18n/".$langParts[0].".js");
+$languages = substr($languages, 0, -1);
+$langParts = explode("=", $languages);
+$language = trim($langParts[1]);
+$langArray = json_decode($language, true);
+
+
 // night service - night,810,1
 $get_data = nethnight_list();
 foreach ($get_data as $key => $row) {
@@ -185,7 +198,7 @@ foreach ($_GET as $key => $value) {
 
 		case "readData":
 			$name = trim($_GET["readData"]);
-			print_r(json_pretty(json_encode($data[$name], true)));
+			print_r(/*json_pretty(*/json_encode($data[$name], true));
 		break;
 
 		case "getAll":
@@ -195,7 +208,7 @@ foreach ($_GET as $key => $value) {
 				$wid = bindData($data, $name, $key);
 				array_push($widContainer, $wid);
 			}
-			print_r(json_pretty(json_encode($widContainer, true)));
+			print_r(/*json_pretty(*/json_encode($widContainer, true));
 		break;
 
 		case "getChild":
@@ -230,7 +243,7 @@ foreach ($_GET as $key => $value) {
 			    }
 			}
 			$merged = $result;
-			print_r(json_pretty(json_encode($merged, true)));
+			print_r(/*json_pretty(*/json_encode($merged, true));
 		break;
 
 		case "id":
@@ -302,7 +315,7 @@ foreach ($_GET as $key => $value) {
 			    }
 			}
 			$merged = $result;
-			print_r(json_pretty(json_encode($merged, true)));
+			print_r(/*json_pretty(*/json_encode($merged, true));
 		break;
 	}
 }
@@ -336,6 +349,7 @@ function getDestination($destination) {
 
 // create widget from destination name
 function bindData($data, $dest, $id) {
+	global $langArray;
 	global $widgetTemplate;
 	$widget = $widgetTemplate;
 
@@ -348,7 +362,7 @@ function bindData($data, $dest, $id) {
 			$widget['bgColor'] = "#87d37c";
 			$widget['x'] = $xPos;
 			$widget['y'] = $yPos;
-			$widget['name'] = "Incoming route";
+			$widget['name'] = $langArray["base_incoming_string"];
 			$widget['entities'][] = array(
 				"text"=> $id." ( ".$data[$dest][$id]['description']." )",
 				"id"=> "route_num-incoming%".$id,
@@ -357,7 +371,7 @@ function bindData($data, $dest, $id) {
 			);
 			if($data['incoming'][$id]['night']) {
 				$widget['entities'][] = array(
-					"text"=> "Night service",
+					"text"=> $langArray["base_night_service_string"],
 					"id"=> "night_service%".$id,
 					"type"=> "output"
 				);
@@ -370,7 +384,7 @@ function bindData($data, $dest, $id) {
 			$widget['id'] = $dest."%".$id;
 			$widget['x'] = $xPos;
 			$widget['y'] = $yPos;
-			$widget['name'] = "Internal number";
+			$widget['name'] = $langArray["base_from_did_direct_string"];
 			$widget['entities'][] = array(
 				"text"=> $data[$dest][$id]['name']." ( ".$id." )",
 				"id"=> $dest."%".$id,
@@ -385,7 +399,7 @@ function bindData($data, $dest, $id) {
 			$widget['id'] = $dest."%".$id;
 			$widget['x'] = $xPos;
 			$widget['y'] = $yPos;
-			$widget['name'] = "Conference";
+			$widget['name'] = $langArray["base_ext_meetme_string"];
 			$widget['entities'][] = array(
 				"text"=> $data[$dest][$id]['description']." ( ".$data[$dest][$id]['id']." )",
 				"id"=> $dest."%".$id,
@@ -400,9 +414,9 @@ function bindData($data, $dest, $id) {
 			$widget['id'] = $dest."%".$id;
 			$widget['x'] = $xPos;
 			$widget['y'] = $yPos;
-			$widget['name'] = "Hangup";
+			$widget['name'] = $langArray["base_hangup_string"];
 			$widget['entities'][] = array(
-				"text"=> "Hangup",
+				"text"=> $langArray["base_hangup_string"],
 				"id"=> $dest."%".$id,
 				"type"=> "input"
 			);
@@ -417,19 +431,19 @@ function bindData($data, $dest, $id) {
 			$widget['id'] = $dest."%".$id;
 			$widget['x'] = $xPos;
 			$widget['y'] = $yPos;
-			$widget['name'] = "Voice Mail";
+			$widget['name'] = $langArray["base_ext_local_string"];
 			$widget['entities'][] = array(
-				"text"=> $data['from-did-direct'][$idUsers]['name']." ( ".$idUsers." ) - Busy",
+				"text"=> $data['from-did-direct'][$idUsers]['name']." ( ".$idUsers." ) - ".$langArray["base_busy_string"],
 				"id"=> $dest."%vmb".$idUsers,
 				"type"=> "input"
 			);
 			$widget['entities'][] = array(
-				"text"=> $data['from-did-direct'][$idUsers]['name']." ( ".$idUsers." ) - No Message",
+				"text"=> $data['from-did-direct'][$idUsers]['name']." ( ".$idUsers." ) - ".$langArray["base_nomsg_string"],
 				"id"=> $dest."%vms".$idUsers,
 				"type"=> "input"
 			);
 			$widget['entities'][] = array(
-				"text"=> $data['from-did-direct'][$idUsers]['name']." ( ".$idUsers." ) - Unavailable",
+				"text"=> $data['from-did-direct'][$idUsers]['name']." ( ".$idUsers." ) - ".$langArray["base_unavailable_string"],
 				"id"=> $dest."%vmu".$idUsers,
 				"type"=> "input"
 			);
@@ -442,7 +456,7 @@ function bindData($data, $dest, $id) {
 			$widget['id'] = $dest."%".$id;
 			$widget['x'] = $xPos;
 			$widget['y'] = $yPos;
-			$widget['name'] = "Night service";
+			$widget['name'] = $langArray["base_night_service_string"];
 			$widget['entities'][] = array(
 				"text"=> $data[$dest][$id]['name'],
 				"id"=> $dest."%".$id,
@@ -452,11 +466,11 @@ function bindData($data, $dest, $id) {
 			$year = date('Y', strtotime($data[$dest][$id]['timeend']));
 			$content = date('d/m/Y', strtotime($data[$dest][$id]['timebegin']))." - ".date('d/m/Y', strtotime($data[$dest][$id]['timeend']));
 			if($year == 2030) {
-				$content = "Active";
+				$content = $langArray["base_active_string"];
 			}
 
 			if($year == 1970) {
-				$content = "Not Active";
+				$content = $langArray["base_not_active_string"];
 			}
 
 			$widget['entities'][] = array(
@@ -465,7 +479,7 @@ function bindData($data, $dest, $id) {
 				"type"=> "text"
 			);
 			$widget['entities'][] = array(
-				"text"=> "Destination",
+				"text"=> $langArray["base_destination_string"],
 				"id"=> "nightdest-".$dest."%".$id,
 				"type"=> "output",
 				"destination"=> $data[$dest][$id]['dest']
@@ -479,7 +493,7 @@ function bindData($data, $dest, $id) {
 			$widget['id'] = $dest."%".$id;
 			$widget['x'] = $xPos;
 			$widget['y'] = $yPos;
-			$widget['name'] = "Announcement";
+			$widget['name'] = $langArray["base_app_announcement_string"];
 			$widget['entities'][] = array(
 				"text"=> $data[$dest][$id]['description'],
 				"id"=> $dest."%".$id,
@@ -491,7 +505,7 @@ function bindData($data, $dest, $id) {
 				"type"=> "text"
 			);
 			$widget['entities'][] = array(
-				"text"=> "Destination",
+				"text"=> $langArray["base_destination_string"],
 				"id"=> "postdest-".$dest."%".$id,
 				"type"=> "output",
 				"destination"=> $data[$dest][$id]['postdest']
@@ -505,20 +519,20 @@ function bindData($data, $dest, $id) {
 			$widget['id'] = $dest."%".$id;
 			$widget['x'] = $xPos;
 			$widget['y'] = $yPos;
-			$widget['name'] = "Call-flow control";
+			$widget['name'] = $langArray["base_app_daynight_string"];
 			$widget['entities'][] = array(
 				"text"=> $data[$dest][$id]['name']." ( ".$data[$dest][$id]['control_code']." )",
 				"id"=> $dest."%".$id,
 				"type" => "input"
 			);
 			$widget['entities'][] = array(
-				"text"=> "Normal flow (green)",
+				"text"=> $langArray["base_normal_flow_string"],
 				"id"=> "green_flow-".$dest."%".$id,
 				"type" => "output",
 				"destination"=> $data[$dest][$id]['green_flow']
 			);
 			$widget['entities'][] = array(
-				"text"=> "Alternative flow (red)",
+				"text"=> $langArray["base_alternative_flow_string"],
 				"id"=> "red_flow-".$dest."%".$id,
 				"type" => "output",
 				"destination"=> $data[$dest][$id]['red_flow']
@@ -532,7 +546,7 @@ function bindData($data, $dest, $id) {
 			$widget['id'] = $dest."%".$id;
 			$widget['x'] = $xPos;
 			$widget['y'] = $yPos;
-			$widget['name'] = "Time Conditions";
+			$widget['name'] = $langArray["base_timeconditions_string"];
 			$widget['entities'][] = array(
 				"text"=> $data[$dest][$id]['displayname'],
 				"id"=> $dest."%".$id,
@@ -544,13 +558,13 @@ function bindData($data, $dest, $id) {
 				"type" => "text"
 			);
 			$widget['entities'][] = array(
-				"text"=> "True condition",
+				"text"=> $langArray["base_true_dest_string"],
 				"id"=> "truegoto-".$dest."%".$id,
 				"type" => "output",
 				"destination"=> $data[$dest][$id]['truegoto']
 			);
 			$widget['entities'][] = array(
-				"text"=> "False condition",
+				"text"=> $langArray["base_false_dest_string"],
 				"id"=> "falsegoto-".$dest."%".$id,
 				"type" => "output",
 				"destination"=> $data[$dest][$id]['falsegoto']
@@ -564,25 +578,25 @@ function bindData($data, $dest, $id) {
 			$widget['id'] = $dest."%".$id;
 			$widget['x'] = $xPos;
 			$widget['y'] = $yPos;
-			$widget['name'] = "IVR";
+			$widget['name'] = $langArray["base_ivr_string"];
 			$widget['entities'][] = array(
 				"text"=> $data[$dest][$id]['name']." ( ".$data[$dest][$id]['description']." ) - ".$data[$dest][$id]['id'],
 				"id"=> $dest."%".$id,
 				"type"=> "input"
 			);
 			$widget['entities'][] = array(
-				"text"=> "Announcement: ".$data['recordings'][$data[$dest][$id]['announcement']]['name'],
+				"text"=> $langArray["base_app_announcement_string"].": ".$data['recordings'][$data[$dest][$id]['announcement']]['name'],
 				"id"=> "announcement-".$dest."%".$id,
 				"type"=> "text"
 			);
 			$widget['entities'][] = array(
-				"text"=> "Invalid destination",
+				"text"=> $langArray["base_inv_dest_string"],
 				"id"=> "invalid_destination-".$dest."%".$id,
 				"type"=> "output",
 				"destination"=> $data[$dest][$id]['invalid_destination']
 			);
 			$widget['entities'][] = array(
-				"text"=> "Timeout destination",
+				"text"=> $langArray["base_time_dest_string"],
 				"id"=> "timeout_destination-".$dest."%".$id,
 				"type"=> "output",
 				"destination"=> $data[$dest][$id]['timeout_destination']
@@ -604,14 +618,14 @@ function bindData($data, $dest, $id) {
 			$widget['id'] = $dest."%".$id;
 			$widget['x'] = $xPos;
 			$widget['y'] = $yPos;
-			$widget['name'] = "Queues";
+			$widget['name'] = $langArray["base_ext_queues_string"];
 			$widget['entities'][] = array(
 				"text"=> $data[$dest][$id]['descr']." ( ".$data[$dest][$id]['num']." )",
 				"id"=> $dest."%".$id,
 				"type"=> "input"
 			);
 			$widget['entities'][] = array(
-				"text"=> "Static members",
+				"text"=> $langArray["base_static_memb_string"],
 				"id"=> $dest."%".$id."stext",
 				"type"=> "text"
 			);
@@ -622,7 +636,7 @@ function bindData($data, $dest, $id) {
 			);
 
 			$widget['entities'][] = array(
-				"text"=> "Dynamic members",
+				"text"=> $langArray["base_dyn_memb_string"],
 				"id"=> $dest."%".$id."dtext",
 				"type"=> "text"
 			);
@@ -633,7 +647,7 @@ function bindData($data, $dest, $id) {
 			);
 
 			$widget['entities'][] = array(
-				"text"=> "Fail destination",
+				"text"=> $langArray["base_fail_dest_string"],
 				"id"=> "faildest-".$dest."%".$id,
 				"type"=> "output",
 				"destination"=> $data[$dest][$id]['dest']
@@ -647,14 +661,14 @@ function bindData($data, $dest, $id) {
 			$widget['id'] = $dest."%".$id;
 			$widget['x'] = $xPos;
 			$widget['y'] = $yPos;
-			$widget['name'] = "Groups";
+			$widget['name'] = $langArray["base_ext_group_string"];
 			$widget['entities'][] = array(
 				"text"=> $data[$dest][$id]['description']." (".$data[$dest][$id]['num']." )",
 				"id"=> $dest."%".$id,
 				"type"=> "input"
 			);
 			$widget['entities'][] = array(
-				"text"=> "Extensions list",
+				"text"=> $langArray["base_ext_list_string"],
 				"id"=> $dest."%".$id."dtext",
 				"type"=> "text"
 			);
@@ -664,7 +678,7 @@ function bindData($data, $dest, $id) {
 				"type"=> "list"
 			);
 			$widget['entities'][] = array(
-				"text"=> "Fail destination",
+				"text"=> $langArray["base_fail_dest_string"],
 				"id"=> "faildest-".$dest."%".$id,
 				"type"=> "output",
 				"destination"=> $data[$dest][$id]['postdest']
@@ -904,6 +918,7 @@ function explore($data, $destination, $destArray) {
 	global $connections;
 	global $widgetTemplate;
 	global $connectionTemplate;
+	global $langArray;
 
 	if(!in_array($destination, $destArray)) {
 		// insert elem in array
@@ -1031,11 +1046,11 @@ function explore($data, $destination, $destArray) {
 				$widget['x'] = $xPos;
 				$widget['y'] = $yPos;
 				if($dest != "") {
-					$widget['name'] = "Alternative destination";
+					$widget['name'] = $langArray["base_alternative_string"];
 					$text = $dest;
 				} else {
-					$widget['name'] = "Disabled";
-					$text = "disabled";
+					$widget['name'] = $langArray["base_disable_string"];
+					$text = strtolower($langArray["base_disable_string"]);
 				}
 				$widget['entities'][] = array(
 					"text"=> $text,

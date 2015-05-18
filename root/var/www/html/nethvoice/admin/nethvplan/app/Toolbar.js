@@ -47,23 +47,41 @@ example.Toolbar = Class.extend({
 		this.delimiter  = $("<span class='toolbar_delimiter'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>");
 		this.html.append(this.delimiter);
 
-		this.panButton  = $("<button id='canvasPolicy' currentBtn='pan' class='gray'><i class='fa fa-arrows fa-lg'></i></button>");
+		this.panButton  = $("<button id='canvasPolicy' currentBtn='pan' class='gray'><i class='fa fa-arrows-alt fa-lg'></i></button>");
 		this.html.append(this.panButton	);
 		this.panButton.click($.proxy(function(e){
 			var currentBtn = e.currentTarget.attributes.currentBtn.value;
+			var canvas = document.getElementById("canvas");
 
 			if(currentBtn === "pan") {
 				e.currentTarget.attributes.currentBtn.value = "box";
 				$(e.currentTarget.children[0]).removeAttr('class');
-				$(e.currentTarget.children[0]).attr('class', 'fa fa-chain-broken fa-lg');
+				$(e.currentTarget.children[0]).attr('class', 'fa fa-crosshairs fa-lg');
+				canvas.style.cursor = "cell";
 				var policy = new draw2d.policy.canvas.BoundingboxSelectionPolicy;
             	this.view.installEditPolicy(policy);
+
+            	$('#typer').children().html("&nbsp;&nbsp;"+languages[browserLang]["toolbar_select_string"]);
+            	$('#typer').children().attr('class', 'fa fa-crosshairs fa-3x typing-icon');
+            	$('#typer').fadeIn("slow");
+			    setTimeout(function(){
+			    	$('#typer').fadeOut("slow");	
+			    }, 1000);
+
 			} else {
 				e.currentTarget.attributes.currentBtn.value = "pan";
 				$(e.currentTarget.children[0]).removeAttr('class');
-				$(e.currentTarget.children[0]).attr('class', 'fa fa-arrows fa-lg');
+				$(e.currentTarget.children[0]).attr('class', 'fa fa-arrows-alt fa-lg');
+				canvas.style.cursor = "move";
 				var policy = new draw2d.policy.canvas.PanningSelectionPolicy;
             	this.view.installEditPolicy(policy);
+
+            	$('#typer').children().html("&nbsp;&nbsp;"+languages[browserLang]["toolbar_pan_string"]);
+            	$('#typer').children().attr('class', 'fa fa-arrows-alt fa-3x typing-icon');
+            	$('#typer').fadeIn("slow");
+			    setTimeout(function(){
+			    	$('#typer').fadeOut("slow");	
+			    }, 1000);
 			}
 		},this));
 
@@ -144,31 +162,40 @@ example.Toolbar = Class.extend({
 					}
 				}
 
-				//console.log(/*window.btoa(unescape(encodeURIComponent(*/JSON.stringify(json, null, 2)/*)))*/);
-				$.ajax({
-			      url: "/nethvoice/admin/nethvplan/create.php?",
-			      type: "POST",
-			      data: "jsonData="+window.btoa(unescape(encodeURIComponent(JSON.stringify(json)))),
-			      beforeSend: function( xhr ) {
-			        $('#loader').show();
-			      }
-			    }).done(function(c) {
-			    	$('#loader').hide();
+				if(jQuery.isEmptyObject(json)) {
+					$('#emptier').fadeIn("slow");
+					$('#emptier').children().html("&nbsp;&nbsp;"+languages[browserLang]["toolbar_empty_string"]);
+				    setTimeout(function(){
+				    	$('#emptier').fadeOut("slow");	
+				    }, 5000);
+				} else {
+					$.ajax({
+				      url: "/nethvoice/admin/nethvplan/create.php?",
+				      type: "POST",
+				      data: "jsonData="+window.btoa(unescape(encodeURIComponent(JSON.stringify(json)))),
+				      beforeSend: function( xhr ) {
+				        $('#loader').show();
+				      }
+				    }).done(function(c) {
+				    	$('#loader').hide();
 
-			    	if(c === "") {
-				    	$('#saver').fadeIn("slow");
-					    setTimeout(function(){
-					    	$('#saver').fadeOut("slow");	
-					    }, 3000);
-				    	highlight($('#save_button'));
-			    	} else {
-			    		$('#errorer').fadeIn("slow");
-					    setTimeout(function(){
-					    	$('#errorer').fadeOut("slow");	
-					    }, 5000);
-			    	}
-			    });
-			    
+				    	if(c === "") {
+				    		$('#saver').children().html("&nbsp;&nbsp;"+languages[browserLang]["toolbar_save_string"]);
+					    	$('#saver').fadeIn("slow");
+						    setTimeout(function(){
+						    	$('#saver').fadeOut("slow");	
+						    }, 3000);
+					    	highlight($('#save_button'));
+				    	} else {
+				    		$('#errorer').children().eq(0).html("&nbsp;&nbsp;"+languages[browserLang]["toolbar_not_save_string"]);
+				    		$('#errorer').children().eq(1).html("&nbsp;&nbsp;"+languages[browserLang]["toolbar_not_save_log_string"]);
+				    		$('#errorer').fadeIn("slow");
+						    setTimeout(function(){
+						    	$('#errorer').fadeOut("slow");	
+						    }, 5000);
+				    	}
+				    });
+				}
 			});
 		},this));
 

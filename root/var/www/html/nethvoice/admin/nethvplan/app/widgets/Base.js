@@ -4,12 +4,11 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
 	
     init : function(attr)
     {
-        var _this = this;
-
         this.tooltip = null;
 
         this._super($.extend({
-            stroke: 0
+            width: 50,
+            height: 50
         }, attr));
 
         this.classLabel = new draw2d.shape.basic.Label({
@@ -25,18 +24,9 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
         this.add(this.classLabel);
     },
 
-    // onDragStart: function() {
-    //     this._super();
-    //     this.showTooltip();
-    //     // var canvas = document.getElementById('canvas');
-    //     // $(canvas).panzoom("disable");
-    // },
-
-    // onDragEnd: function() {
-    //     // var canvas = document.getElementById('canvas');
-    //     // $(canvas).panzoom("enable");
-    //     this.hideTooltip();
-    // },
+    onMouseEnter: function(){
+        console.log("enter");
+    },
 
     addEntity: function(txt, type, optionalIndex)
     {
@@ -52,10 +42,14 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
 
         if(type === "list") {
             if(txt && txt !== "") {
-                var members = txt.match(/-?\d+/g).filter(Number);
-                txt = members.join(",");
+                var membersCheck = txt.match(/-?\d+/g);
+                var members = "";
+                if(membersCheck) {
+                    members = txt.match(/-?\d+/g).filter(Number);
+                    txt = members.join(",");
+                }
             } else {
-                txt = "No elements found";
+                txt = languages[browserLang]["base_no_elements_string"];
             }
 
             padding = { left:40, top:5, right:10, bottom:5 };
@@ -75,6 +69,8 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
         // create port
         if(type === "input" || type == "output") {
             var port = label.createPort(type);
+            port.setWidth(14);
+            port.setHeight(14);
             port.setName(type+"_"+label.id);
             if(type == "output") {
                 port.setMaxFanOut(1);
@@ -119,11 +115,11 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                                     break;
                                 }
                             },this),
-                            x: event.x,
+                            x: event.x+50,
                             y: event.y,
                             items: 
                             {
-                                "delete": { name: "Delete Night Service" }
+                                "delete": { name: languages[browserLang]["base_delete_night_service_string"] }
                             }
                         });
                     } else {
@@ -138,18 +134,18 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                                 switch(key){
                                     case "action":
                                         setTimeout(function(){
-                                                 table.addEntity("Night Service", "output", "false");
+                                                 table.addEntity(languages[browserLang]["base_night_service_string"], "output", "false");
                                              },10);
                                     break;
                                     default:
                                     break;
                                 }
                             },this),
-                            x: event.x,
+                            x: event.x+50,
                             y: event.y,
                             items: 
                             {
-                                "action": { name: "Add Night Service" }
+                                "action": { name: languages[browserLang]["base_add_night_service_string"] }
                             }
                         });
                     }
@@ -180,12 +176,15 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                                 break;
                             }
                         },this),
-                        x: event.x,
-                        y: event.y,
+                        position: function(opt, x, y){
+                            var scrollTopVal = app.view.getScrollArea().scrollTop();
+                            var scrollLeftVal = app.view.getScrollArea().scrollLeft();
+                            opt.$menu.css({ top: event.y/app.view.getZoom()+25-scrollTopVal, left: event.x/app.view.getZoom()+55-scrollLeftVal });
+                        },
                         items: 
                         {
-                            "add": { name: "Add new selection"},
-                            "delete": { name: "Delete selection" }
+                            "add": { name: languages[browserLang]["base_add_ivr_opt_string"] },
+                            "delete": { name: languages[browserLang]["base_delete_ivr_opt_string"] }
                         }
                     });
                 });
@@ -195,7 +194,7 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
     
     onDrop: function(droppedDomNode, x, y, elements)
     {
-        this.creationSwitch(elements, droppedDomNode[0].id, droppedDomNode[0].innerText);
+        this.creationSwitch(elements, droppedDomNode[0].id, $(droppedDomNode[0]).text().trim());
     },
 
     creationSwitch: function(elem, type, title) {
@@ -216,7 +215,7 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                 templateObj.radius = 20;
                 templateObj.entities = [
                     {
-                        text: "Hangup",
+                        text: languages[browserLang]["base_hangup_string"],
                         id: "hangup_dest%"+id,
                         type: "input"
                     }
@@ -240,7 +239,7 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
 
                 if(parseInt(elem[3].value)) {
                     templateObj.entities.push({
-                        text: "Night service",
+                        text: languages[browserLang]["base_night_service_string"],
                         id: "night_service%"+id,
                         type: "output"
                     });
@@ -259,8 +258,8 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                     }
                 ];
 
-                if(parseInt(elem[1].value)) text = "Active";
-                if(!parseInt(elem[1].value)) text = "Not Active";
+                if(parseInt(elem[1].value)) text = languages[browserLang]["base_active_string"];
+                if(!parseInt(elem[1].value)) text = languages[browserLang]["base_not_active_string"];
                 if(elem[1].value == "period") {
                     var from = elem[2].children[1].value;
                     var to = elem[2].children[3].value;
@@ -273,7 +272,7 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                 });
 
                 templateObj.entities.push({
-                    text: "Destination",
+                    text: languages[browserLang]["base_destination_string"],
                     id: "night-service_destination%"+id,
                     type: "output"
                 });
@@ -299,17 +298,17 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                 var dynId = (elem[0].value.split("(")[1]).split(")")[0].trim();
                 templateObj.entities = [
                     {
-                        text: elem[0].value +" - Busy",
+                        text: elem[0].value +" - "+languages[browserLang]["base_busy_string"],
                         id: "ext-local%vmb"+dynId,
                         type: "input"
                     },
                     {
-                        text: elem[0].value +" - No Message",
+                        text: elem[0].value +" - "+languages[browserLang]["base_nomsg_string"],
                         id: "ext-local%vms"+dynId,
                         type: "input"
                     },
                     {
-                        text: elem[0].value +" - Unavailable",
+                        text: elem[0].value +" - "+languages[browserLang]["base_unavailable_string"],
                         id: "ext-local%vmu"+dynId,
                         type: "input"
                     }
@@ -327,7 +326,7 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                         type: "input"
                     },
                     {
-                        text: "Extensions list",
+                        text: languages[browserLang]["base_ext_list_string"],
                         id: "groups_listtext%"+id,
                         type: "text"
                     },
@@ -337,7 +336,7 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                         type: "list"
                     },
                     {
-                        text: "Fail destination",
+                        text: languages[browserLang]["base_fail_dest_string"],
                         id: "groups_output%"+id,
                         type: "output"
                     }
@@ -355,7 +354,7 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                         type: "input"
                     },
                     {
-                        text: "Static members",
+                        text: languages[browserLang]["base_static_memb_string"],
                         id: "queues_statictext%"+id,
                         type: "text"
                     },
@@ -365,7 +364,7 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                         type: "list"
                     },
                     {
-                        text: "Dynamic members",
+                        text: languages[browserLang]["base_dyn_memb_string"],
                         id: "queues_dynamictext%"+id,
                         type: "text"
                     },
@@ -375,7 +374,7 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                         type: "list"
                     },
                     {
-                        text: "Fail destination",
+                        text: languages[browserLang]["base_fail_dest_string"],
                         id: "queues_output%"+id,
                         type: "output"
                     }
@@ -393,17 +392,17 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                         type: "input"
                     },
                     {
-                        text: "Announcement: "+elem[2].value,
+                        text: languages[browserLang]["base_app_announcement_string"]+": "+elem[2].value,
                         id: "ivr_announc%"+id,
                         type: "text"
                     },
                     {
-                        text: "Invalid destination",
+                        text: languages[browserLang]["base_inv_dest_string"],
                         id: "ivr_invalid-dest%"+id,
                         type: "output"
                     },
                     {
-                        text: "Timeout destination",
+                        text: languages[browserLang]["base_time_dest_string"],
                         id: "ivr_timeout-dest%"+id,
                         type: "output"
                     }
@@ -426,7 +425,7 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                         type: "text"
                     },
                     {
-                        text: "Destination",
+                        text: languages[browserLang]["base_destination_string"],
                         id: "announcement_output%"+id,
                         type: "output"
                     }
@@ -449,12 +448,12 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                         type: "text"
                     },
                     {
-                        text: "True condition",
+                        text: languages[browserLang]["base_true_dest_string"],
                         id: "timeconditions_truegoto%"+id,
                         type: "output"
                     },
                     {
-                        text: "False condition",
+                        text: languages[browserLang]["base_false_dest_string"],
                         id: "timeconditions_falsegoto%"+id,
                         type: "output"
                     }
@@ -472,12 +471,12 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                         type: "input"
                     },
                     {
-                        text: "Normal flow (green)",
+                        text: languages[browserLang]["base_normal_flow_string"],
                         id: "app-daynight_truegoto%"+id,
                         type: "output"
                     },
                     {
-                        text: "Alternative flow (red)",
+                        text: languages[browserLang]["base_alternative_flow_string"],
                         id: "app-daynight_falsegoto%"+id,
                         type: "output"
                     }
@@ -547,22 +546,6 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                 var entity = this.addEntity(e.text, e.type);
                 entity.id = e.id;
 
-                // entity.onMouseEnter = function() {
-                //     this.tooltip = $('<div class="tooltip">Tooltip</div>').appendTo('body');
-                //     if( this.tooltip===null){
-                //         return;
-                //     }
-                    
-                //     var width =  this.tooltip.outerWidth(true);
-                //     var tPosX = entity.getAbsoluteX()+entity.getWidth()/2-width/2+8;
-                //     var tPosY = entity.getAbsoluteY()+entity.getHeight() + 20;
-                //     this.tooltip.css({'top': tPosY, 'left': tPosX});
-                // }
-                // entity.onMouseLeave = function() {
-                //     this.tooltip.remove();   
-                //     this.tooltip = null;
-                // }
-
                 if(e.type == "output")
                     entity.getOutputPort(0).setName("output_"+e.id);
 
@@ -605,9 +588,5 @@ MyConnection = draw2d.Connection.extend({
             this.targetDecorator.setDimension(10,10);
             this.targetDecorator.setBackgroundColor("#4caf50");
         }
-
-        // if (typeof memento.source.decoration !== "undefined" && memento.source.decoration != null) {
-        //     this.setSourceDecorator(eval("new " + memento.source.decoration));
-        // }
     }
 });

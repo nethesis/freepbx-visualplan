@@ -20,8 +20,11 @@ example.Application = Class.extend(
     init : function()
     {
 	    this.view = new example.View("canvas");
+        var canvas = document.getElementById("canvas");
+
         var policy = new draw2d.policy.canvas.PanningSelectionPolicy;
         this.view.installEditPolicy(policy);
+        canvas.style.cursor = "move";
 
         this.toolbar = new example.Toolbar("toolbar",  this.view );
 	}

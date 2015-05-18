@@ -11,8 +11,8 @@ example.View = draw2d.Canvas.extend({
             canvas.addEventListener("mousewheel", this.MouseWheelHandler, false);
             canvas.addEventListener("DOMMouseScroll", this.MouseWheelHandler, false);
         }
-        else canvas.attachEvent("onmousewheel", this.MouseWheelHandler);
-        	this.setScrollArea("#"+id);
+
+        this.setScrollArea("#"+id);
 	},
 
     // onClick: function(the, mouseX, mouseY, shiftKey, ctrlKey) {
@@ -28,17 +28,32 @@ example.View = draw2d.Canvas.extend({
     onDoubleClick: function( the, mouseX, mouseY, shiftKey, ctrlKey) {
         var e = document.getElementById('canvasPolicy');
         var currentBtn = e.attributes.currentBtn.value;
+        var canvas = document.getElementById("canvas");
 
         if(currentBtn === "pan") {
             e.attributes.currentBtn.value = "box";
             $(e.children[0]).removeAttr('class');
             $(e.children[0]).attr('class', 'fa fa-chain-broken fa-lg');
+            canvas.style.cursor = "cell";
+            $('#typer').children().html("&nbsp;&nbsp;"+languages[browserLang]["toolbar_select_string"]);
+            $('#typer').children().attr('class', 'fa fa-crosshairs fa-3x typing-icon');
+            $('#typer').fadeIn("slow");
+            setTimeout(function(){
+                $('#typer').fadeOut("slow");    
+            }, 1000);
             var policy = new draw2d.policy.canvas.BoundingboxSelectionPolicy;
             app.view.installEditPolicy(policy);
         } else {
             e.attributes.currentBtn.value = "pan";
             $(e.children[0]).removeAttr('class');
-            $(e.children[0]).attr('class', 'fa fa-arrows fa-lg');
+            $(e.children[0]).attr('class', 'fa fa-arrows-alt fa-lg');
+            canvas.style.cursor = "move";
+            $('#typer').children().html("&nbsp;&nbsp;"+languages[browserLang]["toolbar_pan_string"]);
+            $('#typer').children().attr('class', 'fa fa-arrows-alt fa-3x typing-icon');
+            $('#typer').fadeIn("slow");
+            setTimeout(function(){
+                $('#typer').fadeOut("slow");    
+            }, 1000);
             var policy = new draw2d.policy.canvas.PanningSelectionPolicy;
             app.view.installEditPolicy(policy);
         }
@@ -111,7 +126,7 @@ example.View = draw2d.Canvas.extend({
                                         close: function(ev, ui) {
                                             $(this).dialog('destroy').remove();
                                         },
-                                        title: $(event.dropped[0]).text() + " selection"
+                                        title: $(event.dropped[0]).text() + " "+languages[browserLang]["view_selection_string"]
                                     });
                                 $(".ui-dialog-titlebar").css("background", event.dropped.css("backgroundColor"));
 
@@ -198,8 +213,8 @@ example.View = draw2d.Canvas.extend({
                 },
                 items: 
                 {
-                    "add": { name: "Add new" },
-                    "select": { name: "Select existing" }
+                    "add": { name: languages[browserLang]["view_add_new_string"] },
+                    "select": { name: languages[browserLang]["view_select_exis_string"] }
                 }
             });
         });
@@ -227,7 +242,7 @@ example.View = draw2d.Canvas.extend({
                         var result = event.context.checkData(usableElem, event.dropped[0].id, event);
                     }
                 },
-                title: $(event.dropped[0]).text() + " creation"
+                title: $(event.dropped[0]).text() + " " + languages[browserLang]["view_creation_string"]
             });
         $(".ui-dialog-titlebar").css("background", $(event.dropped[0]).css("backgroundColor"));
 
@@ -277,7 +292,7 @@ example.View = draw2d.Canvas.extend({
                 } else {
                     $(".error-message").html("");
                     $(elem[0]).css("border", "1px solid rgb(255, 97, 97)");
-                    $('#modalCreation').append('<p class="error-message">Error: The inserted number is used.</p>');
+                    $('#modalCreation').append('<p class="error-message">'+languages[browserLang]["view_error_inserted_string"]+'</p>');
                 }
             } else {
                 missing = true;
@@ -305,27 +320,27 @@ example.View = draw2d.Canvas.extend({
         var html = "";
         switch (elem.id) {
             case "incoming":
-                html += '<label class="label-creation">Number: </label>';
+                html += '<label class="label-creation">'+languages[browserLang]["view_number_string"]+': </label>';
                 html += '<input usable id="'+elem.id+'-number" class="input-creation-mini"></input>';
                 html += ' / ';
                 html += '<input usable id="'+elem.id+'-cidnum" class="input-creation-mini"></input>';
-                html += '<label class="label-creation">Description: </label>';
+                html += '<label class="label-creation">'+languages[browserLang]["view_description_string"]+': </label>';
                 html += '<input usable id="'+elem.id+'-description" class="input-creation"></input>';
-                html += '<label class="label-creation">Night Service: </label>';
-                html += '<select usable id="'+elem.id+'-nightService" class="input-creation"><option value="1">Active</option><option value="0">Not Active</option></select>';
+                html += '<label class="label-creation">'+languages[browserLang]["base_night_service_string"]+': </label>';
+                html += '<select usable id="'+elem.id+'-nightService" class="input-creation"><option value="1">'+languages[browserLang]["base_active_string"]+'</option><option value="0">'+languages[browserLang]["base_not_active_string"]+'</option></select>';
             break;
             case "night":
-                html += '<label class="label-creation">Name: </label>';
+                html += '<label class="label-creation">'+languages[browserLang]["view_name_string"]+': </label>';
                 html += '<input usable id="'+elem.id+'-name" class="input-creation"></input>';
-                html += '<label class="label-creation">Manual activation: </label>';
-                html += '<select usable onchange="if(this.selectedIndex==2)$(\'#calGroup\').show();else $(\'#calGroup\').hide();" id="'+elem.id+'-activation" class="input-creation"><option value="1">Active</option><option value="0">Not Active</option><option value="period">Period</option></select>';
-                html += '<div usable id="calGroup" style="display:none;"><label class="label-creation">From: </label><input placeholder="dd/mm/yyyy" usable id="'+elem.id+'-fromperiod" class="input-creation"></input><label class="label-creation">To: </label><input placeholder="dd/mm/yyyy" usable id="'+elem.id+'-toperiod" class="input-creation"></input></div>';
+                html += '<label class="label-creation">'+languages[browserLang]["view_manual_act_string"]+': </label>';
+                html += '<select usable onchange="if(this.selectedIndex==2)$(\'#calGroup\').show();else $(\'#calGroup\').hide();" id="'+elem.id+'-activation" class="input-creation"><option value="1">'+languages[browserLang]["base_active_string"]+'</option><option value="0">'+languages[browserLang]["base_not_active_string"]+'</option><option value="period">'+languages[browserLang]["base_period_string"]+'</option></select>';
+                html += '<div usable id="calGroup" style="display:none;"><label class="label-creation">'+languages[browserLang]["base_period_from_string"]+': </label><input placeholder="dd/mm/yyyy" usable id="'+elem.id+'-fromperiod" class="input-creation"></input><label class="label-creation">'+languages[browserLang]["base_period_to_string"]+': </label><input placeholder="dd/mm/yyyy" usable id="'+elem.id+'-toperiod" class="input-creation"></input></div>';
             break;
 
             case "from-did-direct":
-                html += '<label class="label-creation">Number: </label>';
+                html += '<label class="label-creation">'+languages[browserLang]["view_number_string"]+': </label>';
                 html += '<input usable id="'+elem.id+'-number" class="input-creation"></input>';
-                html += '<label class="label-creation">Name: </label>';
+                html += '<label class="label-creation">'+languages[browserLang]["view_name_string"]+': </label>';
                 html += '<input usable id="'+elem.id+'-name" class="input-creation"></input>';
             break;
 
@@ -344,7 +359,7 @@ example.View = draw2d.Canvas.extend({
                         if(data[e].voicemail === "novm")
                             htmlSelect += '<option value="'+data[e].name +' ( '+e+' )">'+data[e].name+' ( '+e+' )</option>';
                     }
-                    html += '<label class="label-creation">Enable Voice Mail for: </label>';
+                    html += '<label class="label-creation">'+languages[browserLang]["view_enable_voicemail_string"]+': </label>';
                     html += '<select usable id="'+elem.id+'-voicenum" class="input-creation">'+htmlSelect+'</select>';
 
                     $("#modalCreation").html(html);
@@ -352,22 +367,22 @@ example.View = draw2d.Canvas.extend({
             break;
 
             case "ext-group":
-                html += '<label class="label-creation">Number: </label>';
+                html += '<label class="label-creation">'+languages[browserLang]["view_number_string"]+': </label>';
                 html += '<input usable id="'+elem.id+'-number" class="input-creation"></input>';
-                html += '<label class="label-creation">Description: </label>';
+                html += '<label class="label-creation">'+languages[browserLang]["view_description_string"]+': </label>';
                 html += '<input usable id="'+elem.id+'-description" class="input-creation"></input>';
-                html += '<label class="label-creation">Extensions List: </label>';
+                html += '<label class="label-creation">'+languages[browserLang]["base_ext_list_string"]+': </label>';
                 html += '<textarea usable id="'+elem.id+'-extensionList" class="input-creation"></textarea>';
             break;
 
             case "ext-queues":
-                html += '<label class="label-creation">Number: </label>';
+                html += '<label class="label-creation">'+languages[browserLang]["view_number_string"]+': </label>';
                 html += '<input usable id="'+elem.id+'-number" class="input-creation"></input>';
-                html += '<label class="label-creation">Name: </label>';
+                html += '<label class="label-creation">'+languages[browserLang]["view_name_string"]+': </label>';
                 html += '<input usable id="'+elem.id+'-name" class="input-creation"></input>';
-                html += '<label class="label-creation">Static Members: </label>';
+                html += '<label class="label-creation">'+languages[browserLang]["base_static_memb_string"]+': </label>';
                 html += '<textarea usable id="'+elem.id+'-staticMem" class="input-creation"></textarea>';
-                html += '<label class="label-creation">Dynamic Members: </label>';
+                html += '<label class="label-creation">'+languages[browserLang]["base_dyn_memb_string"]+': </label>';
                 html += '<textarea usable id="'+elem.id+'-dynamicMem" class="input-creation"></textarea>';
             break;
 
@@ -385,11 +400,11 @@ example.View = draw2d.Canvas.extend({
                     for(e in data) {
                         htmlSelect += '<option value="'+data[e].name +' ( '+e+' )">'+data[e].name+'</option>';
                     }
-                    html += '<label class="label-creation">Name: </label>';
+                    html += '<label class="label-creation">'+languages[browserLang]["view_name_string"]+': </label>';
                     html += '<input usable id="'+elem.id+'-name" class="input-creation"></input>';
-                    html += '<label class="label-creation">Description: </label>';
+                    html += '<label class="label-creation">'+languages[browserLang]["view_description_string"]+': </label>';
                     html += '<input usable id="'+elem.id+'-description" class="input-creation"></input>';
-                    html += '<label class="label-creation">Recording: </label>';
+                    html += '<label class="label-creation">'+languages[browserLang]["view_recording_string"]+': </label>';
                     html += '<select usable id="'+elem.id+'-recording" class="input-creation">'+htmlSelect+'</select>';
 
                     $("#modalCreation").html(html);
@@ -410,9 +425,9 @@ example.View = draw2d.Canvas.extend({
                     for(e in data) {
                         htmlSelect += '<option value="'+data[e].name +' ( '+e+' )">'+data[e].name+'</option>';
                     }
-                    html += '<label class="label-creation">Name: </label>';
+                    html += '<label class="label-creation">'+languages[browserLang]["view_name_string"]+': </label>';
                     html += '<input usable id="'+elem.id+'-name" class="input-creation"></input>';
-                    html += '<label class="label-creation">Recording: </label>';
+                    html += '<label class="label-creation">'+languages[browserLang]["view_recording_string"]+': </label>';
                     html += '<select usable id="'+elem.id+'-recording" class="input-creation">'+htmlSelect+'</select>';
 
                     $("#modalCreation").html(html);
@@ -434,9 +449,9 @@ example.View = draw2d.Canvas.extend({
                     for(e in data) {
                         htmlSelect += '<option value="'+data[e].description +' ( '+e+' )">'+data[e].description+'</option>';
                     }
-                    html += '<label class="label-creation">Name: </label>';
+                    html += '<label class="label-creation">'+languages[browserLang]["view_name_string"]+': </label>';
                     html += '<input usable id="'+elem.id+'-name" class="input-creation"></input>';
-                    html += '<label class="label-creation">Time Group: </label>';
+                    html += '<label class="label-creation">'+languages[browserLang]["view_timegroup_string"]+': </label>';
                     html += '<select usable id="'+elem.id+'-timegroup" class="input-creation">'+htmlSelect+'</select>';
 
                     $("#modalCreation").html(html);
@@ -457,9 +472,9 @@ example.View = draw2d.Canvas.extend({
                     for(e in data) {
                         htmlSelect += '<option value="'+data[e]+'">'+data[e]+'</option>';
                     }
-                    html += '<label class="label-creation">Name: </label>';
+                    html += '<label class="label-creation">'+languages[browserLang]["view_name_string"]+': </label>';
                     html += '<input usable id="'+elem.id+'-name" class="input-creation"></input>';
-                    html += '<label class="label-creation">Control Code: </label>';
+                    html += '<label class="label-creation">'+languages[browserLang]["view_control_code_string"]+': </label>';
                     html += '<select usable id="'+elem.id+'-controlcode" class="input-creation">'+htmlSelect+'</select>';
 
                     $("#modalCreation").html(html);
@@ -467,9 +482,9 @@ example.View = draw2d.Canvas.extend({
             break;
 
             case "ext-meetme":
-                html += '<label class="label-creation">Number: </label>';
+                html += '<label class="label-creation">'+languages[browserLang]["view_number_string"]+': </label>';
                 html += '<input usable id="'+elem.id+'-number" class="input-creation"></input>';
-                html += '<label class="label-creation">Name: </label>';
+                html += '<label class="label-creation">'+languages[browserLang]["view_name_string"]+': </label>';
                 html += '<input usable id="'+elem.id+'-name" class="input-creation"></input>';
             break;
         }
@@ -514,7 +529,7 @@ example.View = draw2d.Canvas.extend({
             }
             htmlInj += '<div><button elemDest="'+dataArray[elem].entities[dataArray[elem].entities.length-1].destination+'" elemId="'+elem+'" class="button-elem-list">'+elem+' - '+text+'</button></div>';
         }
-        if(htmlInj === "") htmlInj = "No elements found.";
+        if(htmlInj === "") htmlInj = languages[browserLang]["base_no_elements_string"];
         return htmlInj;
     },
     
