@@ -62,8 +62,8 @@ $get_data = core_users_list();
 foreach ($get_data as $key => $row) {
 	if($row[2] != "novm") {
 		$data['ext-local'][$row[0]] = array("name" => $row[1],
-											  "voicemail" => $row[2]
-											);
+											"voicemail" => $row[2]
+										   );
 	}
 	
 }
@@ -205,6 +205,9 @@ foreach ($_GET as $key => $value) {
 			$name = $_GET["getAll"];
 			$widContainer = array();
 			foreach ($data[$name] as $key => $value) {
+				if($name == "ext-local") {
+					$key = "vmb".$key;
+				}
 				$wid = bindData($data, $name, $key);
 				array_push($widContainer, $wid);
 			}
@@ -320,6 +323,19 @@ foreach ($_GET as $key => $value) {
 	}
 }
 
+function cmpAnnun($a, $b) {
+    if ($a['announcement_id'] == $b['announcement_id']) {
+        return 0;
+    }
+    return ($a['announcement_id'] < $b['announcement_id']) ? -1 : 1;
+}
+function cmpTime($a, $b) {
+    if ($a['timeconditions_id'] == $b['timeconditions_id']) {
+        return 0;
+    }
+    return ($a['timeconditions_id'] < $b['timeconditions_id']) ? -1 : 1;
+}
+
 // get destination from asterisk destination id
 function getDestination($destination) {
 	if(preg_match('/ivr-*/', $destination)) {
@@ -422,7 +438,7 @@ function bindData($data, $dest, $id) {
 			);
 		break;
 		case "ext-local":
-			$idUsers = substr($id, -3);
+			$idUsers = substr($id, 3);
 
 			$widget = $widgetTemplate;
 			$widget['type'] = "Base";
@@ -495,7 +511,7 @@ function bindData($data, $dest, $id) {
 			$widget['y'] = $yPos;
 			$widget['name'] = $langArray["base_app_announcement_string"];
 			$widget['entities'][] = array(
-				"text"=> $data[$dest][$id]['description'],
+				"text"=> $data[$dest][$id]['description'] ." - ".$id,
 				"id"=> $dest."%".$id,
 				"type"=> "input"
 			);
@@ -548,7 +564,7 @@ function bindData($data, $dest, $id) {
 			$widget['y'] = $yPos;
 			$widget['name'] = $langArray["base_timeconditions_string"];
 			$widget['entities'][] = array(
-				"text"=> $data[$dest][$id]['displayname'],
+				"text"=> $data[$dest][$id]['displayname'] ." - ".$id,
 				"id"=> $dest."%".$id,
 				"type" => "input"
 			);

@@ -22,6 +22,7 @@ $connectionArray = array_filter(
 );
 
 $currentCreated = array();
+$returnedIdArray = array();
 
 extraction($widgetArray, $connectionArray);
 
@@ -36,9 +37,14 @@ function extraction($dataArray, $connectionArray) {
 	}
 }
 
+$returnedIdArray = array("success" => $returnedIdArray);
+print_r(/*json_pretty(*/json_encode($returnedIdArray, true));
+
 function switchCreate($wType, $value, $connectionArray) {
 	$idReturn = "";
 	global $currentCreated;
+	global $returnedIdArray;
+
 	switch($wType) {
 		case "incoming":
 			$partsNum = explode("(", $value['entities'][0]['text']);
@@ -203,7 +209,10 @@ function switchCreate($wType, $value, $connectionArray) {
 			}
 		break;
 		case "app-announcement":
-			$name = trim($value['entities'][0]['text']);
+			$nameParts = explode("-", $value['entities'][0]['text']);
+			$name = trim($nameParts[0]);
+			$id = trim($nameParts[1]);
+
 			$parts = explode("(", $value['entities'][1]['text']);
 			$extParts = explode(")", $parts[1]);
 			$rec_id = trim($extParts[0]);
@@ -211,11 +220,15 @@ function switchCreate($wType, $value, $connectionArray) {
 			if(!array_key_exists($value['id'], $currentCreated)) {
 				$destinations = getDestination($value, $connectionArray);
 				$destination = trim($destinations["output_".$value['entities'][2]['id']]);
-				announcement_add($name, $rec_id, "", $destination);
-				$result = announcement_list();
-				usort($result, "cmpAnnun");
-				$idAnn = $result[count($result)-1]['announcement_id'];
-				$idReturn = $idAnn;
+
+				if(empty($id)) {
+					$idAnn = announcement_add($name, $rec_id, "", $destination);
+					$idReturn = $idAnn;
+				} else {
+					announcement_edit($id, $name, $rec_id, "", $destination);
+					$idReturn = $id;
+				}
+				$currentCreated[$value['id']] = $idReturn;
 			}
 		break;
 
@@ -241,30 +254,58 @@ function switchCreate($wType, $value, $connectionArray) {
 				if(empty($invDest)) $invDest = "";
 				if(empty($timeDest)) $timeDest = "";
 
-				$idIVR = ivr_save_details(array(
-					"id" => $id,
-					"name" => $name,
-					"description" => $description,
-					"announcement" => $announcement,
+				if(empty($id)) {
+					$idIVR = ivr_save_details(array(
+						"name" => $name,
+						"description" => $description,
+						"announcement" => $announcement,
 
-					"directdial" => 0,
-					"invalid_loops" => 0,
-					"invalid_retry_recording" => 0,
+						"directdial" => 0,
+						"invalid_loops" => 0,
+						"invalid_retry_recording" => 0,
 
-					"invalid_destination" => $invDest,
+						"invalid_destination" => $invDest,
 
-					"invalid_recording" => 0,
-					"retvm" => 0,
-					"timeout_time" => 0,
-					"timeout_recording" => 0,
-					"timeout_retry_recording" => 0,
+						"invalid_recording" => 0,
+						"retvm" => 0,
+						"timeout_time" => 0,
+						"timeout_recording" => 0,
+						"timeout_retry_recording" => 0,
 
-					"timeout_destination" => $timeDest,
+						"timeout_destination" => $timeDest,
 
-					"timeout_loops" => 0,
-					"timeout_append_announce" => 0,
-					"invalid_append_announce" => 0,
-				));
+						"timeout_loops" => 0,
+						"timeout_append_announce" => 0,
+						"invalid_append_announce" => 0,
+					));
+				} else {
+					$idIVR = ivr_save_details(array(
+						"id" => $id,
+						"name" => $name,
+						"description" => $description,
+						"announcement" => $announcement,
+
+						"directdial" => 0,
+						"invalid_loops" => 0,
+						"invalid_retry_recording" => 0,
+
+						"invalid_destination" => $invDest,
+
+						"invalid_recording" => 0,
+						"retvm" => 0,
+						"timeout_time" => 0,
+						"timeout_recording" => 0,
+						"timeout_retry_recording" => 0,
+
+						"timeout_destination" => $timeDest,
+
+						"timeout_loops" => 0,
+						"timeout_append_announce" => 0,
+						"invalid_append_announce" => 0,
+					));
+				}
+
+				$idReturn = $idIVR;
 
 				$ivrArray = array();
 				$ivrArray['ivr_ret'] = 0;
@@ -279,10 +320,14 @@ function switchCreate($wType, $value, $connectionArray) {
 
 				ivr_save_entries($idIVR, $ivrArray);
 				$idReturn = $idIVR;
+				$currentCreated[$value['id']] = $idIVR;
 			}
 		break;
 		case "timeconditions":
-			$name = $value['entities'][0]['text'];
+			$nameParts = explode("-", $value['entities'][0]['text']);
+			$name = trim($nameParts[0]);
+			$id = trim($nameParts[1]);
+
 			$parts = explode("(", $value['entities'][1]['text']);
 			$extParts = explode(")", $parts[1]);
 			$time = trim($extParts[0]);
@@ -290,19 +335,30 @@ function switchCreate($wType, $value, $connectionArray) {
 			if(!array_key_exists($value['id'], $currentCreated)) {
 				$destinations = getDestination($value, $connectionArray, $currentCreated, $wType);
 
-				timeconditions_add(array(
-					"displayname" => $name,
-					"time" => $time,
-					"goto1" => "truegoto",
-					"goto0" => "falsegoto",
-					"truegoto1" => trim($destinations["output_".$value['entities'][3]['id']]),
-					"falsegoto0" => trim($destinations["output_".$value['entities'][2]['id']]),
-					"deptname" => ""
-				));
-				$result = timeconditions_list();
-				usort($result, "cmpTime");
-				$idTime = $result[count($result)-1]['timeconditions_id'];
-				$idReturn = $idTime;
+				if(empty($id)) {
+					$idTime = timeconditions_add(array(
+						"displayname" => $name,
+						"time" => $time,
+						"goto1" => "truegoto",
+						"goto0" => "falsegoto",
+						"truegoto1" => trim($destinations["output_".$value['entities'][3]['id']]),
+						"falsegoto0" => trim($destinations["output_".$value['entities'][2]['id']]),
+						"deptname" => ""
+					));
+					$idReturn = $idTime;
+				} else {
+					timeconditions_edit($id, array(
+						"displayname" => $name,
+						"time" => $time,
+						"goto1" => "truegoto",
+						"goto0" => "falsegoto",
+						"truegoto1" => trim($destinations["output_".$value['entities'][3]['id']]),
+						"falsegoto0" => trim($destinations["output_".$value['entities'][2]['id']]),
+						"deptname" => ""
+					));
+					$idReturn = $id;
+				}
+				$currentCreated[$value['id']] = $idReturn;
 			}
 		break;
 		case "app-daynight":
@@ -325,20 +381,11 @@ function switchCreate($wType, $value, $connectionArray) {
 			), $controlCode);
 		break;
 	}
-	return $idReturn;
-}
 
-function cmpAnnun($a, $b) {
-    if ($a['announcement_id'] == $b['announcement_id']) {
-        return 0;
-    }
-    return ($a['announcement_id'] < $b['announcement_id']) ? -1 : 1;
-}
-function cmpTime($a, $b) {
-    if ($a['timeconditions_id'] == $b['timeconditions_id']) {
-        return 0;
-    }
-    return ($a['timeconditions_id'] < $b['timeconditions_id']) ? -1 : 1;
+	if($idReturn) {
+		$returnedIdArray[$value['id']] = array("idElem" => $value['id'], "idObj" => $idReturn);
+	}
+	return $idReturn;
 }
 
 function checkDestination($destination, $type, $value, $connectionArray) {
@@ -351,7 +398,7 @@ function checkDestination($destination, $type, $value, $connectionArray) {
 			$currentVals = $widgetArray[$k];
 		}
 	}
-	if(!array_key_exists($destination, $currentCreated)) {//if(!in_array($destination, $currentCreated)) {
+	if(!array_key_exists($destination, $currentCreated)) {
 		$result = switchCreate($type, $currentVals, $connectionArray);
 		$currentCreated[$destination] = $result;
 		return $result;
@@ -411,7 +458,6 @@ function getDestination($values, $connectionArray) {
 			}
 		}
 	}
-	//print_r($destAsterisk);
 	return $destAsterisk;
 }
 

@@ -179,13 +179,16 @@ example.Toolbar = Class.extend({
 				    }).done(function(c) {
 				    	$('#loader').hide();
 
-				    	if(c === "") {
+				    	var resp = JSON.parse(c);
+
+				    	if(resp.success) {
 				    		$('#saver').children().html("&nbsp;&nbsp;"+languages[browserLang]["toolbar_save_string"]);
 					    	$('#saver').fadeIn("slow");
 						    setTimeout(function(){
 						    	$('#saver').fadeOut("slow");	
 						    }, 3000);
 					    	highlight($('#save_button'));
+					    	console.log(resp);
 				    	} else {
 				    		$('#errorer').children().eq(0).html("&nbsp;&nbsp;"+languages[browserLang]["toolbar_not_save_string"]);
 				    		$('#errorer').children().eq(1).html("&nbsp;&nbsp;"+languages[browserLang]["toolbar_not_save_log_string"]);

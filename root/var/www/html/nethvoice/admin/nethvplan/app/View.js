@@ -115,6 +115,7 @@ example.View = draw2d.Canvas.extend({
                             }).done(function(c) {
                                 $('#loader').hide();
                                 containerData = JSON.parse(c);
+                                console.log(containerData);
                                 // populate dialog
                                 var dialog = $('<div id="elementList"></div>')
                                     .dialog({
