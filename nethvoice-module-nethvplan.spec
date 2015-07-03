@@ -1,5 +1,5 @@
 Name:		nethvoice-module-nethvplan
-Version: 	0.0.1
+Version: 	0.0.2
 Release: 	1%{dist}
 Summary:	A module to visualize and edit FreePBX dialplan
 Group:		Networking/Daemons	
@@ -37,6 +37,8 @@ rm -rf $RPM_BUILD_ROOT
 %clean
 rm -rf $RPM_BUILD_ROOT
 
+%post
+/sbin/e-smith/signal-event nethvoice-module-nethvplan-update
 
 %files -f %{name}-%{version}-filelist
 %defattr(-,asterisk,asterisk)
