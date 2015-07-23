@@ -219,17 +219,22 @@ function switchCreate($wType, $value, $connectionArray) {
 			$rec_id = trim($extParts[0]);
 
 			if(!array_key_exists($value['id'], $currentCreated)) {
-				$destinations = getDestination($value, $connectionArray);
-				$destination = trim($destinations["output_".$value['entities'][2]['id']]);
 
 				if(empty($id)) {
 					$idAnn = announcement_add($name, $rec_id, "", $destination);
 					$idReturn = $idAnn;
+					$currentCreated[$value['id']] = $idReturn;
+					$destinations = getDestination($value, $connectionArray);
+					$destination = trim($destinations["output_".$value['entities'][2]['id']]);
+					announcement_edit($idReturn, $name, $rec_id, "", $destination);
 				} else {
+					$currentCreated[$value['id']] = $id;
+					$destinations = getDestination($value, $connectionArray);
+					$destination = trim($destinations["output_".$value['entities'][2]['id']]);
 					announcement_edit($id, $name, $rec_id, "", $destination);
 					$idReturn = $id;
 				}
-				$currentCreated[$value['id']] = $idReturn;
+				
 			}
 		break;
 
@@ -247,16 +252,42 @@ function switchCreate($wType, $value, $connectionArray) {
 			$announcement = trim($annExParts[0]);
 
 			if(!array_key_exists($value['id'], $currentCreated)) {
-				$destinations = getDestination($value, $connectionArray, $currentCreated, $wType);
-
-				$invDest = trim($destinations["output_".$value['entities'][2]['id']]);
-				$timeDest = trim($destinations["output_".$value['entities'][3]['id']]);
+				
 
 				if(empty($invDest)) $invDest = "";
 				if(empty($timeDest)) $timeDest = "";
 
 				if(empty($id)) {
 					$idIVR = ivr_save_details(array(
+						"name" => $name,
+						"description" => $description,
+						"announcement" => $announcement,
+
+						"directdial" => 0,
+						"invalid_loops" => 0,
+						"invalid_retry_recording" => 0,
+
+						"invalid_destination" => $invDest,
+
+						"invalid_recording" => 0,
+						"retvm" => 0,
+						"timeout_time" => 0,
+						"timeout_recording" => 0,
+						"timeout_retry_recording" => 0,
+
+						"timeout_destination" => $timeDest,
+
+						"timeout_loops" => 0,
+						"timeout_append_announce" => 0,
+						"invalid_append_announce" => 0,
+					));
+					$idReturn = $idIVR;
+					$currentCreated[$value['id']] = $idIVR;
+					$destinations = getDestination($value, $connectionArray, $currentCreated, $wType);
+					$invDest = trim($destinations["output_".$value['entities'][2]['id']]);
+					$timeDest = trim($destinations["output_".$value['entities'][3]['id']]);
+					$idIVR = ivr_save_details(array(
+						"id" => $idIVR,
 						"name" => $name,
 						"description" => $description,
 						"announcement" => $announcement,
@@ -304,9 +335,36 @@ function switchCreate($wType, $value, $connectionArray) {
 						"timeout_append_announce" => 0,
 						"invalid_append_announce" => 0,
 					));
-				}
+					$currentCreated[$value['id']] = $idIVR;
+					$destinations = getDestination($value, $connectionArray, $currentCreated, $wType);
+					$invDest = trim($destinations["output_".$value['entities'][2]['id']]);
+					$timeDest = trim($destinations["output_".$value['entities'][3]['id']]);
+					$idIVR = ivr_save_details(array(
+						"id" => $idIVR,
+						"name" => $name,
+						"description" => $description,
+						"announcement" => $announcement,
 
-				$idReturn = $idIVR;
+						"directdial" => 0,
+						"invalid_loops" => 0,
+						"invalid_retry_recording" => 0,
+
+						"invalid_destination" => $invDest,
+
+						"invalid_recording" => 0,
+						"retvm" => 0,
+						"timeout_time" => 0,
+						"timeout_recording" => 0,
+						"timeout_retry_recording" => 0,
+
+						"timeout_destination" => $timeDest,
+
+						"timeout_loops" => 0,
+						"timeout_append_announce" => 0,
+						"invalid_append_announce" => 0,
+					));
+					$idReturn = $idIVR;
+				}
 
 				$ivrArray = array();
 				$ivrArray['ivr_ret'] = 0;
@@ -320,8 +378,6 @@ function switchCreate($wType, $value, $connectionArray) {
 				$ivrArray['goto'] = $goto;
 
 				ivr_save_entries($idIVR, $ivrArray);
-				$idReturn = $idIVR;
-				$currentCreated[$value['id']] = $idIVR;
 			}
 		break;
 		case "timeconditions":
@@ -334,10 +390,6 @@ function switchCreate($wType, $value, $connectionArray) {
 			$time = trim($extParts[0]);
 
 			if(!array_key_exists($value['id'], $currentCreated)) {
-				$destinations = getDestination($value, $connectionArray, $currentCreated, $wType);
-
-				//echo "TIME: ".$value['id']."\n";
-				//print_r($currentCreated);
 
 				if(empty($id)) {
 					$idTime = timeconditions_add(array(
@@ -350,7 +402,20 @@ function switchCreate($wType, $value, $connectionArray) {
 						"deptname" => ""
 					));
 					$idReturn = $idTime;
+					$currentCreated[$value['id']] = $idReturn;
+					$destinations = getDestination($value, $connectionArray, $currentCreated, $wType);
+					timeconditions_edit($idReturn, array(
+						"displayname" => $name,
+						"time" => $time,
+						"goto1" => "truegoto",
+						"goto0" => "falsegoto",
+						"truegoto1" => trim($destinations["output_".$value['entities'][3]['id']]),
+						"falsegoto0" => trim($destinations["output_".$value['entities'][2]['id']]),
+						"deptname" => ""
+					));
 				} else {
+					$currentCreated[$value['id']] = $id;
+					$destinations = getDestination($value, $connectionArray, $currentCreated, $wType);
 					timeconditions_edit($id, array(
 						"displayname" => $name,
 						"time" => $time,
@@ -362,7 +427,6 @@ function switchCreate($wType, $value, $connectionArray) {
 					));
 					$idReturn = $id;
 				}
-				$currentCreated[$value['id']] = $idReturn;
 			}
 		break;
 		case "app-daynight":
@@ -405,8 +469,6 @@ function checkDestination($destination, $type, $value, $connectionArray) {
 	}
 
 	if(!array_key_exists($destination, $currentCreated)) {
-		//echo $destination."\n";
-		
 		$result = switchCreate($type, $currentVals, $connectionArray);
 		$currentCreated[$destination] = $result;
 		return $result;

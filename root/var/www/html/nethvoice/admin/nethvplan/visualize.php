@@ -16,14 +16,19 @@ $langArray = json_decode($language, true);
 
 
 // night service - night,810,1
-$get_data = nethnight_list();
-foreach ($get_data as $key => $row) {
-	$data['night'][$row['night_id']] = array(	"name" => $row['displayname'],
-												"id" => $row['night_id'],
-												"dest" => $row['didaction'],
-												"timebegin" => $row['timebegin'],
-												"timeend" => $row['timeend']
-										);
+if(function_exists("nethnight_list")){
+	$get_data = nethnight_list();
+	$night_is_installed = true;
+	foreach ($get_data as $key => $row) {
+		$data['night'][$row['night_id']] = array(	"name" => $row['displayname'],
+													"id" => $row['night_id'],
+													"dest" => $row['didaction'],
+													"timebegin" => $row['timebegin'],
+													"timeend" => $row['timeend']
+											);
+	}
+} else {
+	$night_is_installed = false;
 }
 
 // incoming data
@@ -34,17 +39,21 @@ foreach ($get_data as $key => $row) {
 		$data['incoming'][$row['extension']." / ".$row['cidnum']]['destination'] = $row['destination'];
 		$data['incoming'][$row['extension']." / ".$row['cidnum']]['description'] = $row['description'];
 
-		$night_service = nethnight_get_fromdid($row['extension']."/".$row['cidnum']);
-		if($night_service) {
-			$data['incoming'][$row['extension']." / ".$row['cidnum']]['night'] = $data['night'][$night_service['night_id']];
+		if($night_is_installed) {
+			$night_service = nethnight_get_fromdid($row['extension']."/".$row['cidnum']);
+			if($night_service) {
+				$data['incoming'][$row['extension']." / ".$row['cidnum']]['night'] = $data['night'][$night_service['night_id']];
+			}
 		}
 	} else {
 		$data['incoming'][$row['extension']]['destination'] = $row['destination'];
 		$data['incoming'][$row['extension']]['description'] = $row['description'];
 
-		$night_service = nethnight_get_fromdid($row['extension']."/");
-		if($night_service) {
-			$data['incoming'][$row['extension']]['night'] = $data['night'][$night_service['night_id']];
+		if($night_is_installed) {
+			$night_service = nethnight_get_fromdid($row['extension']."/");
+			if($night_service) {
+				$data['incoming'][$row['extension']]['night'] = $data['night'][$night_service['night_id']];
+			}
 		}
 	}
 }
