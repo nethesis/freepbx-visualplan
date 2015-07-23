@@ -1,9 +1,8 @@
 Base = draw2d.shape.layout.VerticalLayout.extend({
 
-	NAME: "Base",
-	
-    init : function(attr)
-    {
+    NAME: "Base",
+
+    init: function(attr) {
         this.tooltip = null;
 
         this._super($.extend({
@@ -12,10 +11,10 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
         }, attr));
 
         this.classLabel = new draw2d.shape.basic.Label({
-            text:"ClassName",
-            stroke:0,
-            padding:10,
-            resizeable:true,
+            text: "ClassName",
+            stroke: 0,
+            padding: 10,
+            resizeable: true,
             bold: true,
             fontColor: "#ffffff",
             fontSize: 14
@@ -24,27 +23,41 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
         this.add(this.classLabel);
     },
 
-    onMouseEnter: function(){
+    onMouseEnter: function() {
         console.log("enter");
     },
 
-    addEntity: function(txt, type, optionalIndex)
-    {
-        var padding = { left:30, top:5, right:30, bottom:5 };
+    addEntity: function(txt, type, optionalIndex) {
+        var padding = {
+            left: 30,
+            top: 5,
+            right: 30,
+            bottom: 5
+        };
         var bgColor = "#f7f7f7";
 
-        if(type == "input") {
-            padding = { left:10, top:5, right:50, bottom:5 };
+        if (type == "input") {
+            padding = {
+                left: 10,
+                top: 5,
+                right: 50,
+                bottom: 5
+            };
         }
-        if(type == "output") {
-            padding = { left:50, top:5, right:10, bottom:5 };
+        if (type == "output") {
+            padding = {
+                left: 50,
+                top: 5,
+                right: 10,
+                bottom: 5
+            };
         }
 
-        if(type === "list") {
-            if(txt && txt !== "") {
+        if (type === "list") {
+            if (txt && txt !== "") {
                 var membersCheck = txt.match(/-?\d+/g);
                 var members = "";
-                if(membersCheck) {
+                if (membersCheck) {
                     members = txt.match(/-?\d+/g).filter(Number);
                     txt = members.join(",");
                 }
@@ -52,148 +65,158 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                 txt = languages[browserLang]["base_no_elements_string"];
             }
 
-            padding = { left:40, top:5, right:10, bottom:5 };
+            padding = {
+                left: 40,
+                top: 5,
+                right: 10,
+                bottom: 5
+            };
             bgColor = "#ffffff";
-        } 
+        }
 
         // create label
         var label = new draw2d.shape.basic.Label({
-            text:txt,
-            stroke:0,
-            bgColor:bgColor,
-            padding:padding,
-            fontColor:"#4a4a4a",
-            resizeable:true
+            text: txt,
+            stroke: 0,
+            bgColor: bgColor,
+            padding: padding,
+            fontColor: "#4a4a4a",
+            resizeable: true
         });
 
         // create port
-        if(type === "input" || type == "output") {
+        if (type === "input" || type == "output") {
             var port = label.createPort(type);
             port.setWidth(14);
             port.setHeight(14);
-            port.setName(type+"_"+label.id);
-            if(type == "output") {
+            port.setName(type + "_" + label.id);
+            if (type == "output") {
                 port.setMaxFanOut(1);
             }
         }
 
         // add context menu
         this.contextMenu(label, this);
-        
-        if($.isNumeric(optionalIndex)){
-            this.add(label, null, optionalIndex+1);
-        }
-        else{
+
+        if ($.isNumeric(optionalIndex)) {
+            this.add(label, null, optionalIndex + 1);
+        } else {
             this.add(label);
         }
 
         return label;
     },
 
-    contextMenu: function(label, table)
-    {
+    contextMenu: function(label, table) {
         var idType = table.id.split("%")[0];
 
-        switch(idType) {
+        switch (idType) {
             case "incoming":
-                label.on("contextmenu", function(emitter, event){
-                    if(table.children.data.length > 2) {
+                label.on("contextmenu", function(emitter, event) {
+                    if (table.children.data.length > 2) {
                         $.contextMenu({
-                            selector: 'body', 
-                            events:
-                            {  
-                                hide:function(){ $.contextMenu( 'destroy' ); }
+                            selector: 'body',
+                            events: {
+                                hide: function() {
+                                    $.contextMenu('destroy');
+                                }
                             },
-                            callback: $.proxy(function(key, options) 
-                            {
-                                switch(key){
+                            callback: $.proxy(function(key, options) {
+                                switch (key) {
                                     case "delete":
                                         var cmd = new draw2d.command.CommandDelete(table.children.data[2].figure);
                                         emitter.getCanvas().getCommandStack().execute(cmd);
-                                    break;
+                                        break;
                                     default:
-                                    break;
+                                        break;
                                 }
-                            },this),
-                            x: event.x+50,
+                            }, this),
+                            x: event.x + 50,
                             y: event.y,
-                            items: 
-                            {
-                                "delete": { name: languages[browserLang]["base_delete_night_service_string"] }
+                            items: {
+                                "delete": {
+                                    name: languages[browserLang]["base_delete_night_service_string"]
+                                }
                             }
                         });
                     } else {
                         $.contextMenu({
-                            selector: 'body', 
-                            events:
-                            {  
-                                hide:function(){ $.contextMenu( 'destroy' ); }
-                            },
-                            callback: $.proxy(function(key, options) 
-                            {
-                                switch(key){
-                                    case "action":
-                                        setTimeout(function(){
-                                                 table.addEntity(languages[browserLang]["base_night_service_string"], "output", "false");
-                                             },10);
-                                    break;
-                                    default:
-                                    break;
+                            selector: 'body',
+                            events: {
+                                hide: function() {
+                                    $.contextMenu('destroy');
                                 }
-                            },this),
-                            x: event.x+50,
+                            },
+                            callback: $.proxy(function(key, options) {
+                                switch (key) {
+                                    case "action":
+                                        setTimeout(function() {
+                                            table.addEntity(languages[browserLang]["base_night_service_string"], "output", "false");
+                                        }, 10);
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            }, this),
+                            x: event.x + 50,
                             y: event.y,
-                            items: 
-                            {
-                                "action": { name: languages[browserLang]["base_add_night_service_string"] }
+                            items: {
+                                "action": {
+                                    name: languages[browserLang]["base_add_night_service_string"]
+                                }
                             }
                         });
                     }
                 });
-            break;
+                break;
             case "ivr":
                 label.on("contextmenu", function(emitter, event) {
                     $.contextMenu({
-                        selector: 'body', 
-                        events:
-                        {  
-                            hide:function(){ $.contextMenu( 'destroy' ); }
-                        },
-                        callback: $.proxy(function(key, options) 
-                        {
-                            switch(key){
-                                case "add":
-                                    var cNum = table.children.data.length-5;
-                                    setTimeout(function(){
-                                        table.addEntity(cNum, "output", "false");
-                                    },10);
-                                break;
-                                case "delete":
-                                    var cmd = new draw2d.command.CommandDelete(table.children.data[table.children.data.length-1].figure);
-                                    emitter.getCanvas().getCommandStack().execute(cmd);
-                                break;
-                                default:
-                                break;
+                        selector: 'body',
+                        events: {
+                            hide: function() {
+                                $.contextMenu('destroy');
                             }
-                        },this),
-                        position: function(opt, x, y){
+                        },
+                        callback: $.proxy(function(key, options) {
+                            switch (key) {
+                                case "add":
+                                    var cNum = table.children.data.length - 5;
+                                    setTimeout(function() {
+                                        table.addEntity(cNum, "output", "false");
+                                    }, 10);
+                                    break;
+                                case "delete":
+                                    var cmd = new draw2d.command.CommandDelete(table.children.data[table.children.data.length - 1].figure);
+                                    emitter.getCanvas().getCommandStack().execute(cmd);
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }, this),
+                        position: function(opt, x, y) {
                             var scrollTopVal = app.view.getScrollArea().scrollTop();
                             var scrollLeftVal = app.view.getScrollArea().scrollLeft();
-                            opt.$menu.css({ top: event.y/app.view.getZoom()+25-scrollTopVal, left: event.x/app.view.getZoom()+55-scrollLeftVal });
+                            opt.$menu.css({
+                                top: event.y / app.view.getZoom() + 25 - scrollTopVal,
+                                left: event.x / app.view.getZoom() + 55 - scrollLeftVal
+                            });
                         },
-                        items: 
-                        {
-                            "add": { name: languages[browserLang]["base_add_ivr_opt_string"] },
-                            "delete": { name: languages[browserLang]["base_delete_ivr_opt_string"] }
+                        items: {
+                            "add": {
+                                name: languages[browserLang]["base_add_ivr_opt_string"]
+                            },
+                            "delete": {
+                                name: languages[browserLang]["base_delete_ivr_opt_string"]
+                            }
                         }
                     });
                 });
-            break;
+                break;
         }
     },
-    
-    onDrop: function(droppedDomNode, x, y, elements)
-    {
+
+    onDrop: function(droppedDomNode, x, y, elements) {
         this.creationSwitch(elements, droppedDomNode[0].id, $(droppedDomNode[0]).text().trim());
     },
 
@@ -210,349 +233,300 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
 
         switch (type) {
             case "app-blackhole":
-                templateObj.id = type+"%"+id;
+                templateObj.id = type + "%" + id;
                 templateObj.bgColor = "#cf000f";
                 templateObj.radius = 20;
-                templateObj.entities = [
-                    {
-                        text: languages[browserLang]["base_hangup_string"],
-                        id: "hangup_dest%"+id,
-                        type: "input"
-                    }
-                ];
-            break;
+                templateObj.entities = [{
+                    text: languages[browserLang]["base_hangup_string"],
+                    id: "hangup_dest%" + id,
+                    type: "input"
+                }];
+                break;
             case "incoming":
                 var sufx = elem[1].value;
-                if(sufx.slice(-1) !== ".")
-                    sufx = sufx+".";
+                if (sufx.slice(-1) !== ".")
+                    sufx = sufx + ".";
 
-                templateObj.id = type+"%"+elem[0].value+" / "+sufx;
+                templateObj.id = type + "%" + elem[0].value + " / " + sufx;
                 templateObj.bgColor = "#87d37c";
                 templateObj.radius = 20;
-                templateObj.entities = [
-                    {
-                        text: elem[0].value+" / "+sufx+" ( "+elem[2].value +" )",
-                        id: "incoming_route-num%"+id,
-                        type: "output"
-                    }
-                ];
+                templateObj.entities = [{
+                    text: elem[0].value + " / " + sufx + " ( " + elem[2].value + " )",
+                    id: "incoming_route-num%" + id,
+                    type: "output"
+                }];
 
-                if(parseInt(elem[3].value)) {
+                if (parseInt(elem[3].value)) {
                     templateObj.entities.push({
                         text: languages[browserLang]["base_night_service_string"],
-                        id: "night_service%"+id,
+                        id: "night_service%" + id,
                         type: "output"
                     });
                 }
-            break;
+                break;
 
             case "night":
-                templateObj.id = type+"%"+id;
+                templateObj.id = type + "%" + id;
                 templateObj.bgColor = "#34495e";
                 templateObj.radius = 0;
-                templateObj.entities = [
-                    {
-                        text: elem[0].value,
-                        id: "night-service_name%"+id,
-                        type: "input"
-                    }
-                ];
+                templateObj.entities = [{
+                    text: elem[0].value,
+                    id: "night-service_name%" + id,
+                    type: "input"
+                }];
 
-                if(parseInt(elem[1].value)) text = languages[browserLang]["base_active_string"];
-                if(!parseInt(elem[1].value)) text = languages[browserLang]["base_not_active_string"];
-                if(elem[1].value == "period") {
+                if (parseInt(elem[1].value)) text = languages[browserLang]["base_active_string"];
+                if (!parseInt(elem[1].value)) text = languages[browserLang]["base_not_active_string"];
+                if (elem[1].value == "period") {
                     var from = elem[2].children[1].value;
                     var to = elem[2].children[3].value;
-                    text = from +" - "+ to;
+                    text = from + " - " + to;
                 }
                 templateObj.entities.push({
                     text: text,
-                    id: "night-service_state%"+id,
+                    id: "night-service_state%" + id,
                     type: "text"
                 });
 
                 templateObj.entities.push({
                     text: languages[browserLang]["base_destination_string"],
-                    id: "night-service_destination%"+id,
+                    id: "night-service_destination%" + id,
                     type: "output"
                 });
-            break;
+                break;
 
             case "from-did-direct":
-                templateObj.id = type+"%"+elem[0].value;
+                templateObj.id = type + "%" + elem[0].value;
                 templateObj.bgColor = "#27ae60";
                 templateObj.radius = 20;
-                templateObj.entities = [
-                    {
-                        text: elem[1].value + " ( "+elem[0].value+" )",
-                        id: "from-did-direct_dest%"+id,
-                        type: "input"
-                    }
-                ];
-            break;
+                templateObj.entities = [{
+                    text: elem[1].value + " ( " + elem[0].value + " )",
+                    id: "from-did-direct_dest%" + id,
+                    type: "input"
+                }];
+                break;
 
             case "ext-local":
-                templateObj.id = type+"%"+id;
+                templateObj.id = type + "%" + id;
                 templateObj.bgColor = "#16a085";
                 templateObj.radius = 20;
                 var dynId = (elem[0].value.split("(")[1]).split(")")[0].trim();
-                templateObj.entities = [
-                    {
-                        text: elem[0].value +" - "+languages[browserLang]["base_busy_string"],
-                        id: "ext-local%vmb"+dynId,
-                        type: "input"
-                    },
-                    {
-                        text: elem[0].value +" - "+languages[browserLang]["base_nomsg_string"],
-                        id: "ext-local%vms"+dynId,
-                        type: "input"
-                    },
-                    {
-                        text: elem[0].value +" - "+languages[browserLang]["base_unavailable_string"],
-                        id: "ext-local%vmu"+dynId,
-                        type: "input"
-                    }
-                ];
-            break;
+                templateObj.entities = [{
+                    text: elem[0].value + " - " + languages[browserLang]["base_busy_string"],
+                    id: "ext-local%vmb" + dynId,
+                    type: "input"
+                }, {
+                    text: elem[0].value + " - " + languages[browserLang]["base_nomsg_string"],
+                    id: "ext-local%vms" + dynId,
+                    type: "input"
+                }, {
+                    text: elem[0].value + " - " + languages[browserLang]["base_unavailable_string"],
+                    id: "ext-local%vmu" + dynId,
+                    type: "input"
+                }];
+                break;
 
             case "ext-group":
-                templateObj.id = type+"%"+elem[0].value;
+                templateObj.id = type + "%" + elem[0].value;
                 templateObj.bgColor = "#2980b9";
                 templateObj.radius = 0;
-                templateObj.entities = [
-                    {
-                        text: elem[1].value + " ( "+elem[0].value+" )",
-                        id: "groups_name%"+id,
-                        type: "input"
-                    },
-                    {
-                        text: languages[browserLang]["base_ext_list_string"],
-                        id: "groups_listtext%"+id,
-                        type: "text"
-                    },
-                    {
-                        text: elem[2].value,
-                        id: "groups_lists%"+id,
-                        type: "list"
-                    },
-                    {
-                        text: languages[browserLang]["base_fail_dest_string"],
-                        id: "groups_output%"+id,
-                        type: "output"
-                    }
-                ];
-            break;
+                templateObj.entities = [{
+                    text: elem[1].value + " ( " + elem[0].value + " )",
+                    id: "groups_name%" + id,
+                    type: "input"
+                }, {
+                    text: languages[browserLang]["base_ext_list_string"],
+                    id: "groups_listtext%" + id,
+                    type: "text"
+                }, {
+                    text: elem[2].value,
+                    id: "groups_lists%" + id,
+                    type: "list"
+                }, {
+                    text: languages[browserLang]["base_fail_dest_string"],
+                    id: "groups_output%" + id,
+                    type: "output"
+                }];
+                break;
 
             case "ext-queues":
-                templateObj.id = type+"%"+elem[0].value;
+                templateObj.id = type + "%" + elem[0].value;
                 templateObj.bgColor = "#9b59b6";
                 templateObj.radius = 0;
-                templateObj.entities = [
-                    {
-                        text: elem[1].value + " ( "+elem[0].value+" )",
-                        id: "queues_name%"+id,
-                        type: "input"
-                    },
-                    {
-                        text: languages[browserLang]["base_static_memb_string"],
-                        id: "queues_statictext%"+id,
-                        type: "text"
-                    },
-                    {
-                        text: elem[2].value,
-                        id: "queues_staticlist%"+id,
-                        type: "list"
-                    },
-                    {
-                        text: languages[browserLang]["base_dyn_memb_string"],
-                        id: "queues_dynamictext%"+id,
-                        type: "text"
-                    },
-                    {
-                        text: elem[3].value,
-                        id: "queues_dynamiclist%"+id,
-                        type: "list"
-                    },
-                    {
-                        text: languages[browserLang]["base_fail_dest_string"],
-                        id: "queues_output%"+id,
-                        type: "output"
-                    }
-                ];
-            break;
+                templateObj.entities = [{
+                    text: elem[1].value + " ( " + elem[0].value + " )",
+                    id: "queues_name%" + id,
+                    type: "input"
+                }, {
+                    text: languages[browserLang]["base_static_memb_string"],
+                    id: "queues_statictext%" + id,
+                    type: "text"
+                }, {
+                    text: elem[2].value,
+                    id: "queues_staticlist%" + id,
+                    type: "list"
+                }, {
+                    text: languages[browserLang]["base_dyn_memb_string"],
+                    id: "queues_dynamictext%" + id,
+                    type: "text"
+                }, {
+                    text: elem[3].value,
+                    id: "queues_dynamiclist%" + id,
+                    type: "list"
+                }, {
+                    text: languages[browserLang]["base_fail_dest_string"],
+                    id: "queues_output%" + id,
+                    type: "output"
+                }];
+                break;
 
             case "ivr":
-                templateObj.id = type+"%"+id;
+                templateObj.id = type + "%" + id;
                 templateObj.bgColor = "#7f8c8d";
                 templateObj.radius = 0;
-                templateObj.entities = [
-                    {
-                        text: elem[0].value + " ( "+elem[1].value+" )",
-                        id: "ivr_name%"+id,
-                        type: "input"
-                    },
-                    {
-                        text: languages[browserLang]["base_app_announcement_string"]+": "+elem[2].value,
-                        id: "ivr_announc%"+id,
-                        type: "text"
-                    },
-                    {
-                        text: languages[browserLang]["base_inv_dest_string"],
-                        id: "ivr_invalid-dest%"+id,
-                        type: "output"
-                    },
-                    {
-                        text: languages[browserLang]["base_time_dest_string"],
-                        id: "ivr_timeout-dest%"+id,
-                        type: "output"
-                    }
-                ];
-            break;
+                templateObj.entities = [{
+                    text: elem[0].value + " ( " + elem[1].value + " )",
+                    id: "ivr_name%" + id,
+                    type: "input"
+                }, {
+                    text: languages[browserLang]["base_app_announcement_string"] + ": " + elem[2].value,
+                    id: "ivr_announc%" + id,
+                    type: "text"
+                }, {
+                    text: languages[browserLang]["base_inv_dest_string"],
+                    id: "ivr_invalid-dest%" + id,
+                    type: "output"
+                }, {
+                    text: languages[browserLang]["base_time_dest_string"],
+                    id: "ivr_timeout-dest%" + id,
+                    type: "output"
+                }];
+                break;
 
             case "app-announcement":
-                templateObj.id = type+"%"+id;
+                templateObj.id = type + "%" + id;
                 templateObj.bgColor = "#f4b350";
                 templateObj.radius = 0;
-                templateObj.entities = [
-                    {
-                        text: elem[0].value,
-                        id: "announcement_name%"+id,
-                        type: "input"
-                    },
-                    {
-                        text: elem[1].value,
-                        id: "announcement_record%"+id,
-                        type: "text"
-                    },
-                    {
-                        text: languages[browserLang]["base_destination_string"],
-                        id: "announcement_output%"+id,
-                        type: "output"
-                    }
-                ];
-            break;
+                templateObj.entities = [{
+                    text: elem[0].value,
+                    id: "announcement_name%" + id,
+                    type: "input"
+                }, {
+                    text: elem[1].value,
+                    id: "announcement_record%" + id,
+                    type: "text"
+                }, {
+                    text: languages[browserLang]["base_destination_string"],
+                    id: "announcement_output%" + id,
+                    type: "output"
+                }];
+                break;
 
             case "timeconditions":
-                templateObj.id = type+"%"+id;
+                templateObj.id = type + "%" + id;
                 templateObj.bgColor = "#D35400";
                 templateObj.radius = 0;
-                templateObj.entities = [
-                    {
-                        text: elem[0].value,
-                        id: "timeconditions_name%"+id,
-                        type: "input"
-                    },
-                    {
-                        text: elem[1].value,
-                        id: "timeconditions_record%"+id,
-                        type: "text"
-                    },
-                    {
-                        text: languages[browserLang]["base_true_dest_string"],
-                        id: "timeconditions_truegoto%"+id,
-                        type: "output"
-                    },
-                    {
-                        text: languages[browserLang]["base_false_dest_string"],
-                        id: "timeconditions_falsegoto%"+id,
-                        type: "output"
-                    }
-                ];
-            break;
+                templateObj.entities = [{
+                    text: elem[0].value,
+                    id: "timeconditions_name%" + id,
+                    type: "input"
+                }, {
+                    text: elem[1].value,
+                    id: "timeconditions_record%" + id,
+                    type: "text"
+                }, {
+                    text: languages[browserLang]["base_true_dest_string"],
+                    id: "timeconditions_truegoto%" + id,
+                    type: "output"
+                }, {
+                    text: languages[browserLang]["base_false_dest_string"],
+                    id: "timeconditions_falsegoto%" + id,
+                    type: "output"
+                }];
+                break;
 
             case "app-daynight":
-                templateObj.id = type+"%"+elem[1].value;
+                templateObj.id = type + "%" + elem[1].value;
                 templateObj.bgColor = "#2c3e50";
                 templateObj.radius = 0;
-                templateObj.entities = [
-                    {
-                        text: elem[0].value +" ( *28"+elem[1].value+" )",
-                        id: "app-daynight_name%"+id,
-                        type: "input"
-                    },
-                    {
-                        text: languages[browserLang]["base_normal_flow_string"],
-                        id: "app-daynight_truegoto%"+id,
-                        type: "output"
-                    },
-                    {
-                        text: languages[browserLang]["base_alternative_flow_string"],
-                        id: "app-daynight_falsegoto%"+id,
-                        type: "output"
-                    }
-                ];
-            break;
+                templateObj.entities = [{
+                    text: elem[0].value + " ( *28" + elem[1].value + " )",
+                    id: "app-daynight_name%" + id,
+                    type: "input"
+                }, {
+                    text: languages[browserLang]["base_normal_flow_string"],
+                    id: "app-daynight_truegoto%" + id,
+                    type: "output"
+                }, {
+                    text: languages[browserLang]["base_alternative_flow_string"],
+                    id: "app-daynight_falsegoto%" + id,
+                    type: "output"
+                }];
+                break;
 
             case "ext-meetme":
-                templateObj.id = type+"%"+elem[0].value;
+                templateObj.id = type + "%" + elem[0].value;
                 templateObj.bgColor = "#65c6bb";
                 templateObj.radius = 20;
-                templateObj.entities = [
-                    {
-                        text: elem[1].value + " ( "+elem[0].value+" )",
-                        id: "ext-meetme_dest%"+id,
-                        type: "input"
-                    }
-                ];
-            break;
+                templateObj.entities = [{
+                    text: elem[1].value + " ( " + elem[0].value + " )",
+                    id: "ext-meetme_dest%" + id,
+                    type: "input"
+                }];
+                break;
         }
         this.setPersistentAttributes(templateObj);
     },
 
-    removeEntity: function(index)
-    {
-        this.remove(this.children.get(index+1).figure);
+    removeEntity: function(index) {
+        this.remove(this.children.get(index + 1).figure);
     },
 
-    getEntity: function(index)
-    {
-        return this.children.get(index+1).figure;
+    getEntity: function(index) {
+        return this.children.get(index + 1).figure;
     },
 
-    setName: function(name)
-    {
+    setName: function(name) {
         this.classLabel.setText(name);
 
         return this;
     },
 
-    getPersistentAttributes : function()
-    {
+    getPersistentAttributes: function() {
         var memento = this._super();
 
         memento.name = this.classLabel.getText();
-        memento.entities   = [];
-        this.children.each(function(i,e){
+        memento.entities = [];
+        this.children.each(function(i, e) {
 
-            if(i>0){
-                    memento.entities.push({
-                    text:e.figure.getText(),
+            if (i > 0) {
+                memento.entities.push({
+                    text: e.figure.getText(),
                     id: e.figure.id
-                    });
-                }
+                });
+            }
         });
 
         return memento;
     },
 
-    setPersistentAttributes : function(memento)
-    {
+    setPersistentAttributes: function(memento) {
         this._super(memento);
 
         this.setName(memento.name);
 
-        if(typeof memento.entities !== "undefined"){
-            $.each(memento.entities, $.proxy(function(i,e){
+        if (typeof memento.entities !== "undefined") {
+            $.each(memento.entities, $.proxy(function(i, e) {
                 var entity = this.addEntity(e.text, e.type);
                 entity.id = e.id;
 
-                if(e.type == "output")
-                    entity.getOutputPort(0).setName("output_"+e.id);
+                if (e.type == "output")
+                    entity.getOutputPort(0).setName("output_" + e.id);
 
-                if(e.type == "input")
-                    entity.getInputPort(0).setName("input_"+e.id);
+                if (e.type == "input")
+                    entity.getInputPort(0).setName("input_" + e.id);
 
-            },this));
+            }, this));
         }
 
         return this;
@@ -562,11 +536,11 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
 MyConnection = draw2d.Connection.extend({
     NAME: "MyConnection",
 
-    init: function (attr) {
+    init: function(attr) {
         this._super(attr);
     },
 
-    getPersistentAttributes: function () {
+    getPersistentAttributes: function() {
         var memento = this._super();
 
         if (this.sourceDecorator !== null) {
@@ -580,12 +554,12 @@ MyConnection = draw2d.Connection.extend({
         return memento;
     },
 
-    setPersistentAttributes: function (memento) {
+    setPersistentAttributes: function(memento) {
         this._super(memento);
 
         if (typeof memento.target.decoration !== "undefined" && memento.target.decoration != null) {
             this.setTargetDecorator(eval("new " + memento.target.decoration));
-            this.targetDecorator.setDimension(10,10);
+            this.targetDecorator.setDimension(10, 10);
             this.targetDecorator.setBackgroundColor("#4caf50");
         }
     }

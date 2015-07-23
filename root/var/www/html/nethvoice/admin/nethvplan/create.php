@@ -22,6 +22,7 @@ $connectionArray = array_filter(
 );
 
 $currentCreated = array();
+$currentVisited = array();
 $returnedIdArray = array();
 
 extraction($widgetArray, $connectionArray);
@@ -335,6 +336,9 @@ function switchCreate($wType, $value, $connectionArray) {
 			if(!array_key_exists($value['id'], $currentCreated)) {
 				$destinations = getDestination($value, $connectionArray, $currentCreated, $wType);
 
+				//echo "TIME: ".$value['id']."\n";
+				//print_r($currentCreated);
+
 				if(empty($id)) {
 					$idTime = timeconditions_add(array(
 						"displayname" => $name,
@@ -391,6 +395,7 @@ function switchCreate($wType, $value, $connectionArray) {
 function checkDestination($destination, $type, $value, $connectionArray) {
 	global $widgetArray;
 	global $currentCreated;
+	global $currentVisited;
 	$currentVals = array();
 
 	foreach ($widgetArray as $k => $v) {
@@ -398,7 +403,10 @@ function checkDestination($destination, $type, $value, $connectionArray) {
 			$currentVals = $widgetArray[$k];
 		}
 	}
+
 	if(!array_key_exists($destination, $currentCreated)) {
+		//echo $destination."\n";
+		
 		$result = switchCreate($type, $currentVals, $connectionArray);
 		$currentCreated[$destination] = $result;
 		return $result;
@@ -427,7 +435,7 @@ function getDestination($values, $connectionArray) {
 					$destAsterisk[$value['source']['port']] = trim($parts[0]).",".trim($parts[1]).",1";
 				break;
 				case "night":
-					$destAsterisk[$value['source']['port']] = trim($parts[1]);//$parts[0].",8".$parts[1]."0,1";
+					$destAsterisk[$value['source']['port']] = trim($parts[1]);
 				break;
 				case "ext-local":
 					$d = $value['target']['port'];
