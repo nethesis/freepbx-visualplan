@@ -119,7 +119,8 @@ foreach ($get_data as $key => $row) {
 	$data['app-announcement'][$row['announcement_id']] = array(	"description" => $row['description'],
 															"id" => $row['announcement_id'],
 															"postdest" => $row['post_dest'],
-															"rec_name" => $rec_details['displayname']
+															"rec_name" => $rec_details['displayname'],
+															"rec_id" => $row['recording_id']
 														  );
 }
 $recordings = recordings_list();
@@ -525,7 +526,7 @@ function bindData($data, $dest, $id) {
 				"type"=> "input"
 			);
 			$widget['entities'][] = array(
-				"text"=> $data[$dest][$id]['rec_name']." ( ".$data[$dest][$id]['id']." )",
+				"text"=> $langArray["view_recording_string"].": ".$data[$dest][$id]['rec_name']." ( ".$data[$dest][$id]['rec_id']." )",
 				"id"=> $dest."%".$id,
 				"type"=> "text"
 			);
@@ -578,7 +579,7 @@ function bindData($data, $dest, $id) {
 				"type" => "input"
 			);
 			$widget['entities'][] = array(
-				"text"=> $data['timegroups'][$data[$dest][$id]['time']]['description'],
+				"text"=> $langArray["view_timegroup_string"].": ".$data['timegroups'][$data[$dest][$id]['time']]['description']." ( ".$data['timegroups'][$data[$dest][$id]['time']]['id']." )",
 				"id"=> $dest."%".$id,
 				"type" => "text"
 			);
@@ -610,7 +611,7 @@ function bindData($data, $dest, $id) {
 				"type"=> "input"
 			);
 			$widget['entities'][] = array(
-				"text"=> $langArray["base_app_announcement_string"].": ".$data['recordings'][$data[$dest][$id]['announcement']]['name'],
+				"text"=> $langArray["base_app_announcement_string"].": ".$data['recordings'][$data[$dest][$id]['announcement']]['name']." ( ".$data[$dest][$id]['announcement']." )",
 				"id"=> "announcement-".$dest."%".$id,
 				"type"=> "text"
 			);
@@ -666,7 +667,7 @@ function bindData($data, $dest, $id) {
 				"type"=> "text"
 			);
 			$widget['entities'][] = array(
-				"text"=> implode(",", $data[$dest][$id]['dynmembers']),
+				"text"=> $data[$dest][$id]['dynmembers'],
 				"id"=> $dest."%".$id."dlist",
 				"type"=> "list"
 			);
@@ -698,7 +699,7 @@ function bindData($data, $dest, $id) {
 				"type"=> "text"
 			);
 			$widget['entities'][] = array(
-				"text"=> implode(",", $data[$dest][$id]['grplist']),
+				"text"=> $data[$dest][$id]['grplist'],
 				"id"=> $dest."%".$id,
 				"type"=> "list"
 			);

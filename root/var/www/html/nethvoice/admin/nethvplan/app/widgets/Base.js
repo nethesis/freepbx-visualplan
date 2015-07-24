@@ -58,8 +58,8 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                 var membersCheck = txt.match(/-?\d+/g);
                 var members = "";
                 if (membersCheck) {
-                    members = txt.match(/-?\d+/g).filter(Number);
-                    txt = members.join(",");
+                    members = txt.replace(/-/g, " ").match(/-?\d+/g).filter(Number);
+                    txt = members.join("\n");
                 }
             } else {
                 txt = languages[browserLang]["base_no_elements_string"];
@@ -187,8 +187,11 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                                     }, 10);
                                     break;
                                 case "delete":
-                                    var cmd = new draw2d.command.CommandDelete(table.children.data[table.children.data.length - 1].figure);
-                                    emitter.getCanvas().getCommandStack().execute(cmd);
+                                    if (table.children.data.length > 5) {
+                                        var cmd = new draw2d.command.CommandDelete(table.children.data[table.children.data.length - 1].figure);
+                                        emitter.getCanvas().getCommandStack().execute(cmd);
+                                    }
+
                                     break;
                                 default:
                                     break;
@@ -407,12 +410,13 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                 templateObj.id = type + "%" + id;
                 templateObj.bgColor = "#f4b350";
                 templateObj.radius = 0;
+                console.log(elem[1].value);
                 templateObj.entities = [{
                     text: elem[0].value,
                     id: "announcement_name%" + id,
                     type: "input"
                 }, {
-                    text: elem[1].value,
+                    text: languages[browserLang]["view_recording_string"] + ": " + elem[1].value,
                     id: "announcement_record%" + id,
                     type: "text"
                 }, {
@@ -431,7 +435,7 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                     id: "timeconditions_name%" + id,
                     type: "input"
                 }, {
-                    text: elem[1].value,
+                    text: languages[browserLang]["view_timegroup_string"] + ": " + elem[1].value,
                     id: "timeconditions_record%" + id,
                     type: "text"
                 }, {

@@ -36,6 +36,7 @@ languages.en = {
     "view_add_new_string": "Add New",
     "view_select_exis_string": "Select Existing",
     "view_creation_string": "- Creation",
+    "view_modification_string": "- Modification",
     "view_error_inserted_string": "Error: The inserted value is used",
     "view_number_string": "Number",
     "view_description_string": "Description",

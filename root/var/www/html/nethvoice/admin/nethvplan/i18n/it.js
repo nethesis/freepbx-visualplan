@@ -36,6 +36,7 @@ languages.it = {
     "view_add_new_string": "Aggiungi Nuovo",
     "view_select_exis_string": "Seleziona Esistente",
     "view_creation_string": "- Creazione",
+    "view_modification_string": "- Modifica",
     "view_error_inserted_string": "Errore: Il valore inserito è già in uso",
     "view_number_string": "Numero",
     "view_description_string": "Descrizione",

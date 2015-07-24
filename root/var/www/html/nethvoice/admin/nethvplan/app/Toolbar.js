@@ -110,6 +110,41 @@ example.Toolbar = Class.extend({
         this.delimiter = $("<span class='toolbar_delimiter'>&nbsp;&nbsp;&nbsp;</span>");
         this.html.append(this.delimiter);
 
+        // Inject the MODIFY Button
+        //
+        this.modifyButton = $("<button class='gray'><i class='fa fa-pencil fa-lg'></i></button>");
+        this.html.append(this.modifyButton);
+        this.modifyButton.click($.proxy(function() {
+            var node = this.view.getCurrentSelection();
+            try {
+                var idExt = node.children.data[1].figure.text.split('-')[1].trim();
+            } catch (e) {
+                var idExt = "";
+            }
+            var typeObj = node.id.split('%')[0].trim();
+            var nodeObj = {
+                id: typeObj,
+                idObj: idExt,
+                title: node.children.data[0].figure.text,
+                color: node.bgColor.hashString,
+                data: node.children.data,
+                x: node.x,
+                y: node.y,
+                width: node.width,
+                height: node.height,
+                context: node.canvas,
+                shape: node.cssClass
+            };
+            if (typeObj !== 'ext-local' && typeObj !== 'app-blackhole') {
+                this.createDialog(nodeObj);
+            }
+            // var command = new draw2d.command.CommandDelete(node);
+            // this.view.getCommandStack().execute(command);
+        }, this));
+
+        this.delimiter = $("<span class='toolbar_delimiter'>&nbsp;</span>");
+        this.html.append(this.delimiter);
+
         // Inject the DELETE Button
         //
         this.deleteButton = $("<button class='gray'><i class='fa fa-close fa-lg'></i></button>");
@@ -172,6 +207,7 @@ example.Toolbar = Class.extend({
                         $('#emptier').fadeOut("slow");
                     }, 5000);
                 } else {
+                    console.log(json);
                     $.ajax({
                         url: "/nethvoice/admin/nethvplan/create.php?",
                         type: "POST",
@@ -274,5 +310,41 @@ example.Toolbar = Class.extend({
         } else {
             button.removeClass("disabled");
         }
+    },
+
+    createDialog: function(event) {
+        var dialog = $('<div id="modalCreation"></div>')
+            .dialog({
+                position: 'center',
+                autoOpen: false,
+                resizable: false,
+                width: 500,
+                modal: true,
+                close: function(ev, ui) {
+                    $(this).dialog('destroy').remove();
+                },
+                buttons: {
+                    Cancel: function() {
+                        $(this).dialog('destroy').remove();
+                    },
+                    Save: function() {
+                        var usableElem = event.context.getElemByAttr("usable");
+
+                        // check existing data
+                        var result = event.context.checkData(usableElem, event.id, event);
+                    }
+                },
+                title: event.title + " " + languages[browserLang]["view_modification_string"]
+            });
+        $(".ui-dialog-titlebar").css("background", event.color);
+
+        // inject html
+        dialog.html(event.context.modalCreate(event, true));
+
+        // show dialog
+        dialog.dialog("open");
+        $('.ui-widget-overlay').bind('click', function() {
+            dialog.dialog('destroy').remove();
+        });
     }
 });

@@ -86,9 +86,9 @@ function switchCreate($wType, $value, $connectionArray) {
 			$name = trim($value['entities'][0]['text']);
 			$state = trim($value['entities'][1]['text']);
 
-			if (strcasecmp($state, "active") == 0) {
+			if (strcasecmp($state, "active") == 0 || strcasecmp($state, "attivo") == 0) {
 				$date = "attivo";
-			} else if (strcasecmp($state, "not active") == 0) {
+			} else if (strcasecmp($state, "not active") == 0 || strcasecmp($state, "non attivo") == 0) {
 				$date = "inattivo";
 			} else {
 				$dateparts = explode("-", $state);
@@ -390,7 +390,6 @@ function switchCreate($wType, $value, $connectionArray) {
 			$time = trim($extParts[0]);
 
 			if(!array_key_exists($value['id'], $currentCreated)) {
-
 				if(empty($id)) {
 					$idTime = timeconditions_add(array(
 						"displayname" => $name,

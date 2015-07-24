@@ -317,6 +317,8 @@ example.View = draw2d.Canvas.extend({
                 var typeFig = $(event.dropped).data("shape");
                 var figure = eval("new " + typeFig + "();");
 
+                console.log(elem, event)
+
                 figure.onDrop(event.dropped, event.x, event.y, elem);
 
                 var command = new draw2d.command.CommandAdd(event.context, figure, event.x - figure.width - 75, event.y - 25);
@@ -327,32 +329,130 @@ example.View = draw2d.Canvas.extend({
         });
     },
 
-    modalCreate: function(elem) {
+    extracInfo: function(data, type) {
+        console.log(data);
+        switch (type) {
+            case "incoming":
+                var v1 = data[1].figure.text.split('/')[0].trim();
+                var v2 = data[1].figure.text.split('/')[1].split('(')[0].trim();
+                var v3 = data[1].figure.text.split('(')[1].split(')')[0].trim();
+                try {
+                    if (data[2].figure.text.length > 2) {
+                        var v4 = "selected";
+                        var v5 = "";
+                    } else {
+                        var v5 = "selected";
+                        var v4 = "";
+                    }
+                } catch (e) {
+                    var v5 = "selected";
+                    var v4 = "";
+                }
+                return [v1, v2, v3, v4, v5];
+                break;
+            case "night":
+                var v1 = data[1].figure.text.trim();
+                var nightType = data[2].figure.text.trim();
+                if (nightType === 'Active' || nightType === 'Attivo') {
+                    var v2 = "selected";
+                    var v3 = "";
+                    var v4 = "";
+                    var v5 = "";
+                    var v6 = "";
+                } else if (nightType === 'Not Active' || nightType === 'Non Attivo') {
+                    var v2 = "";
+                    var v3 = "selected";
+                    var v4 = "";
+                    var v5 = "";
+                    var v6 = "";
+                } else {
+                    var v2 = "";
+                    var v3 = "";
+                    var v4 = "selected";
+                    var v5 = data[2].figure.text.split('-')[0].trim();
+                    var v6 = data[2].figure.text.split('-')[1].trim();
+                }
+                return [v1, v2, v3, v4, v5, v6];
+                break;
+            case "from-did-direct":
+                var v1 = data[1].figure.text.split('(')[1].split(')')[0].trim();
+                var v2 = data[1].figure.text.split('(')[0].trim();
+                return [v1, v2];
+                break;
+            case "ext-group":
+                var v1 = data[1].figure.text.split('(')[1].split(')')[0].trim();
+                var v2 = data[1].figure.text.split('(')[0].trim();
+                var v3 = data[3].figure.text;
+                return [v1, v2, v3];
+                break;
+            case "ext-queues":
+                var v1 = data[1].figure.text.split('(')[1].split(')')[0].trim();
+                var v2 = data[1].figure.text.split('(')[0].trim();
+                var v3 = data[3].figure.text;
+                var v4 = data[5].figure.text;
+                return [v1, v2, v3, v4];
+                break;
+            case "ivr":
+                var v1 = data[1].figure.text.split('(')[0].trim();
+                var v2 = data[1].figure.text.split('(')[1].split(')')[0].trim();
+                var v3 = data[2].figure.text.split(':')[1].split('(')[0].trim();
+                return [v1, v2, v3];
+                break;
+            case "app-announcement":
+                var v1 = data[1].figure.text.split('-')[0].trim();
+                var v2 = data[2].figure.text.split(':')[1].split('(')[0].trim();
+                return [v1, v2];
+                break;
+            case "timeconditions":
+                var v1 = data[1].figure.text.split('-')[0].trim();
+                var v2 = data[2].figure.text.split(':')[1].split('(')[0].trim();
+                return [v1, v2];
+                break;
+            case "app-daynight":
+                var v1 = data[1].figure.text.split('(')[0].trim();
+                var v2 = data[1].figure.text.split('*')[1].split(')')[0].trim().slice(-1);
+                return [v1, v2];
+                break;
+            case "ext-meetme":
+                var v1 = data[1].figure.text.split('(')[1].split(')')[0].trim();
+                var v2 = data[1].figure.text.split('(')[0].trim();
+                return [v1, v2];
+                break;
+        }
+    },
+
+    modalCreate: function(elem, mod) {
         var html = "";
+        values = ["", "", "", "", "", "", "", "", ""];
+        if (mod) {
+            values = this.extracInfo(elem.data || {}, elem.id);
+            console.log(values);
+        }
+
         switch (elem.id) {
             case "incoming":
                 html += '<label class="label-creation">' + languages[browserLang]["view_number_string"] + ': </label>';
-                html += '<input usable id="' + elem.id + '-number" class="input-creation-mini"></input>';
+                html += '<input autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="input-creation-mini"></input>';
                 html += ' / ';
-                html += '<input usable id="' + elem.id + '-cidnum" class="input-creation-mini"></input>';
+                html += '<input value="' + values[1] + '" usable id="' + elem.id + '-cidnum" class="input-creation-mini"></input>';
                 html += '<label class="label-creation">' + languages[browserLang]["view_description_string"] + ': </label>';
-                html += '<input usable id="' + elem.id + '-description" class="input-creation"></input>';
+                html += '<input value="' + values[2] + '" usable id="' + elem.id + '-description" class="input-creation"></input>';
                 html += '<label class="label-creation">' + languages[browserLang]["base_night_service_string"] + ': </label>';
-                html += '<select usable id="' + elem.id + '-nightService" class="input-creation"><option value="1">' + languages[browserLang]["base_active_string"] + '</option><option value="0">' + languages[browserLang]["base_not_active_string"] + '</option></select>';
+                html += '<select usable id="' + elem.id + '-nightService" class="input-creation"><option ' + values[3] + ' value="1">' + languages[browserLang]["base_active_string"] + '</option><option ' + values[4] + ' value="0">' + languages[browserLang]["base_not_active_string"] + '</option></select>';
                 break;
             case "night":
                 html += '<label class="label-creation">' + languages[browserLang]["view_name_string"] + ': </label>';
-                html += '<input usable id="' + elem.id + '-name" class="input-creation"></input>';
+                html += '<input autofocus value="' + values[0] + '" usable id="' + elem.id + '-name" class="input-creation"></input>';
                 html += '<label class="label-creation">' + languages[browserLang]["view_manual_act_string"] + ': </label>';
-                html += '<select usable onchange="if(this.selectedIndex==2)$(\'#calGroup\').show();else $(\'#calGroup\').hide();" id="' + elem.id + '-activation" class="input-creation"><option value="1">' + languages[browserLang]["base_active_string"] + '</option><option value="0">' + languages[browserLang]["base_not_active_string"] + '</option><option value="period">' + languages[browserLang]["base_period_string"] + '</option></select>';
-                html += '<div usable id="calGroup" style="display:none;"><label class="label-creation">' + languages[browserLang]["base_period_from_string"] + ': </label><input placeholder="dd/mm/yyyy" usable id="' + elem.id + '-fromperiod" class="input-creation"></input><label class="label-creation">' + languages[browserLang]["base_period_to_string"] + ': </label><input placeholder="dd/mm/yyyy" usable id="' + elem.id + '-toperiod" class="input-creation"></input></div>';
+                html += '<select id="selectNightType" usable onchange="if(this.selectedIndex==2)$(\'#calGroup\').show();else $(\'#calGroup\').hide();" id="' + elem.id + '-activation" class="input-creation"><option ' + values[1] + ' value="1">' + languages[browserLang]["base_active_string"] + '</option><option ' + values[2] + ' value="0">' + languages[browserLang]["base_not_active_string"] + '</option><option ' + values[3] + ' value="period">' + languages[browserLang]["base_period_string"] + '</option></select>';
+                html += '<script>if($("#selectNightType").val() === "period")$("#calGroup").show();</script><div usable id="calGroup" style="display:none;"><label class="label-creation">' + languages[browserLang]["base_period_from_string"] + ': </label><input value="' + values[4] + '" placeholder="dd/mm/yyyy" usable id="' + elem.id + '-fromperiod" class="input-creation"></input><label class="label-creation">' + languages[browserLang]["base_period_to_string"] + ': </label><input value="' + values[5] + '" placeholder="dd/mm/yyyy" usable id="' + elem.id + '-toperiod" class="input-creation"></input></div>';
                 break;
 
             case "from-did-direct":
                 html += '<label class="label-creation">' + languages[browserLang]["view_number_string"] + ': </label>';
-                html += '<input usable id="' + elem.id + '-number" class="input-creation"></input>';
+                html += '<input autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="input-creation"></input>';
                 html += '<label class="label-creation">' + languages[browserLang]["view_name_string"] + ': </label>';
-                html += '<input usable id="' + elem.id + '-name" class="input-creation"></input>';
+                html += '<input usable value="' + values[1] + '" id="' + elem.id + '-name" class="input-creation"></input>';
                 break;
 
             case "ext-local":
@@ -379,22 +479,22 @@ example.View = draw2d.Canvas.extend({
 
             case "ext-group":
                 html += '<label class="label-creation">' + languages[browserLang]["view_number_string"] + ': </label>';
-                html += '<input usable id="' + elem.id + '-number" class="input-creation"></input>';
+                html += '<input autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="input-creation"></input>';
                 html += '<label class="label-creation">' + languages[browserLang]["view_description_string"] + ': </label>';
-                html += '<input usable id="' + elem.id + '-description" class="input-creation"></input>';
+                html += '<input usable value="' + values[1] + '" id="' + elem.id + '-description" class="input-creation"></input>';
                 html += '<label class="label-creation">' + languages[browserLang]["base_ext_list_string"] + ': </label>';
-                html += '<textarea usable id="' + elem.id + '-extensionList" class="input-creation"></textarea>';
+                html += '<textarea usable id="' + elem.id + '-extensionList" class="input-creation">' + values[2] + '</textarea>';
                 break;
 
             case "ext-queues":
                 html += '<label class="label-creation">' + languages[browserLang]["view_number_string"] + ': </label>';
-                html += '<input usable id="' + elem.id + '-number" class="input-creation"></input>';
+                html += '<input autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="input-creation"></input>';
                 html += '<label class="label-creation">' + languages[browserLang]["view_name_string"] + ': </label>';
-                html += '<input usable id="' + elem.id + '-name" class="input-creation"></input>';
+                html += '<input usable value="' + values[1] + '" id="' + elem.id + '-name" class="input-creation"></input>';
                 html += '<label class="label-creation">' + languages[browserLang]["base_static_memb_string"] + ': </label>';
-                html += '<textarea usable id="' + elem.id + '-staticMem" class="input-creation"></textarea>';
+                html += '<textarea usable id="' + elem.id + '-staticMem" class="input-creation">' + values[2] + '</textarea>';
                 html += '<label class="label-creation">' + languages[browserLang]["base_dyn_memb_string"] + ': </label>';
-                html += '<textarea usable id="' + elem.id + '-dynamicMem" class="input-creation"></textarea>';
+                html += '<textarea usable id="' + elem.id + '-dynamicMem" class="input-creation">' + values[3] + '</textarea>';
                 break;
 
             case "ivr":
@@ -408,13 +508,19 @@ example.View = draw2d.Canvas.extend({
                     $('#loader').hide();
                     var data = JSON.parse(c);
                     var htmlSelect = "";
+                    var selectedOption = "";
                     for (e in data) {
-                        htmlSelect += '<option value="' + data[e].name + ' ( ' + e + ' )">' + data[e].name + '</option>';
+                        if (data[e].name === values[2]) {
+                            selectedOption = "selected";
+                        } else {
+                            selectedOption = "";
+                        }
+                        htmlSelect += '<option ' + selectedOption + ' value="' + data[e].name + ' ( ' + e + ' )">' + data[e].name + '</option>';
                     }
                     html += '<label class="label-creation">' + languages[browserLang]["view_name_string"] + ': </label>';
-                    html += '<input usable id="' + elem.id + '-name" class="input-creation"></input>';
+                    html += '<input autofocus value="' + values[0] + '" usable id="' + elem.id + '-name" class="input-creation"></input>';
                     html += '<label class="label-creation">' + languages[browserLang]["view_description_string"] + ': </label>';
-                    html += '<input usable id="' + elem.id + '-description" class="input-creation"></input>';
+                    html += '<input usable value="' + values[1] + '" id="' + elem.id + '-description" class="input-creation"></input>';
                     html += '<label class="label-creation">' + languages[browserLang]["view_recording_string"] + ': </label>';
                     html += '<select usable id="' + elem.id + '-recording" class="input-creation">' + htmlSelect + '</select>';
 
@@ -433,11 +539,17 @@ example.View = draw2d.Canvas.extend({
                     $('#loader').hide();
                     var data = JSON.parse(c);
                     var htmlSelect = "";
+                    var selectedOption = "";
                     for (e in data) {
-                        htmlSelect += '<option value="' + data[e].name + ' ( ' + e + ' )">' + data[e].name + '</option>';
+                        if (data[e].name === values[1]) {
+                            selectedOption = "selected";
+                        } else {
+                            selectedOption = "";
+                        }
+                        htmlSelect += '<option ' + selectedOption + ' value="' + data[e].name + ' ( ' + e + ' )">' + data[e].name + '</option>';
                     }
                     html += '<label class="label-creation">' + languages[browserLang]["view_name_string"] + ': </label>';
-                    html += '<input usable id="' + elem.id + '-name" class="input-creation"></input>';
+                    html += '<input autofocus value="' + values[0] + '" usable id="' + elem.id + '-name" class="input-creation"></input>';
                     html += '<label class="label-creation">' + languages[browserLang]["view_recording_string"] + ': </label>';
                     html += '<select usable id="' + elem.id + '-recording" class="input-creation">' + htmlSelect + '</select>';
 
@@ -457,11 +569,17 @@ example.View = draw2d.Canvas.extend({
                     $('#loader').hide();
                     var data = JSON.parse(c);
                     var htmlSelect = "";
+                    var selectedOption = "";
                     for (e in data) {
-                        htmlSelect += '<option value="' + data[e].description + ' ( ' + e + ' )">' + data[e].description + '</option>';
+                        if (data[e].description === values[1]) {
+                            selectedOption = "selected";
+                        } else {
+                            selectedOption = "";
+                        }
+                        htmlSelect += '<option ' + selectedOption + ' value="' + data[e].description + ' ( ' + e + ' )">' + data[e].description + '</option>';
                     }
                     html += '<label class="label-creation">' + languages[browserLang]["view_name_string"] + ': </label>';
-                    html += '<input usable id="' + elem.id + '-name" class="input-creation"></input>';
+                    html += '<input autofocus value="' + values[0] + '" usable id="' + elem.id + '-name" class="input-creation"></input>';
                     html += '<label class="label-creation">' + languages[browserLang]["view_timegroup_string"] + ': </label>';
                     html += '<select usable id="' + elem.id + '-timegroup" class="input-creation">' + htmlSelect + '</select>';
 
@@ -483,8 +601,11 @@ example.View = draw2d.Canvas.extend({
                     for (e in data) {
                         htmlSelect += '<option value="' + data[e] + '">' + data[e] + '</option>';
                     }
+                    if (mod) {
+                        htmlSelect += '<option selected value="' + values[1] + '">' + values[1] + '</option>';
+                    }
                     html += '<label class="label-creation">' + languages[browserLang]["view_name_string"] + ': </label>';
-                    html += '<input usable id="' + elem.id + '-name" class="input-creation"></input>';
+                    html += '<input autofocus value="' + values[0] + '" usable id="' + elem.id + '-name" class="input-creation"></input>';
                     html += '<label class="label-creation">' + languages[browserLang]["view_control_code_string"] + ': </label>';
                     html += '<select usable id="' + elem.id + '-controlcode" class="input-creation">' + htmlSelect + '</select>';
 
@@ -494,9 +615,9 @@ example.View = draw2d.Canvas.extend({
 
             case "ext-meetme":
                 html += '<label class="label-creation">' + languages[browserLang]["view_number_string"] + ': </label>';
-                html += '<input usable id="' + elem.id + '-number" class="input-creation"></input>';
+                html += '<input autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="input-creation"></input>';
                 html += '<label class="label-creation">' + languages[browserLang]["view_name_string"] + ': </label>';
-                html += '<input usable id="' + elem.id + '-name" class="input-creation"></input>';
+                html += '<input value="' + values[1] + '" usable id="' + elem.id + '-name" class="input-creation"></input>';
                 break;
         }
 
@@ -538,7 +659,7 @@ example.View = draw2d.Canvas.extend({
             if (type === "ext-local") {
                 text = dataArray[elem].entities[0].text.split("-")[0];
             }
-            htmlInj += '<div><button elemDest="' + dataArray[elem].entities[dataArray[elem].entities.length - 1].destination + '" elemId="' + elem + '" class="button-elem-list">' + elem + ' - ' + text + '</button></div>';
+            htmlInj += '<div><button elemDest="' + dataArray[elem].entities[dataArray[elem].entities.length - 1].destination + '" elemId="' + elem + '" class="button-elem-list">' + text + '</button></div>';
         }
         if (htmlInj === "") htmlInj = languages[browserLang]["base_no_elements_string"];
         return htmlInj;
