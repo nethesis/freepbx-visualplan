@@ -193,11 +193,12 @@ function switchCreate($wType, $value, $connectionArray) {
 			$name = trim($parts[0]);
 			$extParts = explode(")", $parts[1]);
 			$extension = trim($extParts[0]);
-			$listStatic = explode(',', $value['entities'][2]['text']);
+			
+			$listStatic = explode("\n", $value['entities'][2]['text']);
 			foreach ($listStatic as $k => $v) {
 				$listStatic[$k] = "Local/".$v."@from-queue/n,0";
 			}
-			$listDynamic = explode(',', $value['entities'][4]['text']);
+			$listDynamic = explode("\n", $value['entities'][4]['text']);
 
 			$destinations = getDestination($value, $connectionArray, $currentCreated, $wType);
 			$destination = trim($destinations["output_".$value['entities'][5]['id']]);

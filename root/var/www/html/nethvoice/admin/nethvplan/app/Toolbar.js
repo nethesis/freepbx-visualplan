@@ -136,7 +136,7 @@ example.Toolbar = Class.extend({
                 shape: node.cssClass
             };
             if (typeObj !== 'ext-local' && typeObj !== 'app-blackhole') {
-                this.createDialog(nodeObj);
+                this.createDialog(nodeObj, node);
             }
             // var command = new draw2d.command.CommandDelete(node);
             // this.view.getCommandStack().execute(command);
@@ -164,7 +164,6 @@ example.Toolbar = Class.extend({
         this.html.append(this.saveButton);
         this.saveButton.click($.proxy(function() {
 
-            //console.log(this.view.figures.data);
             var currentView = this.view;
 
             var writer = new draw2d.io.json.Writer();
@@ -207,7 +206,6 @@ example.Toolbar = Class.extend({
                         $('#emptier').fadeOut("slow");
                     }, 5000);
                 } else {
-                    console.log(json);
                     $.ajax({
                         url: "/nethvoice/admin/nethvplan/create.php?",
                         type: "POST",
@@ -241,7 +239,7 @@ example.Toolbar = Class.extend({
                                         var name = nameComplete.split('-')[0].trim();
 
                                         // set new name
-                                        cWid.children.data[1].figure.text = name + " - " + newId;
+                                        cWid.children.data[1].figure.setText(name + " - " + newId);
                                     }
                                 }
                             }
@@ -312,7 +310,8 @@ example.Toolbar = Class.extend({
         }
     },
 
-    createDialog: function(event) {
+    createDialog: function(obj, node) {
+        var thisApp = this;
         var dialog = $('<div id="modalCreation"></div>')
             .dialog({
                 position: 'center',
@@ -328,23 +327,89 @@ example.Toolbar = Class.extend({
                         $(this).dialog('destroy').remove();
                     },
                     Save: function() {
-                        var usableElem = event.context.getElemByAttr("usable");
+                        // update values
+                        var usableElems = obj.context.getElemByAttr("usable");
+                        thisApp.updateValues(usableElems, node, obj);
 
-                        // check existing data
-                        var result = event.context.checkData(usableElem, event.id, event);
+                        $('#modalCreation').dialog('destroy').remove();
                     }
                 },
-                title: event.title + " " + languages[browserLang]["view_modification_string"]
+                title: obj.title + " " + languages[browserLang]["view_modification_string"]
             });
-        $(".ui-dialog-titlebar").css("background", event.color);
+        $(".ui-dialog-titlebar").css("background", obj.color);
 
         // inject html
-        dialog.html(event.context.modalCreate(event, true));
+        dialog.html(obj.context.modalCreate(obj, true));
 
         // show dialog
         dialog.dialog("open");
         $('.ui-widget-overlay').bind('click', function() {
             dialog.dialog('destroy').remove();
         });
+    },
+
+    updateValues: function(elems, node, obj) {
+        switch (obj.id) {
+            case "incoming":
+                node.children.data[1].figure.setText(elems[0].value + ' / ' + elems[1].value + ' ( ' + elems[2].value + ' )');
+                break;
+            case "night":
+                node.children.data[1].figure.setText(elems[0].value);
+                if (elems[1].value === '1')
+                    node.children.data[2].figure.setText(languages[browserLang]["base_active_string"]);
+                if (elems[1].value === '0')
+                    node.children.data[2].figure.setText(languages[browserLang]["base_not_active_string"]);
+                if (elems[1].value === 'period')
+                    node.children.data[2].figure.setText(elems[2].children[1].value + ' - ' + elems[2].children[3].value);
+                break;
+            case "from-did-direct":
+                node.children.data[1].figure.setText(elems[1].value + ' ( ' + elems[0].value + ' )');
+                break;
+            case "ext-group":
+                node.children.data[1].figure.setText(elems[1].value + ' ( ' + elems[0].value + ' )');
+                node.children.data[3].figure.setText(elems[2].value);
+                break;
+            case "ext-queues":
+                node.children.data[1].figure.setText(elems[1].value + ' ( ' + elems[0].value + ' )');
+                node.children.data[3].figure.setText(elems[2].value);
+                node.children.data[5].figure.setText(elems[3].value);
+                break;
+            case "ivr":
+                var id = node.children.data[1].figure.text.split('-')[1];
+                if (id) {
+                    id = id.trim();
+                    node.children.data[1].figure.setText(elems[0].value + ' ( ' + elems[1].value + ' )' + ' - ' + id);
+                } else {
+                    node.children.data[1].figure.setText(elems[0].value + ' ( ' + elems[1].value + ' )');
+                }
+                node.children.data[2].figure.setText(languages[browserLang]["base_app_announcement_string"] + ': ' + elems[2].value);
+                break;
+            case "app-announcement":
+                var id = node.children.data[1].figure.text.split('-')[1];
+                if (id) {
+                    id = id.trim();
+                    node.children.data[1].figure.setText(elems[0].value + ' - ' + id);
+                } else {
+                    node.children.data[1].figure.setText(elems[0].value);
+                }
+                node.children.data[2].figure.setText(languages[browserLang]["view_recording_string"] + ': ' + elems[1].value);
+                break;
+            case "timeconditions":
+                var id = node.children.data[1].figure.text.split('-')[1];
+                if (id) {
+                    id = id.trim();
+                    node.children.data[1].figure.setText(elems[0].value + ' - ' + id);
+                } else {
+                    node.children.data[1].figure.setText(elems[0].value);
+                }
+                node.children.data[2].figure.setText(languages[browserLang]["view_timegroup_string"] + ': ' + elems[1].value);
+                break;
+            case "app-daynight":
+                node.children.data[1].figure.setText(elems[0].value + ' ( *28' + elems[1].value + ' )');
+                break;
+            case "ext-meetme":
+                node.children.data[1].figure.setText(elems[1].value + ' ( ' + elems[0].value + ' )');
+                break;
+        }
     }
 });

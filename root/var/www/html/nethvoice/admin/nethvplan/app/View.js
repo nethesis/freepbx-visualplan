@@ -314,10 +314,8 @@ example.View = draw2d.Canvas.extend({
             }
 
             if (missing) {
-                var typeFig = $(event.dropped).data("shape");
+                var typeFig = $(event.dropped).data("shape") || event.shape;
                 var figure = eval("new " + typeFig + "();");
-
-                console.log(elem, event)
 
                 figure.onDrop(event.dropped, event.x, event.y, elem);
 
@@ -330,7 +328,6 @@ example.View = draw2d.Canvas.extend({
     },
 
     extracInfo: function(data, type) {
-        console.log(data);
         switch (type) {
             case "incoming":
                 var v1 = data[1].figure.text.split('/')[0].trim();
@@ -405,6 +402,7 @@ example.View = draw2d.Canvas.extend({
                 break;
             case "timeconditions":
                 var v1 = data[1].figure.text.split('-')[0].trim();
+                console.log(data[2].figure.text);
                 var v2 = data[2].figure.text.split(':')[1].split('(')[0].trim();
                 return [v1, v2];
                 break;
@@ -423,22 +421,23 @@ example.View = draw2d.Canvas.extend({
 
     modalCreate: function(elem, mod) {
         var html = "";
+        var isDisabled = "";
         values = ["", "", "", "", "", "", "", "", ""];
         if (mod) {
             values = this.extracInfo(elem.data || {}, elem.id);
-            console.log(values);
+            isDisabled = 'disabled';
         }
 
         switch (elem.id) {
             case "incoming":
                 html += '<label class="label-creation">' + languages[browserLang]["view_number_string"] + ': </label>';
-                html += '<input autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="input-creation-mini"></input>';
+                html += '<input '+isDisabled+' autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="input-creation-mini"></input>';
                 html += ' / ';
-                html += '<input value="' + values[1] + '" usable id="' + elem.id + '-cidnum" class="input-creation-mini"></input>';
+                html += '<input '+isDisabled+' value="' + values[1] + '" usable id="' + elem.id + '-cidnum" class="input-creation-mini"></input>';
                 html += '<label class="label-creation">' + languages[browserLang]["view_description_string"] + ': </label>';
                 html += '<input value="' + values[2] + '" usable id="' + elem.id + '-description" class="input-creation"></input>';
                 html += '<label class="label-creation">' + languages[browserLang]["base_night_service_string"] + ': </label>';
-                html += '<select usable id="' + elem.id + '-nightService" class="input-creation"><option ' + values[3] + ' value="1">' + languages[browserLang]["base_active_string"] + '</option><option ' + values[4] + ' value="0">' + languages[browserLang]["base_not_active_string"] + '</option></select>';
+                html += '<select '+isDisabled+' usable id="' + elem.id + '-nightService" class="input-creation"><option ' + values[3] + ' value="1">' + languages[browserLang]["base_active_string"] + '</option><option ' + values[4] + ' value="0">' + languages[browserLang]["base_not_active_string"] + '</option></select>';
                 break;
             case "night":
                 html += '<label class="label-creation">' + languages[browserLang]["view_name_string"] + ': </label>';
@@ -450,7 +449,7 @@ example.View = draw2d.Canvas.extend({
 
             case "from-did-direct":
                 html += '<label class="label-creation">' + languages[browserLang]["view_number_string"] + ': </label>';
-                html += '<input autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="input-creation"></input>';
+                html += '<input '+isDisabled+' autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="input-creation"></input>';
                 html += '<label class="label-creation">' + languages[browserLang]["view_name_string"] + ': </label>';
                 html += '<input usable value="' + values[1] + '" id="' + elem.id + '-name" class="input-creation"></input>';
                 break;
@@ -479,7 +478,7 @@ example.View = draw2d.Canvas.extend({
 
             case "ext-group":
                 html += '<label class="label-creation">' + languages[browserLang]["view_number_string"] + ': </label>';
-                html += '<input autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="input-creation"></input>';
+                html += '<input '+isDisabled+' autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="input-creation"></input>';
                 html += '<label class="label-creation">' + languages[browserLang]["view_description_string"] + ': </label>';
                 html += '<input usable value="' + values[1] + '" id="' + elem.id + '-description" class="input-creation"></input>';
                 html += '<label class="label-creation">' + languages[browserLang]["base_ext_list_string"] + ': </label>';
@@ -488,7 +487,7 @@ example.View = draw2d.Canvas.extend({
 
             case "ext-queues":
                 html += '<label class="label-creation">' + languages[browserLang]["view_number_string"] + ': </label>';
-                html += '<input autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="input-creation"></input>';
+                html += '<input '+isDisabled+' autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="input-creation"></input>';
                 html += '<label class="label-creation">' + languages[browserLang]["view_name_string"] + ': </label>';
                 html += '<input usable value="' + values[1] + '" id="' + elem.id + '-name" class="input-creation"></input>';
                 html += '<label class="label-creation">' + languages[browserLang]["base_static_memb_string"] + ': </label>';
@@ -607,7 +606,7 @@ example.View = draw2d.Canvas.extend({
                     html += '<label class="label-creation">' + languages[browserLang]["view_name_string"] + ': </label>';
                     html += '<input autofocus value="' + values[0] + '" usable id="' + elem.id + '-name" class="input-creation"></input>';
                     html += '<label class="label-creation">' + languages[browserLang]["view_control_code_string"] + ': </label>';
-                    html += '<select usable id="' + elem.id + '-controlcode" class="input-creation">' + htmlSelect + '</select>';
+                    html += '<select '+isDisabled+' usable id="' + elem.id + '-controlcode" class="input-creation">' + htmlSelect + '</select>';
 
                     $("#modalCreation").html(html);
                 });
@@ -615,7 +614,7 @@ example.View = draw2d.Canvas.extend({
 
             case "ext-meetme":
                 html += '<label class="label-creation">' + languages[browserLang]["view_number_string"] + ': </label>';
-                html += '<input autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="input-creation"></input>';
+                html += '<input '+isDisabled+' autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="input-creation"></input>';
                 html += '<label class="label-creation">' + languages[browserLang]["view_name_string"] + ': </label>';
                 html += '<input value="' + values[1] + '" usable id="' + elem.id + '-name" class="input-creation"></input>';
                 break;

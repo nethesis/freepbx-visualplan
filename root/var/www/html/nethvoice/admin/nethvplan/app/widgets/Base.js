@@ -23,10 +23,6 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
         this.add(this.classLabel);
     },
 
-    onMouseEnter: function() {
-        console.log("enter");
-    },
-
     addEntity: function(txt, type, optionalIndex) {
         var padding = {
             left: 30,
@@ -60,6 +56,9 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                 if (membersCheck) {
                     members = txt.replace(/-/g, " ").match(/-?\d+/g).filter(Number);
                     txt = members.join("\n");
+                }
+                if(txt.length == 0) {
+                    txt = languages[browserLang]["base_no_elements_string"];
                 }
             } else {
                 txt = languages[browserLang]["base_no_elements_string"];
@@ -410,7 +409,6 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                 templateObj.id = type + "%" + id;
                 templateObj.bgColor = "#f4b350";
                 templateObj.radius = 0;
-                console.log(elem[1].value);
                 templateObj.entities = [{
                     text: elem[0].value,
                     id: "announcement_name%" + id,
@@ -523,7 +521,6 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
             $.each(memento.entities, $.proxy(function(i, e) {
                 var entity = this.addEntity(e.text, e.type);
                 entity.id = e.id;
-
                 if (e.type == "output")
                     entity.getOutputPort(0).setName("output_" + e.id);
 

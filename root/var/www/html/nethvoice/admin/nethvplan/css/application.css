@@ -197,7 +197,7 @@ body {
     overflow: hidden;
     cursor: move;
     /*width: 10000px;
-	height: 10000px;*/
+    height: 10000px;*/
 }
 
 #toolbar {
@@ -418,11 +418,13 @@ textarea {
     text-align: right;
     padding-right: 1.5em;
     padding-bottom: 1em;
+    vertical-align: top;
 }
 
 .input-creation {
     display: inline-block;
     min-width: 180px;
+    margin-bottom: 14px;
 }
 
 .input-creation-mini {
