@@ -23,8 +23,9 @@ if(function_exists("nethnight_list")){
 		$data['night'][$row['night_id']] = array(	"name" => $row['displayname'],
 													"id" => $row['night_id'],
 													"dest" => $row['didaction'],
-													"timebegin" => $row['timebegin'],
-													"timeend" => $row['timeend']
+													"timebegin" => $row['tsbegin'],
+													"timeend" => $row['tsend'],
+													"enabled" => $row['enabled']
 											);
 	}
 } else {
@@ -484,18 +485,19 @@ function bindData($data, $dest, $id) {
 			$widget['y'] = $yPos;
 			$widget['name'] = $langArray["base_night_service_string"];
 			$widget['entities'][] = array(
-				"text"=> $data[$dest][$id]['name'],
+				"text"=> $data[$dest][$id]['name'] ." - ".$id,
 				"id"=> $dest."%".$id,
 				"type"=> "input"
 			);
 
-			$year = date('Y', strtotime($data[$dest][$id]['timeend']));
-			$content = date('d/m/Y', strtotime($data[$dest][$id]['timebegin']))." - ".date('d/m/Y', strtotime($data[$dest][$id]['timeend']));
-			if($year == 2030) {
+			$tb = $data[$dest][$id]['timebegin'];
+			$te = $data[$dest][$id]['timeend'];
+			$content = date('d/m/Y', $tb)." - ".date('d/m/Y', $te);
+			if($data[$dest][$id]['enabled'] == "1") {
 				$content = $langArray["base_active_string"];
 			}
 
-			if($year == 1970) {
+			if($data[$dest][$id]['enabled'] == "0") {
 				$content = $langArray["base_not_active_string"];
 			}
 

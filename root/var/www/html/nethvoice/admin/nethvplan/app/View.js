@@ -348,7 +348,7 @@ example.View = draw2d.Canvas.extend({
                 return [v1, v2, v3, v4, v5];
                 break;
             case "night":
-                var v1 = data[1].figure.text.trim();
+                var v1 = data[1].figure.text.split('-')[0].trim();
                 var nightType = data[2].figure.text.trim();
                 if (nightType === 'Active' || nightType === 'Attivo') {
                     var v2 = "selected";
@@ -402,7 +402,6 @@ example.View = draw2d.Canvas.extend({
                 break;
             case "timeconditions":
                 var v1 = data[1].figure.text.split('-')[0].trim();
-                console.log(data[2].figure.text);
                 var v2 = data[2].figure.text.split(':')[1].split('(')[0].trim();
                 return [v1, v2];
                 break;

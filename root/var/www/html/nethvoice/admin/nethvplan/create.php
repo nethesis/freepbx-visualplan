@@ -83,7 +83,9 @@ function switchCreate($wType, $value, $connectionArray) {
 		break;
 
 		case "night":
-			$name = trim($value['entities'][0]['text']);
+			$nameParts = explode("-", $value['entities'][0]['text']);
+			$name = trim($nameParts[0]);
+			$id = trim($nameParts[1]);
 			$state = trim($value['entities'][1]['text']);
 
 			if (strcasecmp($state, "active") == 0 || strcasecmp($state, "attivo") == 0) {
@@ -106,16 +108,32 @@ function switchCreate($wType, $value, $connectionArray) {
 			$destinations = getDestination($value, $connectionArray, $currentCreated, $wType);
 			$destination = trim($destinations["output_".$value['entities'][2]['id']]);
 
-			$nethNightId = nethnight_add(array(
-				"description" => $name,
-				"date" => $date,
-				"tsbegin" => $timebegin,
-				"tsend" => $timeend,
-				"goto0" => "dest",
-				"dest0" => $destination,
-				"enabled" => ""
-			));
-			nightGetSource($value['id'], $connectionArray, $nethNightId);
+			$exists = nethnight_get($id);
+			if(empty($exists)) {
+				$nethNightId = nethnight_add(array(
+					"description" => $name,
+					"date" => $date,
+					"tsbegin" => $timebegin,
+					"tsend" => $timeend,
+					"goto0" => "dest",
+					"dest0" => $destination,
+					"enabled" => ""
+				));
+				$idReturn = $nethNightId;
+			} else {
+				nethnight_edit($id, array(
+					"description" => $name,
+					"date" => $date,
+					"tsbegin" => $timebegin,
+					"tsend" => $timeend,
+					"goto0" => "dest",
+					"dest0" => $destination,
+					"enabled" => ""
+				));
+				$idReturn = $id;
+			}
+			
+			nightGetSource($value['id'], $connectionArray, $idReturn);
 		break;
 
 		case "from-did-direct":
@@ -127,6 +145,11 @@ function switchCreate($wType, $value, $connectionArray) {
 			$exists = core_users_get($extension);
 			if(empty($exists)) {
 				core_users_add(array(
+					"extension" => $extension,
+					"name" => $name
+				));
+			} else {
+				core_users_edit($extension, array(
 					"extension" => $extension,
 					"name" => $name
 				));
@@ -168,6 +191,9 @@ function switchCreate($wType, $value, $connectionArray) {
 
 			$exists = conferences_get($extension);
 			if(empty($exists)) {
+				conferences_add($extension, $name);
+			} else {
+				conferences_del($extension);
 				conferences_add($extension, $name);
 			}
 		break;

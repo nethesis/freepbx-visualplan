@@ -220,6 +220,8 @@ example.Toolbar = Class.extend({
                             var resp = JSON.parse(c);
                         } catch (e) {
                             var resp = c;
+                            resp = resp.substring(resp.indexOf("{"));
+                            resp = JSON.parse(resp);
                         }
 
                         if (resp.success) {
@@ -354,7 +356,13 @@ example.Toolbar = Class.extend({
                 node.children.data[1].figure.setText(elems[0].value + ' / ' + elems[1].value + ' ( ' + elems[2].value + ' )');
                 break;
             case "night":
-                node.children.data[1].figure.setText(elems[0].value);
+                var id = node.children.data[1].figure.text.split('-')[1];
+                if (id) {
+                    id = id.trim();
+                    node.children.data[1].figure.setText(elems[0].value + ' - ' + id);
+                } else {
+                    node.children.data[1].figure.setText(elems[0].value);
+                }
                 if (elems[1].value === '1')
                     node.children.data[2].figure.setText(languages[browserLang]["base_active_string"]);
                 if (elems[1].value === '0')
