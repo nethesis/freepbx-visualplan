@@ -57,7 +57,7 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                     members = txt.replace(/-/g, " ").match(/-?\d+/g).filter(Number);
                     txt = members.join("\n");
                 }
-                if(txt.length == 0) {
+                if (txt.length == 0) {
                     txt = languages[browserLang]["base_no_elements_string"];
                 }
             } else {
@@ -170,6 +170,19 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                 break;
             case "ivr":
                 label.on("contextmenu", function(emitter, event) {
+                    var items = {};
+                    if (isNaN(emitter.text)) {
+                        items["add"] = {
+                            name: languages[browserLang]["base_add_ivr_opt_string"]
+                        };
+                    } else {
+                        items["add"] = {
+                            name: languages[browserLang]["base_add_ivr_opt_string"]
+                        };
+                        items["delete"] = {
+                            name: languages[browserLang]["base_delete_ivr_opt_string"] +" "+ emitter.text
+                        };
+                    }
                     $.contextMenu({
                         selector: 'body',
                         events: {
@@ -181,13 +194,50 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                             switch (key) {
                                 case "add":
                                     var cNum = table.children.data.length - 5;
-                                    setTimeout(function() {
-                                        table.addEntity(cNum, "output", "false");
-                                    }, 10);
+                                    var dialog = $('<div id="modalCreation"></div>')
+                                        .dialog({
+                                            position: 'center',
+                                            autoOpen: false,
+                                            resizable: false,
+                                            width: 250,
+                                            modal: true,
+                                            close: function(ev, ui) {
+                                                $(this).dialog('destroy').remove();
+                                            },
+                                            buttons: {
+                                                Cancel: function() {
+                                                    $(this).dialog('destroy').remove();
+                                                },
+                                                Save: function(e) {
+                                                    var ivrVal = $('#ivr-option').val();
+
+                                                    // update values
+                                                    setTimeout(function() {
+                                                        table.addEntity(ivrVal, "output", "false");
+                                                    }, 10);
+
+                                                    $('#modalCreation').dialog('destroy').remove();
+                                                }
+                                            },
+                                            title: languages[browserLang]["base_ivr_option_string"]
+                                        });
+                                    $(".ui-dialog-titlebar").css("background", "#7f8c8d");
+
+                                    // inject html
+                                    var html = "";
+                                    html += '<label class="label-creation-mini">' + languages[browserLang]["view_number_string"] + ': </label>';
+                                    html += '<input autofocus type="number" value="" usable id="ivr-option" class="input-creation-mini"></input>';
+                                    dialog.html(html);
+
+                                    // show dialog
+                                    dialog.dialog("open");
+                                    $('.ui-widget-overlay').bind('click', function() {
+                                        dialog.dialog('destroy').remove();
+                                    });
                                     break;
                                 case "delete":
                                     if (table.children.data.length > 5) {
-                                        var cmd = new draw2d.command.CommandDelete(table.children.data[table.children.data.length - 1].figure);
+                                        var cmd = new draw2d.command.CommandDelete(emitter);
                                         emitter.getCanvas().getCommandStack().execute(cmd);
                                     }
 
@@ -204,14 +254,7 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                                 left: event.x / app.view.getZoom() + 55 - scrollLeftVal
                             });
                         },
-                        items: {
-                            "add": {
-                                name: languages[browserLang]["base_add_ivr_opt_string"]
-                            },
-                            "delete": {
-                                name: languages[browserLang]["base_delete_ivr_opt_string"]
-                            }
-                        }
+                        items: items
                     });
                 });
                 break;

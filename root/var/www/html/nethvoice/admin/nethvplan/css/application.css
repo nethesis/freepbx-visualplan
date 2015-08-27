@@ -421,6 +421,15 @@ textarea {
     vertical-align: top;
 }
 
+.label-creation-mini {
+    display: inline-block;
+    width: 6em;
+    text-align: right;
+    padding-right: 1.5em;
+    padding-bottom: 0em;
+    vertical-align: top;
+}
+
 .input-creation {
     display: inline-block;
     min-width: 180px;

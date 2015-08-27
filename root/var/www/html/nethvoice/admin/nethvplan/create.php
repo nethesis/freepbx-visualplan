@@ -398,12 +398,13 @@ function switchCreate($wType, $value, $connectionArray) {
 
 				foreach($value['entities'] as $k => $v) {
 					if ($k < 4) continue;
-					$ext[$v['text']] = $v['text'];
-					$goto[$v['text']] = trim($destinations["output_".$v['id']]);
+					//$ext[$v['text']] = $v['text'];
+					$ext[] = $v['text'];
+					//$goto[$v['text']] = trim($destinations["output_".$v['id']]);
+					$goto[] = trim($destinations["output_".$v['id']]);
 				}
 				$ivrArray['ext'] = $ext;
 				$ivrArray['goto'] = $goto;
-
 				ivr_save_entries($idIVR, $ivrArray);
 			}
 		break;
