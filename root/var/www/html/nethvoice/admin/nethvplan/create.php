@@ -101,12 +101,18 @@ function switchCreate($wType, $value, $connectionArray) {
 			} else {
 				$dateparts = explode("-", $state);
 
+				$offset = timeZoneOffset();
+
 				$timebegin = trim($dateparts[0]);
-				$timestampBeg = strtotime(str_replace('/', '-', $timebegin));
+				$timestampBeg = strtotime(str_replace('/', '-', $timebegin)) + $offset;
+				$timestampBeg = $timestampBeg - $offset;
+
 				$timebegin = date("Y-m-d H:i:s", $timestampBeg);
 
 				$timeend = trim($dateparts[1]);
-				$timestampEnd = strtotime(str_replace('/', '-', $timeend));
+				$timestampEnd = strtotime(str_replace('/', '-', $timeend)) + $offset;
+				$timestampEnd = $timestampEnd - $offset;
+				
 				$timeend = date("Y-m-d H:i:s", $timestampEnd);
 				$date = 'custom';
 			}
@@ -572,4 +578,23 @@ function nightGetSource($id, $connectionArray, $nightId) {
 			nethnigh_set_destination($incomingId, $nightId);
 		}
 	}
+}
+
+function timeZoneOffset() {
+	global $amp_conf;
+	try {
+	    $tz = $amp_conf['timezone'];
+	    $dtz = new DateTimeZone($tz);
+	    $dt = new DateTime("now", $dtz);
+	} catch (Exception $e){
+	    $tz = date_default_timezone_get();
+	    $dtz = new DateTimeZone($tz);
+	    $dt = new DateTime("now", $dtz);
+	}
+	$utc_dtz = new DateTimeZone("UTC");
+	$utc_dt = new DateTime("now", $utc_dtz);
+	$offset = $dtz->getOffset($dt) - $utc_dtz->getOffset($utc_dt);
+	$now = time() + $offset;
+
+	return $offset;
 }

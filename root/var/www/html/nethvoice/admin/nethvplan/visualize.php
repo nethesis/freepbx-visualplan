@@ -374,6 +374,25 @@ function getDestination($destination) {
 	return array($dest, $id);
 }
 
+function timeZoneOffset() {
+	global $amp_conf;
+	try {
+	    $tz = $amp_conf['timezone'];
+	    $dtz = new DateTimeZone($tz);
+	    $dt = new DateTime("now", $dtz);
+	} catch (Exception $e){
+	    $tz = date_default_timezone_get();
+	    $dtz = new DateTimeZone($tz);
+	    $dt = new DateTime("now", $dtz);
+	}
+	$utc_dtz = new DateTimeZone("UTC");
+	$utc_dt = new DateTime("now", $utc_dtz);
+	$offset = $dtz->getOffset($dt) - $utc_dtz->getOffset($utc_dt);
+	$now = time() + $offset;
+
+	return $offset;
+}
+
 // create widget from destination name
 function bindData($data, $dest, $id) {
 	global $langArray;
@@ -490,8 +509,11 @@ function bindData($data, $dest, $id) {
 				"type"=> "input"
 			);
 
-			$tb = $data[$dest][$id]['timebegin'];
-			$te = $data[$dest][$id]['timeend'];
+			$offsetTime = timeZoneOffset();
+
+			$tb = $data[$dest][$id]['timebegin'] + $offsetTime;
+			$te = $data[$dest][$id]['timeend'] + $offsetTime;
+
 			$content = date('d/m/Y', $tb)." - ".date('d/m/Y', $te);
 			if($data[$dest][$id]['enabled'] == "1") {
 				$content = $langArray["base_active_string"];
@@ -1092,8 +1114,7 @@ function explore($data, $destination, $destArray) {
 	}
 }
 
-function json_pretty($json, $options = array())
-{
+function json_pretty($json, $options = array()) {
     $tokens = preg_split('|([\{\}\]\[,])|', $json, -1, PREG_SPLIT_DELIM_CAPTURE);
     $result = '';
     $indent = 0;
