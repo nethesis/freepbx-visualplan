@@ -37,9 +37,6 @@ rm -rf $RPM_BUILD_ROOT
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%post
-/sbin/e-smith/signal-event nethvoice-module-nethvplan-update
-
 %files -f %{name}-%{version}-filelist
 %defattr(-,asterisk,asterisk)
 
