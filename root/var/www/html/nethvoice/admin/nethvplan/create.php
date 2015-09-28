@@ -160,6 +160,15 @@ function switchCreate($wType, $value, $connectionArray) {
 					"extension" => $extension,
 					"name" => $name
 				));
+	            core_devices_add(
+					$extension,
+					"sip",
+					"",
+					"fixed",
+					$extension,
+					$name,
+					""
+	            );
 			} else {
 				core_users_edit($extension, array(
 					"extension" => $extension,
