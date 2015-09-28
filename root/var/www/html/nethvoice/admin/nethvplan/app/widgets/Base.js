@@ -289,8 +289,8 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                 break;
             case "incoming":
                 var sufx = elem[1].value;
-                if (sufx.slice(-1) !== ".")
-                    sufx = sufx + ".";
+                // if (sufx.slice(-1) !== ".")
+                //     sufx = sufx + ".";
 
                 templateObj.id = type + "%" + elem[0].value + " / " + sufx;
                 templateObj.bgColor = "#87d37c";

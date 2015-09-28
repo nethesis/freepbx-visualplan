@@ -17,13 +17,10 @@ msgstr ""
 "X-Poedit-Language: Italian\n"
 "X-Poedit-Country: ITALY\n"
 
-msgid "Show Newer Calls"
-msgstr "Mostra chiamate più recenti"
+msgid "Add new incoming route"
+msgstr "Aggiungi rotta in entrata"
 
-msgid "Show Older Calls"
-msgstr "Mostra chiamate meno recenti"
-
-msgid "Refresh"
-msgstr "Ricarica"
+msgid "Incoming routes list"
+msgstr "Lista rotte in entrata"
 
 

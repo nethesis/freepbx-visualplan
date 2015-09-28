@@ -55,9 +55,9 @@ function switchCreate($wType, $value, $connectionArray) {
 			$descriptionParts = explode(")", $partsNum[1]);
 			$description = trim($descriptionParts[0]);
 
-			if($cidnum && substr($cidnum, -1) != ".") {
-				$cidnum = $cidnum.".";
-			}
+			// if($cidnum && substr($cidnum, -1) != ".") {
+			// 	$cidnum = $cidnum.".";
+			// }
 
 			$destinations = getDestination($value, $connectionArray);
 			$destination = trim($destinations["output_".$value['entities'][0]['id']]);
@@ -310,7 +310,7 @@ function switchCreate($wType, $value, $connectionArray) {
 
 						"invalid_recording" => 0,
 						"retvm" => 0,
-						"timeout_time" => 0,
+						"timeout_time" => 10,
 						"timeout_recording" => 0,
 						"timeout_retry_recording" => 0,
 
@@ -339,7 +339,7 @@ function switchCreate($wType, $value, $connectionArray) {
 
 						"invalid_recording" => 0,
 						"retvm" => 0,
-						"timeout_time" => 0,
+						"timeout_time" => 10,
 						"timeout_recording" => 0,
 						"timeout_retry_recording" => 0,
 
@@ -364,7 +364,7 @@ function switchCreate($wType, $value, $connectionArray) {
 
 						"invalid_recording" => 0,
 						"retvm" => 0,
-						"timeout_time" => 0,
+						"timeout_time" => 10,
 						"timeout_recording" => 0,
 						"timeout_retry_recording" => 0,
 
@@ -392,7 +392,7 @@ function switchCreate($wType, $value, $connectionArray) {
 
 						"invalid_recording" => 0,
 						"retvm" => 0,
-						"timeout_time" => 0,
+						"timeout_time" => 10,
 						"timeout_recording" => 0,
 						"timeout_retry_recording" => 0,
 
