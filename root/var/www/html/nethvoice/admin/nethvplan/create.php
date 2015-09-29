@@ -41,6 +41,20 @@ function extraction($dataArray, $connectionArray) {
 $returnedIdArray = array("success" => $returnedIdArray);
 print_r(/*json_pretty(*/json_encode($returnedIdArray, true));
 
+function randomPassword() {
+	$length = 18;
+	$chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+	$maxlength = strlen($chars);
+	$plength = 0;
+	$password = '';
+	while ($plength < $length){
+        $char=substr($chars,mt_rand(0, $maxlength - 1), 1);
+	    $password .= $char;
+	    $plength++;
+	}
+	return $password;
+}
+
 function switchCreate($wType, $value, $connectionArray) {
 	$idReturn = "";
 	global $currentCreated;
@@ -158,8 +172,10 @@ function switchCreate($wType, $value, $connectionArray) {
 			if(empty($exists)) {
 				core_users_add(array(
 					"extension" => $extension,
-					"name" => $name
+					"name" => $name,
+					"password" => randomPassword()
 				));
+				$_REQUEST['secret'] = randomPassword();
 	            core_devices_add(
 					$extension,
 					"sip",
