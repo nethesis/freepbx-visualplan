@@ -1,6 +1,6 @@
 Name:		nethvoice-module-nethvplan
-Version: 	0.0.2
-Release: 	1%{dist}
+Version: 1.0.0
+Release: 1%{?dist}
 Summary:	A module to visualize and edit FreePBX dialplan
 Group:		Networking/Daemons	
 License:	GPL	
@@ -41,3 +41,17 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,asterisk,asterisk)
 
 %changelog
+* Wed Sep 30 2015 Stefano Fancello <stefano.fancello@nethesis.it> - 1.0.0-1
+- added default random secret to extension. Refs #3856
+- added device insert with user insert. Refs #3856
+- added default timeout to IVR and remove dot at the end of the incoming route. Refs #3856
+- night service. fixed timestamp error
+- core. added nethnight control on remove
+- ivr. improved option add and delete
+- improved modification for extension, conference and night service
+- finished modification part with all popup elements
+- added modifiy dialog for each components
+- fixed infinte loop on object creation
+- refactor code
+- core. deleted duplicate entries on saved
+
