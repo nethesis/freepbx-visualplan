@@ -47,15 +47,13 @@ foreach ($get_data as $key => $row) {
 			}
 		}
 	} else {
-		// $data['incoming'][$row['extension']]['destination'] = $row['destination'];
-		// $data['incoming'][$row['extension']]['description'] = $row['description'];
 		$data['incoming'][$row['extension']." / "]['destination'] = $row['destination'];
 		$data['incoming'][$row['extension']." / "]['description'] = $row['description'];
 
 		if($night_is_installed) {
 			$night_service = nethnight_get_fromdid($row['extension']."/");
 			if($night_service) {
-				$data['incoming'][$row['extension']]['night'] = $data['night'][$night_service['night_id']];
+				$data['incoming'][$row['extension']." / "]['night'] = $data['night'][$night_service['night_id']];
 			}
 		}
 	}
