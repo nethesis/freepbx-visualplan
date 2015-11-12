@@ -211,7 +211,7 @@ foreach ($_GET as $key => $value) {
 
 		case "readData":
 			$name = trim($_GET["readData"]);
-			print_r(/*json_pretty(*/json_encode($data[$name], true));
+			print_r(/*nethvplan_json_pretty(*/json_encode($data[$name], true));
 		break;
 
 		case "getAll":
@@ -221,10 +221,10 @@ foreach ($_GET as $key => $value) {
 				if($name == "ext-local") {
 					$key = "vmb".$key;
 				}
-				$wid = bindData($data, $name, $key);
+				$wid = nethvplan_bindData($data, $name, $key);
 				array_push($widContainer, $wid);
 			}
-			print_r(/*json_pretty(*/json_encode($widContainer, true));
+			print_r(/*nethvplan_json_pretty(*/json_encode($widContainer, true));
 		break;
 
 		case "getChild":
@@ -237,7 +237,7 @@ foreach ($_GET as $key => $value) {
 			
 			foreach ($pieces as $d) {
 				$cDest = explode("%", $dest);
-				$connection = bindConnection($data, $cDest[0], $cDest[1]);
+				$connection = nethvplan_bindConnection($data, $cDest[0], $cDest[1]);
 
 				if(is_array($connection[0])) {
 					foreach ($connection as $arr) {
@@ -247,7 +247,7 @@ foreach ($_GET as $key => $value) {
 					array_push($connections, $connection);
 				}
 
-				explore($data, $d, $tmpDestArray);
+				nethvplan_explore($data, $d, $tmpDestArray);
 			}
 
 			// print output
@@ -259,7 +259,7 @@ foreach ($_GET as $key => $value) {
 			    }
 			}
 			$merged = $result;
-			print_r(/*json_pretty(*/json_encode($merged, true));
+			print_r(/*nethvplan_json_pretty(*/json_encode($merged, true));
 		break;
 
 		case "id":
@@ -270,7 +270,7 @@ foreach ($_GET as $key => $value) {
 
 			if($id != "") {
 				// get destination field and id
-				$res = getDestination($destination);
+				$res = nethvplan_getDestination($destination);
 				$dest = $res[0];
 				$idDest = $res[1];
 
@@ -290,11 +290,11 @@ foreach ($_GET as $key => $value) {
 				array_push($connections, $connection);
 
 				// start exploring of connections
-				explore($data, $destination, $destArray);
+				nethvplan_explore($data, $destination, $destArray);
 
 				if($data['incoming'][$id]['night']) {
 					// get destination field and id
-					$res = getDestination("night,8".$data['incoming'][$id]['night']['id']."0,1");
+					$res = nethvplan_getDestination("night,8".$data['incoming'][$id]['night']['id']."0,1");
 					$dest = $res[0];
 					$idDest = $res[1];
 
@@ -314,10 +314,10 @@ foreach ($_GET as $key => $value) {
 					array_push($connections, $connection);
 
 					// start exploring of connections
-					explore($data, "night,8".$data['incoming'][$id]['night']['id']."0,1", $destArray);
+					nethvplan_explore($data, "night,8".$data['incoming'][$id]['night']['id']."0,1", $destArray);
 				}
 
-				$widget = bindData($data, "incoming", $id);
+				$widget = nethvplan_bindData($data, "incoming", $id);
 				// add widget
 				array_push($widgets, $widget);
 			}
@@ -331,18 +331,18 @@ foreach ($_GET as $key => $value) {
 			    }
 			}
 			$merged = $result;
-			print_r(/*json_pretty(*/json_encode($merged, true));
+			print_r(/*nethvplan_json_pretty(*/json_encode($merged, true));
 		break;
 	}
 }
 
-function cmpAnnun($a, $b) {
+function nethvplan_cmpAnnun($a, $b) {
     if ($a['announcement_id'] == $b['announcement_id']) {
         return 0;
     }
     return ($a['announcement_id'] < $b['announcement_id']) ? -1 : 1;
 }
-function cmpTime($a, $b) {
+function nethvplan_cmpTime($a, $b) {
     if ($a['timeconditions_id'] == $b['timeconditions_id']) {
         return 0;
     }
@@ -350,7 +350,7 @@ function cmpTime($a, $b) {
 }
 
 // get destination from asterisk destination id
-function getDestination($destination) {
+function nethvplan_getDestination($destination) {
 	if(preg_match('/ivr-*/', $destination)) {
 		$values = explode(",", $destination);
 		$dests = explode("-", $values[0]);
@@ -376,7 +376,7 @@ function getDestination($destination) {
 	return array($dest, $id);
 }
 
-function timeZoneOffset() {
+function nethvplan_timeZoneOffset() {
 	global $amp_conf;
 	try {
 	    $tz = $amp_conf['timezone'];
@@ -396,7 +396,7 @@ function timeZoneOffset() {
 }
 
 // create widget from destination name
-function bindData($data, $dest, $id) {
+function nethvplan_bindData($data, $dest, $id) {
 	global $langArray;
 	global $widgetTemplate;
 	$widget = $widgetTemplate;
@@ -511,7 +511,7 @@ function bindData($data, $dest, $id) {
 				"type"=> "input"
 			);
 
-			$offsetTime = timeZoneOffset();
+			$offsetTime = nethvplan_timeZoneOffset();
 
 			$tb = $data[$dest][$id]['timebegin'] + $offsetTime;
 			$te = $data[$dest][$id]['timeend'] + $offsetTime;
@@ -742,13 +742,13 @@ function bindData($data, $dest, $id) {
 }
 
 // create connections
-function bindConnection($data, $dest, $id) {
+function nethvplan_bindConnection($data, $dest, $id) {
 	global $connectionTemplate;
 	$connection = $connectionTemplate;
 
 	switch($dest) {
 		case "night":
-			$res = getDestination($data[$dest][$id]['dest']);
+			$res = nethvplan_getDestination($data[$dest][$id]['dest']);
 			$destNew = $res[0];
 			$idDest = $res[1];
 
@@ -764,7 +764,7 @@ function bindConnection($data, $dest, $id) {
 			);
 		break;
 		case "app-announcement":
-			$res = getDestination($data[$dest][$id]['postdest']);
+			$res = nethvplan_getDestination($data[$dest][$id]['postdest']);
 			$destNew = $res[0];
 			$idDest = $res[1];
 
@@ -782,7 +782,7 @@ function bindConnection($data, $dest, $id) {
 
 		case "app-daynight":
 			$arrayTmp = array();
-			$res = getDestination($data[$dest][$id]['green_flow']);
+			$res = nethvplan_getDestination($data[$dest][$id]['green_flow']);
 			$destNew = $res[0];
 			$idDest = $res[1];
 
@@ -800,7 +800,7 @@ function bindConnection($data, $dest, $id) {
 
 			array_push($arrayTmp, $con1);
 
-			$res = getDestination($data[$dest][$id]['red_flow']);
+			$res = nethvplan_getDestination($data[$dest][$id]['red_flow']);
 			$destNew = $res[0];
 			$idDest = $res[1];
 
@@ -822,7 +822,7 @@ function bindConnection($data, $dest, $id) {
 		break;
 		case "timeconditions":
 				$arrayTmp = array();
-				$res = getDestination($data[$dest][$id]['truegoto']);
+				$res = nethvplan_getDestination($data[$dest][$id]['truegoto']);
 				$destNew = $res[0];
 				$idDest = $res[1];
 
@@ -840,7 +840,7 @@ function bindConnection($data, $dest, $id) {
 
 				array_push($arrayTmp, $con1);
 
-				$res = getDestination($data[$dest][$id]['falsegoto']);
+				$res = nethvplan_getDestination($data[$dest][$id]['falsegoto']);
 				$destNew = $res[0];
 				$idDest = $res[1];
 
@@ -862,7 +862,7 @@ function bindConnection($data, $dest, $id) {
 		break;
 		case "ivr":
 			$arrayTmp = array();
-			$res = getDestination($data[$dest][$id]['invalid_destination']);
+			$res = nethvplan_getDestination($data[$dest][$id]['invalid_destination']);
 			$destNew = $res[0];
 			$idDest = $res[1];
 
@@ -880,7 +880,7 @@ function bindConnection($data, $dest, $id) {
 
 			array_push($arrayTmp, $con1);
 
-			$res = getDestination($data[$dest][$id]['timeout_destination']);
+			$res = nethvplan_getDestination($data[$dest][$id]['timeout_destination']);
 			$destNew = $res[0];
 			$idDest = $res[1];
 
@@ -899,7 +899,7 @@ function bindConnection($data, $dest, $id) {
 			array_push($arrayTmp, $con2);
 
 			foreach ($data[$dest][$id]['selections'] as $value) {
-				$res = getDestination($value['dest']);
+				$res = nethvplan_getDestination($value['dest']);
 				$destNew = $res[0];
 				$idDest = $res[1];
 
@@ -921,7 +921,7 @@ function bindConnection($data, $dest, $id) {
 		break;
 
 		case "ext-queues":
-			$res = getDestination($data[$dest][$id]['dest']);
+			$res = nethvplan_getDestination($data[$dest][$id]['dest']);
 			$destNew = $res[0];
 			$idDest = $res[1];
 
@@ -937,7 +937,7 @@ function bindConnection($data, $dest, $id) {
 			);
 		break;
 		case "ext-group":
-			$res = getDestination($data[$dest][$id]['postdest']);
+			$res = nethvplan_getDestination($data[$dest][$id]['postdest']);
 			$destNew = $res[0];
 			$idDest = $res[1];
 
@@ -959,7 +959,7 @@ function bindConnection($data, $dest, $id) {
 }
 
 // searching connections function
-function explore($data, $destination, $destArray) {
+function nethvplan_explore($data, $destination, $destArray) {
 
 	global $xPos;
 	global $xOffset;
@@ -977,7 +977,7 @@ function explore($data, $destination, $destArray) {
 		array_push($destArray, $destination);
 
 		// get destination field and id
-		$res = getDestination($destination);
+		$res = nethvplan_getDestination($destination);
 		$dest = $res[0];
 		$id = $res[1];
 
@@ -985,109 +985,109 @@ function explore($data, $destination, $destArray) {
 		// add widget and connections
 		switch($dest) {
 			case "from-did-direct":
-				$widget = bindData($data, $dest, $id);
+				$widget = nethvplan_bindData($data, $dest, $id);
 				// add widget
 				array_push($widgets, $widget);
 			break;
 			case "ext-meetme":
-				$widget = bindData($data, $dest, $id);
+				$widget = nethvplan_bindData($data, $dest, $id);
 				// add widget
 				array_push($widgets, $widget);
 			break;
 			case "app-blackhole":
-				$widget = bindData($data, $dest, $id);
+				$widget = nethvplan_bindData($data, $dest, $id);
 				// add widget
 				array_push($widgets, $widget);
 			break;
 			case "ext-local":
-				$widget = bindData($data, $dest, $id);
+				$widget = nethvplan_bindData($data, $dest, $id);
 				// add widget
 				array_push($widgets, $widget);
 			break;
 
 			case "night":
-				$widget = bindData($data, $dest, $id);
+				$widget = nethvplan_bindData($data, $dest, $id);
 				array_push($widgets, $widget);
 
-				$connection = bindConnection($data, $dest, $id);
+				$connection = nethvplan_bindConnection($data, $dest, $id);
 				array_push($connections, $connection);
 
-				explore($data, $data[$dest][$id]['dest'], $destArray);
+				nethvplan_explore($data, $data[$dest][$id]['dest'], $destArray);
 			break;
 			case "app-announcement":
-				$widget = bindData($data, $dest, $id);
+				$widget = nethvplan_bindData($data, $dest, $id);
 				// add widget
 				array_push($widgets, $widget);
 
-				$connection = bindConnection($data, $dest, $id);
+				$connection = nethvplan_bindConnection($data, $dest, $id);
 				array_push($connections, $connection);
 
-				explore($data, $data[$dest][$id]['postdest'], $destArray);
+				nethvplan_explore($data, $data[$dest][$id]['postdest'], $destArray);
 			break;
 			case "app-daynight":
-				$widget = bindData($data, $dest, $id);
+				$widget = nethvplan_bindData($data, $dest, $id);
 				// add widget
 				array_push($widgets, $widget);
 
-				$connection = bindConnection($data, $dest, $id);
+				$connection = nethvplan_bindConnection($data, $dest, $id);
 				foreach ($connection as $arr) {
 					// add connection
 					array_push($connections, $arr);
 				}
 
-				explore($data, $data[$dest][$id]['green_flow'], $destArray);
-				explore($data, $data[$dest][$id]['red_flow'], $destArray);
+				nethvplan_explore($data, $data[$dest][$id]['green_flow'], $destArray);
+				nethvplan_explore($data, $data[$dest][$id]['red_flow'], $destArray);
 			break;
 			case "timeconditions":
-				$widget = bindData($data, $dest, $id);
+				$widget = nethvplan_bindData($data, $dest, $id);
 				// add widget
 				array_push($widgets, $widget);
 
-				$connection = bindConnection($data, $dest, $id);
+				$connection = nethvplan_bindConnection($data, $dest, $id);
 				foreach ($connection as $arr) {
 					// add connection
 					array_push($connections, $arr);
 				}
 
-				explore($data, $data[$dest][$id]['truegoto'], $destArray);
-				explore($data, $data[$dest][$id]['falsegoto'], $destArray);
+				nethvplan_explore($data, $data[$dest][$id]['truegoto'], $destArray);
+				nethvplan_explore($data, $data[$dest][$id]['falsegoto'], $destArray);
 			break;
 			case "ivr":
-				$widget = bindData($data, $dest, $id);
+				$widget = nethvplan_bindData($data, $dest, $id);
 				// add widget
 				array_push($widgets, $widget);
 
-				$connection = bindConnection($data, $dest, $id);
+				$connection = nethvplan_bindConnection($data, $dest, $id);
 				foreach ($connection as $arr) {
 					// add connection
 					array_push($connections, $arr);
 				}
 
-				explore($data, $data[$dest][$id]['invalid_destination'], $destArray);
-				explore($data, $data[$dest][$id]['timeout_destination'], $destArray);
+				nethvplan_explore($data, $data[$dest][$id]['invalid_destination'], $destArray);
+				nethvplan_explore($data, $data[$dest][$id]['timeout_destination'], $destArray);
 				foreach ($data[$dest][$id]['selections'] as $value) {
-					explore($data, $value['dest'], $destArray);
+					nethvplan_explore($data, $value['dest'], $destArray);
 				}
 			break;
 			case "ext-queues":
-				$widget = bindData($data, $dest, $id);
+				$widget = nethvplan_bindData($data, $dest, $id);
 				// add widget
 				array_push($widgets, $widget);
 
-				$connection = bindConnection($data, $dest, $id);
+				$connection = nethvplan_bindConnection($data, $dest, $id);
 				array_push($connections, $connection);
 
-				explore($data, $data[$dest][$id]['dest'], $destArray);
+				nethvplan_explore($data, $data[$dest][$id]['dest'], $destArray);
 			break;
 			case "ext-group":
-				$widget = bindData($data, $dest, $id);
+				$widget = nethvplan_bindData($data, $dest, $id);
 				// add widget
 				array_push($widgets, $widget);
 
-				$connection = bindConnection($data, $dest, $id);
+				$connection = nethvplan_bindConnection($data, $dest, $id);
 				array_push($connections, $connection);
 
-				explore($data, $data[$dest][$id]['postdest'], $destArray);
+				nethvplan_explore($data, $data[$dest][$id]['postdest'], $destArray);
 			break;
 
 			default:
@@ -1116,7 +1116,7 @@ function explore($data, $destination, $destArray) {
 	}
 }
 
-function json_pretty($json, $options = array()) {
+function nethvplan_json_pretty($json, $options = array()) {
     $tokens = preg_split('|([\{\}\]\[,])|', $json, -1, PREG_SPLIT_DELIM_CAPTURE);
     $result = '';
     $indent = 0;
