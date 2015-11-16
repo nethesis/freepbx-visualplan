@@ -1,4 +1,4 @@
 [nethvplan]
 type=setup
-category=Admin
-
+category=Base Objects
+name=Visual Plan
