@@ -207,7 +207,7 @@ example.Toolbar = Class.extend({
                     }, 5000);
                 } else {
                     $.ajax({
-                        url: "/nethvoice/admin/nethvplan/create.php?",
+                        url: "./create.php?",
                         type: "POST",
                         data: "jsonData=" + window.btoa(unescape(encodeURIComponent(JSON.stringify(json)))),
                         beforeSend: function(xhr) {

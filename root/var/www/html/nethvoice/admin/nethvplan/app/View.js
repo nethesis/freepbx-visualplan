@@ -107,7 +107,7 @@ example.View = draw2d.Canvas.extend({
                             var htmlInj = "";
                             // get data
                             $.ajax({
-                                url: "/nethvoice/admin/nethvplan/visualize.php?getAll=" + event.dropped[0].id,
+                                url: "./visualize.php?getAll=" + event.dropped[0].id,
                                 context: document.body,
                                 beforeSend: function(xhr) {
                                     $('#loader').show();
@@ -147,7 +147,7 @@ example.View = draw2d.Canvas.extend({
                                     var getChildDest = window.btoa(unescape(encodeURIComponent(childDestStr)));
 
                                     $.ajax({
-                                        url: "/nethvoice/admin/nethvplan/visualize.php?getChild=" + getChildId + "&getChildDest=" + getChildDest,
+                                        url: "./visualize.php?getChild=" + getChildId + "&getChildDest=" + getChildDest,
                                         context: document.body,
                                         beforeSend: function(xhr) {
                                             $('#loader').show();
@@ -287,7 +287,7 @@ example.View = draw2d.Canvas.extend({
         }
 
         $.ajax({
-            url: "/nethvoice/admin/nethvplan/visualize.php?readData=" + type,
+            url: "./visualize.php?readData=" + type,
             context: document.body,
             beforeSend: function(xhr) {
                 $('#loader').show();
@@ -455,7 +455,7 @@ example.View = draw2d.Canvas.extend({
 
             case "ext-local":
                 $.ajax({
-                    url: "/nethvoice/admin/nethvplan/visualize.php?readData=from-did-direct",
+                    url: "./visualize.php?readData=from-did-direct",
                     context: document.body,
                     beforeSend: function(xhr) {
                         $('#loader').show();
@@ -497,7 +497,7 @@ example.View = draw2d.Canvas.extend({
 
             case "ivr":
                 $.ajax({
-                    url: "/nethvoice/admin/nethvplan/visualize.php?readData=recordings",
+                    url: "./visualize.php?readData=recordings",
                     context: document.body,
                     beforeSend: function(xhr) {
                         $('#loader').show();
@@ -528,7 +528,7 @@ example.View = draw2d.Canvas.extend({
 
             case "app-announcement":
                 $.ajax({
-                    url: "/nethvoice/admin/nethvplan/visualize.php?readData=recordings",
+                    url: "./visualize.php?readData=recordings",
                     context: document.body,
                     beforeSend: function(xhr) {
                         $('#loader').show();
@@ -558,7 +558,7 @@ example.View = draw2d.Canvas.extend({
 
             case "timeconditions":
                 $.ajax({
-                    url: "/nethvoice/admin/nethvplan/visualize.php?readData=timegroups",
+                    url: "./visualize.php?readData=timegroups",
                     context: document.body,
                     beforeSend: function(xhr) {
                         $('#loader').show();
@@ -587,7 +587,7 @@ example.View = draw2d.Canvas.extend({
 
             case "app-daynight":
                 $.ajax({
-                    url: "/nethvoice/admin/nethvplan/visualize.php?readData=codeavailable",
+                    url: "./visualize.php?readData=codeavailable",
                     context: document.body,
                     beforeSend: function(xhr) {
                         $('#loader').show();

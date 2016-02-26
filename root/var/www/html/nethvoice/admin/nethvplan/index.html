@@ -92,7 +92,7 @@
 
         if (id != "new_route") {
             $.ajax({
-                url: "/nethvoice/admin/nethvplan/visualize.php?id=" + id,
+                url: "./visualize.php?id=" + id,
                 context: document.body,
                 beforeSend: function(xhr) {
                     $('#loader').show();
