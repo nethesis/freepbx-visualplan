@@ -6,4 +6,5 @@ my $event = 'nethvoice-module-nethvplan-update';
 
 event_link ("nethvoice-module-nethvplan-install", $event ,'90');
 templates2events ("/etc/asterisk/freepbx_menu.conf",$event);
+templates2events ("/var/www/html/nethvoice/add_ons.php",$event);
 
