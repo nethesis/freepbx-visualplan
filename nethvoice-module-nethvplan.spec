@@ -1,5 +1,5 @@
 Name:		nethvoice-module-nethvplan
-Version: 1.0.2
+Version: 1.0.3
 Release: 1%{?dist}
 Summary:	A module to visualize and edit FreePBX dialplan
 Group:		Networking/Daemons	
@@ -41,6 +41,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,asterisk,asterisk)
 
 %changelog
+* Mon Mar 14 2016 Stefano Fancello <stefano.fancello@nethesis.it> - 1.0.3-1
+- Add support for vplan in home. Refs #4064
+
 * Fri Feb 26 2016 Stefano Fancello <stefano.fancello@nethesis.it> - 1.0.2-1
 - use relative path. Refs #4059
 
