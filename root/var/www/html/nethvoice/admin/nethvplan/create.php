@@ -69,10 +69,6 @@ function nethvplan_switchCreate($wType, $value, $connectionArray) {
 			$descriptionParts = explode(")", $partsNum[1]);
 			$description = trim($descriptionParts[0]);
 
-			// if($cidnum && substr($cidnum, -1) != ".") {
-			// 	$cidnum = $cidnum.".";
-			// }
-
 			$destinations = nethvplan_getDestination($value, $connectionArray);
 			$destination = trim($destinations["output_".$value['entities'][0]['id']]);
 
@@ -126,7 +122,7 @@ function nethvplan_switchCreate($wType, $value, $connectionArray) {
 				$timeend = trim($dateparts[1]);
 				$timestampEnd = strtotime(str_replace('/', '-', $timeend)) + $offset;
 				$timestampEnd = $timestampEnd - $offset;
-				
+
 				$timeend = date("Y-m-d H:i:s", $timestampEnd);
 				$date = 'custom';
 			}
@@ -158,7 +154,7 @@ function nethvplan_switchCreate($wType, $value, $connectionArray) {
 				));
 				$idReturn = $id;
 			}
-			
+
 			nethvplan_nightGetSource($value['id'], $connectionArray, $idReturn);
 		break;
 
@@ -231,7 +227,7 @@ function nethvplan_switchCreate($wType, $value, $connectionArray) {
 				conferences_add($extension, $name);
 			} else {
 				conferences_del($extension);
-				conferences_add($extension, $name);
+				conferences_add($extension, $name, $exists['userpin'], $exists['adminpin'], $exists['options'], $exists['joinmsg_id'], $exists['music'], $exists['users']);
 			}
 		break;
 		case "ext-group":
@@ -248,7 +244,8 @@ function nethvplan_switchCreate($wType, $value, $connectionArray) {
 				ringgroups_add($extension, "ringall", "300", $list, $destination, $name);
 			} else {
 				ringgroups_del($extension);
-				ringgroups_add($extension, "ringall", "300", $list, $destination, $name);
+				ringgroups_add($extension, $exists['strategy'], $exists['grptime'], $list, $destination, $name,
+                $exists['grppre'],$exists['annmsg_id'],$exists['alertinfo'],$exists['needsconf'],$exists['remotealert_id'],$exists['toolate_id'],$exists['ringing'],$exists['cwignore'],$exists['cfignore'],$exists['changecid'],$exists['fixedcid'],$exists['cpickup'],$exists['recording']);
 			}
 		break;
 		case "ext-queues":
@@ -256,7 +253,7 @@ function nethvplan_switchCreate($wType, $value, $connectionArray) {
 			$name = trim($parts[0]);
 			$extParts = explode(")", $parts[1]);
 			$extension = trim($extParts[0]);
-			
+
 			$listStatic = explode("\n", $value['entities'][2]['text']);
 			foreach ($listStatic as $k => $v) {
 				$listStatic[$k] = "Local/".$v."@from-queue/n,0";
@@ -270,7 +267,34 @@ function nethvplan_switchCreate($wType, $value, $connectionArray) {
 				queues_add($extension, $name, "", "", $destination, "", $listStatic, "","","","","","","0", $listDynamic, "","","","","","", "", "", "");
 			} else {
 				queues_del($extension);
-				queues_add($extension, $name, "", "", $destination, "", $listStatic, "","","","","","","0", $listDynamic, "","","","","","", "", "", "");
+                $_REQUEST['maxlen'] = $exists['maxlen'];
+                $_REQUEST['joinempty'] = $exists['joinempty'];
+                $_REQUEST['leavewhenempty'] = $exists['leavewhenempty'];
+                $_REQUEST['strategy'] = $exists['strategy'];
+                $_REQUEST['timeout'] = $exists['timeout'];
+                $_REQUEST['autopause'] = $exists['autopause'];
+                $_REQUEST['retry'] = $exists['retry'];
+                $_REQUEST['wrapuptime'] = $exists['wrapuptime'];
+                $_REQUEST['announcefreq'] = $exists['announce-frequency'];
+                $_REQUEST['announceholdtime'] = $exists['announce-holdtime'];
+                $_REQUEST['announceposition'] = $exists['announce-position'];
+                $_REQUEST['queue-youarenext'] = $exists['queue-youarenext'];
+                $_REQUEST['queue-thereare'] = $exists['queue-thereare'];
+                $_REQUEST['queue-callswaiting'] = $exists['queue-callswaiting'];
+                $_REQUEST['queue-thankyou'] = $exists['queue-thankyou'];
+                $_REQUEST['pannouncefreq'] = $exists['periodic-announce-frequency'];
+                $_REQUEST['monitor-format'] = $exists['monitor-format'];
+                $_REQUEST['monitor-join'] = $exists['monitor-join'];
+                $_REQUEST['eventwhencalled'] = $exists['eventwhencalled'];
+                $_REQUEST['eventmemberstatus'] = $exists['eventmemberstatus'];
+                $_REQUEST['weight'] = $exists['weight'];
+                $_REQUEST['autofill'] = $exists['autofill'];
+                $_REQUEST['ringinuse'] = $exists['ringinuse'];
+                $_REQUEST['reportholdtime'] = $exists['reportholdtime'];
+                $_REQUEST['servicelevel'] = $exists['servicelevel'];
+                $_REQUEST['memberdelay'] = $exists['memberdelay'];
+                $_REQUEST['timeoutrestart'] = $exists['timeoutrestart'];
+				queues_add($extension, $name, $exists['password'], $exists['prefix'], $destination, $exists['agentannounce_id'], $listStatic, $exists['joinannounce_id'], $exists['maxwait'], $exists['alertinfo'], $exists['cwignore'], $exists['qregex'], $exists['queuewait'], $exists['use_queue_context'], $listDynamic, $exists['dynmemberonly'],$exists['togglehint'],$exists['qnoanswer'],$exists['callconfirm'],$exists['callconfirm_id'],$exists['monitor_type'], $exists['monitor_heard'], $exists['monitor_spoken'], $exists['answered_elsewhere']);
 			}
 		break;
 		case "app-announcement":
@@ -295,10 +319,11 @@ function nethvplan_switchCreate($wType, $value, $connectionArray) {
 					$currentCreated[$value['id']] = $id;
 					$destinations = nethvplan_getDestination($value, $connectionArray);
 					$destination = trim($destinations["output_".$value['entities'][2]['id']]);
-					announcement_edit($id, $name, $rec_id, "", $destination);
+                    $exists = announcement_get($id);
+					announcement_edit($id, $name, $rec_id, $exists['allow_skip'], $destination, $exists['return_ivr'], $exists['noanswer'], $exists['repeat_msg']);
 					$idReturn = $id;
 				}
-				
+
 			}
 		break;
 
@@ -316,7 +341,7 @@ function nethvplan_switchCreate($wType, $value, $connectionArray) {
 			$announcement = trim($annExParts[0]);
 
 			if(!array_key_exists($value['id'], $currentCreated)) {
-				
+
 
 				if(empty($invDest)) $invDest = "";
 				if(empty($timeDest)) $timeDest = "";
@@ -375,29 +400,30 @@ function nethvplan_switchCreate($wType, $value, $connectionArray) {
 						"invalid_append_announce" => 0,
 					));
 				} else {
+                    $exists = ivr_get_details($id);
 					$idIVR = ivr_save_details(array(
 						"id" => $id,
 						"name" => $name,
 						"description" => $description,
 						"announcement" => $announcement,
 
-						"directdial" => 0,
-						"invalid_loops" => 0,
-						"invalid_retry_recording" => 0,
+						"directdial" => $exists['directdial'],
+						"invalid_loops" => $exists['invalid_loops'],
+						"invalid_retry_recording" => $exists['invalid_retry_recording'],
 
 						"invalid_destination" => $invDest,
 
-						"invalid_recording" => 0,
-						"retvm" => 0,
-						"timeout_time" => 10,
-						"timeout_recording" => 0,
-						"timeout_retry_recording" => 0,
+						"invalid_recording" => $exists['invalid_recording'],
+						"retvm" => $exists['retvm'],
+						"timeout_time" => $exists['timeout_time'],
+						"timeout_recording" => $exists['timeout_recording'],
+						"timeout_retry_recording" => $exists['timeout_retry_recording'],
 
 						"timeout_destination" => $timeDest,
 
-						"timeout_loops" => 0,
-						"timeout_append_announce" => 0,
-						"invalid_append_announce" => 0,
+						"timeout_loops" => $exists['timeout_loops'],
+						"timeout_append_announce" => $exists['timeout_append_announce'],
+						"invalid_append_announce" => $exists['invalid_append_announce'],
 					));
 					$currentCreated[$value['id']] = $idIVR;
 					$destinations = nethvplan_getDestination($value, $connectionArray, $currentCreated, $wType);
@@ -409,23 +435,23 @@ function nethvplan_switchCreate($wType, $value, $connectionArray) {
 						"description" => $description,
 						"announcement" => $announcement,
 
-						"directdial" => 0,
-						"invalid_loops" => 0,
-						"invalid_retry_recording" => 0,
+                        "directdial" => $exists['directdial'],
+						"invalid_loops" => $exists['invalid_loops'],
+						"invalid_retry_recording" => $exists['invalid_retry_recording'],
 
 						"invalid_destination" => $invDest,
 
-						"invalid_recording" => 0,
-						"retvm" => 0,
-						"timeout_time" => 10,
-						"timeout_recording" => 0,
-						"timeout_retry_recording" => 0,
+                        "invalid_recording" => $exists['invalid_recording'],
+						"retvm" => $exists['retvm'],
+						"timeout_time" => $exists['timeout_time'],
+						"timeout_recording" => $exists['timeout_recording'],
+						"timeout_retry_recording" => $exists['timeout_retry_recording'],
 
 						"timeout_destination" => $timeDest,
 
-						"timeout_loops" => 0,
-						"timeout_append_announce" => 0,
-						"invalid_append_announce" => 0,
+                        "timeout_loops" => $exists['timeout_loops'],
+						"timeout_append_announce" => $exists['timeout_append_announce'],
+						"invalid_append_announce" => $exists['invalid_append_announce'],
 					));
 					$idReturn = $idIVR;
 				}
@@ -435,9 +461,7 @@ function nethvplan_switchCreate($wType, $value, $connectionArray) {
 
 				foreach($value['entities'] as $k => $v) {
 					if ($k < 4) continue;
-					//$ext[$v['text']] = $v['text'];
 					$ext[] = $v['text'];
-					//$goto[$v['text']] = trim($destinations["output_".$v['id']]);
 					$goto[] = trim($destinations["output_".$v['id']]);
 				}
 				$ivrArray['ext'] = $ext;
@@ -480,6 +504,7 @@ function nethvplan_switchCreate($wType, $value, $connectionArray) {
 				} else {
 					$currentCreated[$value['id']] = $id;
 					$destinations = nethvplan_getDestination($value, $connectionArray, $currentCreated, $wType);
+                    $exists = timeconditions_get($id);
 					timeconditions_edit($id, array(
 						"displayname" => $name,
 						"time" => $time,
@@ -487,7 +512,9 @@ function nethvplan_switchCreate($wType, $value, $connectionArray) {
 						"goto0" => "falsegoto",
 						"truegoto1" => trim($destinations["output_".$value['entities'][3]['id']]),
 						"falsegoto0" => trim($destinations["output_".$value['entities'][2]['id']]),
-						"deptname" => ""
+						"deptname" => $exists['deptname'],
+                        "generate_hint" => $exists['generate_hint'],
+                        "override_fc" => strlen($exists['tccode']) > 0 ? '1' : '0'
 					));
 					$idReturn = $id;
 				}
@@ -500,11 +527,11 @@ function nethvplan_switchCreate($wType, $value, $connectionArray) {
 			$controlCode = substr(trim($extParts[0]), -1);
 
 			$destinations = nethvplan_getDestination($value, $connectionArray, $currentCreated, $wType);
-
+            $exists = daynight_get_obj($controlCode);
 			daynight_edit(array(
-				"day_recording_id" => "0",
-				"night_recording_id" => "0",
-				"state" => "DAY",
+				"day_recording_id" => $exists['day_recording_id'],
+				"night_recording_id" => $exists['night_recording_id'],
+				"state" => strlen($exists['state']) > 0 ? $exists['state'] : 'DAY',
 				"fc_description" => $name,
 				"goto1" => "truegoto",
 				"goto0" => "falsegoto",
