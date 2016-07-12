@@ -180,7 +180,7 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                             name: languages[browserLang]["base_add_ivr_opt_string"]
                         };
                         items["delete"] = {
-                            name: languages[browserLang]["base_delete_ivr_opt_string"] +" "+ emitter.text
+                            name: languages[browserLang]["base_delete_ivr_opt_string"] + " " + emitter.text
                         };
                     }
                     $.contextMenu({

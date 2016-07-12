@@ -235,7 +235,7 @@ function nethvplan_switchCreate($wType, $value, $connectionArray) {
 			$name = trim($parts[0]);
 			$extParts = explode(")", $parts[1]);
 			$extension = trim($extParts[0]);
-			$list = str_replace(',', '-', $value['entities'][2]['text']);
+            $list = preg_replace('/\s+/', '-',$value['entities'][2]['text']);
 
 			$destinations = nethvplan_getDestination($value, $connectionArray, $currentCreated, $wType);
 			$destination = trim($destinations["output_".$value['entities'][3]['id']]);
