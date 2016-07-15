@@ -1,5 +1,5 @@
 Name:		nethvoice-module-nethvplan
-Version: 1.0.5
+Version: 1.0.6
 Release: 1%{?dist}
 Summary:	A module to visualize and edit FreePBX dialplan
 Group:		Networking/Daemons	
@@ -41,6 +41,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,asterisk,asterisk)
 
 %changelog
+* Fri Jul 15 2016 Alessandro Polidori <alessandro.polidori@nethesis.it> - 1.0.6-1
+- ringgroup. fix creation with multiple extensions. Refs #4195
+
 * Fri May 27 2016 Stefano Fancello <stefano.fancello@nethesis.it> - 1.0.5-1
 - Fix reset field of object on save. Refs #4150
 
