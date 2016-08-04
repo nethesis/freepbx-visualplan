@@ -35,7 +35,7 @@ if(function_exists("nethnight_list")){
 // incoming data
 $get_data = core_did_list();
 foreach ($get_data as $key => $row) {
-	
+
 	if($row['cidnum'] != "") {
 		$data['incoming'][$row['extension']." / ".$row['cidnum']]['destination'] = $row['destination'];
 		$data['incoming'][$row['extension']." / ".$row['cidnum']]['description'] = $row['description'];
@@ -75,7 +75,7 @@ foreach ($get_data as $key => $row) {
 											"voicemail" => $row[2]
 										   );
 	}
-	
+
 }
 
 // ivr - ivr-id,s,1
@@ -94,7 +94,7 @@ foreach ($get_data as $key => $row) {
 														 			   		 "dest" => $value['dest']
 																	 );
 	}
-	
+
 }
 
 // timeconditions - timeconditions,id,1
@@ -227,12 +227,12 @@ foreach ($_GET as $key => $value) {
 
 		case "getChild":
 			$tmpDestArray = array();
-			
+
 			$dest = base64_decode($_GET["getChild"]);
 			$finalDest = base64_decode($_GET["getChildDest"]);
 			$pieces = explode("|", $finalDest);
 			unset($pieces[count($pieces)-1]);
-			
+
 			foreach ($pieces as $d) {
 				$cDest = explode("%", $dest);
 				$connection = nethvplan_bindConnection($data, $cDest[0], $cDest[1]);
@@ -361,10 +361,8 @@ function nethvplan_getDestination($destination) {
 		$id = $dests[2];
 	} else if(preg_match('/^night/', $destination)) {
 		$values = explode(",", $destination);
-		$idlong = $values[1];
 		$dest = $values[0];
-		$ids = str_split($idlong);
-		$id = $ids[1];
+		$id = substr($values[1], 1, -1);
 	} else {
 		$values = explode(",", $destination);
 		$dest = $values[0];
@@ -979,7 +977,7 @@ function nethvplan_explore($data, $destination, $destArray) {
 		$dest = $res[0];
 		$id = $res[1];
 
-		// choose correct destination and 
+		// choose correct destination and
 		// add widget and connections
 		switch($dest) {
 			case "from-did-direct":
@@ -1169,7 +1167,7 @@ function nethvplan_json_pretty($json, $options = array()) {
             $result .= ( $inLiteral ? '' : $prefix ) . $token;
 
             // Count # of unescaped double-quotes in token, subtract # of
-            // escaped double-quotes and if the result is odd then we are 
+            // escaped double-quotes and if the result is odd then we are
             // inside a string literal
             if ((substr_count($token, "\"") - substr_count($token, "\\\"")) % 2 != 0) {
                 $inLiteral = !$inLiteral;
