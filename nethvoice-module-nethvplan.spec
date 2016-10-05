@@ -38,6 +38,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files -f %{name}-%{version}-filelist
 %defattr(-,asterisk,asterisk)
+%dir %{_nseventsdir}/nethvoice-module-nethvplan-update
 
 %changelog
 * Fri Jul 15 2016 Alessandro Polidori <alessandro.polidori@nethesis.it> - 1.0.6-1
