@@ -7,7 +7,6 @@ License:	GPL
 Source0:	%{name}-%{version}.tar.gz
 BuildRoot:	%(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 BuildArch:	noarch
-Autoreq:	no
 BuildRequires:  nethserver-devtools	
 BuildRequires:  gettext
 Requires:   	nethserver-nethvoice
