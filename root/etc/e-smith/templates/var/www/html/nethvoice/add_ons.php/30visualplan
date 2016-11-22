@@ -1,3 +1,0 @@
-{
-    $OUT.='$addons["NETHVISUALPLAN"] = true;'."\n";
-}
