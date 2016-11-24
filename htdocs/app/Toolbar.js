@@ -245,7 +245,8 @@ example.Toolbar = Class.extend({
                                     }
                                 }
                             }
-                        } else {
+                        } else { //TODO: maybe never executed?
+                          $('#loader').hide();
                             $('#errorer').children().eq(0).html("&nbsp;&nbsp;" + languages[browserLang]["toolbar_not_save_string"]);
                             $('#errorer').children().eq(1).html("&nbsp;&nbsp;" + languages[browserLang]["toolbar_not_save_log_string"]);
                             $('#errorer').fadeIn("slow");
@@ -255,6 +256,14 @@ example.Toolbar = Class.extend({
                                 $('#errorer').fadeOut("slow");
                             }, 5000);
                         }
+                    }).fail(function (err) {
+                        $('#loader').hide();
+                        $('#errorer').children().eq(0).html("&nbsp;&nbsp;" + languages[browserLang]["toolbar_not_save_string"]);
+                        $('#errorer').children().eq(1).html("&nbsp;&nbsp;" + languages[browserLang]["toolbar_not_save_log_string"]);
+                        $('#errorer').fadeIn("slow");
+                        setTimeout(function() {
+                            $('#errorer').fadeOut("slow");
+                        }, 5000);
                     });
                 }
             });
