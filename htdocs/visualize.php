@@ -1,6 +1,32 @@
 <?php
 
-require('/etc/freepbx.conf');
+if (!@include_once(getenv('FREEPBX_CONF') ? getenv('FREEPBX_CONF') : '/etc/freepbx.conf')) {
+	include_once('/etc/asterisk/freepbx.conf');
+}
+
+// bypass freepbx authentication
+define('FREEPBX_IS_AUTH', 1);
+
+// Include all installed modules class
+if ($handle = opendir(__DIR__. '/../..')) {
+    while (false !== ($entry = readdir($handle))) {
+        if ($entry != "." && $entry != "..") {
+					$moduleClass = __DIR__. '/../../'. $entry. '/'. ucfirst($entry). '.class.php';
+					$funcFile = __DIR__. '/../../'. $entry. '/functions.inc.php';
+
+					// include main module class
+					if (is_file($moduleClass)) {
+						include_once($moduleClass);
+					}
+
+					// include functions.inc.php (deprecated but neeeded for some modules)
+					if (is_file($funcFile)) {
+						include_once($funcFile);
+					}
+        }
+    }
+    closedir($handle);
+}
 
 // read i18n data
 $lang = $_COOKIE['lang'];
@@ -33,7 +59,7 @@ if(function_exists("nethnight_list")){
 }
 
 // incoming data
-$get_data = core_did_list();
+$get_data = FreePBX::Core()->getAllDIDs('extension');
 foreach ($get_data as $key => $row) {
 
 	if($row['cidnum'] != "") {
@@ -60,7 +86,7 @@ foreach ($get_data as $key => $row) {
 }
 
 // internal data - from-did-direct,id,1
-$get_data = core_users_list();
+$get_data = FreePBX::Core()->listUsers(false);
 foreach ($get_data as $key => $row) {
 	$data['from-did-direct'][$row[0]] = array("name" => $row[1],
 											  "voicemail" => $row[2]
@@ -68,7 +94,7 @@ foreach ($get_data as $key => $row) {
 }
 
 // voicemail - ext-local,vm(b|s|u)201,1
-$get_data = core_users_list();
+$get_data = FreePBX::Core()->listUsers(false);
 foreach ($get_data as $key => $row) {
 	if($row[2] != "novm") {
 		$data['ext-local'][$row[0]] = array("name" => $row[1],
@@ -79,7 +105,7 @@ foreach ($get_data as $key => $row) {
 }
 
 // ivr - ivr-id,s,1
-$get_data = ivr_get_details();
+$get_data = FreePBX::Ivr()->getDetails();
 foreach ($get_data as $key => $row) {
 	$data['ivr'][$row['id']]["name"] = $row['name'];
 	$data['ivr'][$row['id']]["id"] = $row['id'];
@@ -98,7 +124,7 @@ foreach ($get_data as $key => $row) {
 }
 
 // timeconditions - timeconditions,id,1
-$get_data = timeconditions_list();
+$get_data = FreePBX::Timeconditions()->listTimeconditions(false);
 foreach ($get_data as $key => $row) {
 	$data['timeconditions'][$row['timeconditions_id']] = array(	"displayname" => $row['displayname'],
 																"time" => $row['time'],
@@ -106,7 +132,7 @@ foreach ($get_data as $key => $row) {
 																"falsegoto" => $row['falsegoto']
 																);
 }
-$timegroups = timeconditions_timegroups_list_groups();
+$timegroups = FreePBX::Timeconditions()->listTimegroups();
 foreach ($timegroups as $key => $row) {
 	$data['timegroups'][$row[0]] = array("id" => $row[0],
 								  		"description" => $row[1]
@@ -114,7 +140,7 @@ foreach ($timegroups as $key => $row) {
 }
 
 // announcement - app-announcement-1,s,1
-$get_data = announcement_list();
+$get_data = FreePBX::Announcement()->getAnnouncements();
 foreach ($get_data as $key => $row) {
 	$rec_details = recordings_get($row['recording_id']);
 	$data['app-announcement'][$row['announcement_id']] = array(	"description" => $row['description'],
@@ -124,7 +150,7 @@ foreach ($get_data as $key => $row) {
 															"rec_id" => $row['recording_id']
 														  );
 }
-$recordings = recordings_list();
+$recordings = FreePBX::Recordings()->getAllRecordings(true);
 foreach ($recordings as $key => $row) {
 	$data['recordings'][$row[0]] = array("name" => $row[1],
 								  		"description" => $row[3]
@@ -132,7 +158,8 @@ foreach ($recordings as $key => $row) {
 }
 
 // call group - ext-group,id,1
-$get_data = ringgroups_list();
+$get_data = FreePBX::Ringgroups()->listRinggroups(false);
+error_log(print_r($get_data, true));
 foreach ($get_data as $key => $row) {
 	$group_details = ringgroups_get($row['grpnum']);
 	$data['ext-group'][$row['grpnum']] = array(	"num" => $row['grpnum'],
@@ -143,7 +170,7 @@ foreach ($get_data as $key => $row) {
 }
 
 // conference - ext-meetme,id,1
-$get_data = conferences_list();
+$get_data = FreePBX::Conferences()->listConferences();
 foreach ($get_data as $key => $row) {
 	$data['ext-meetme'][$row[0]] = array( "description" => $row[1],
 										  "id"=> $row[0]
@@ -151,7 +178,7 @@ foreach ($get_data as $key => $row) {
 }
 
 // queues - ext-queues,id,1
-$get_data = queues_list();
+$get_data = FreePBX::Queues()->listQueues(false);
 foreach ($get_data as $key => $row) {
 	$queues_details = queues_get($row[0]);
 	$data['ext-queues'][$row[0]] = array( "num" => $row[0],
@@ -649,13 +676,15 @@ function nethvplan_bindData($data, $dest, $id) {
 				"type"=> "output",
 				"destination"=> $data[$dest][$id]['timeout_destination']
 			);
-			foreach ($data[$dest][$id]['selections'] as $value) {
-				$widget['entities'][] = array(
-					"text"=> $value['selection'],
-					"id"=> "selection_".$value['selection']."-".$dest."%".$id,
-					"type"=> "output",
-					"destination"=> $value['dest']
-				);
+			if (array_key_exists('selections', $data[$dest][$id])) {
+				foreach ($data[$dest][$id]['selections'] as $value) {
+					$widget['entities'][] = array(
+						"text"=> $value['selection'],
+						"id"=> "selection_".$value['selection']."-".$dest."%".$id,
+						"type"=> "output",
+						"destination"=> $value['dest']
+					);
+				}
 			}
 		break;
 		case "ext-queues":
@@ -894,24 +923,26 @@ function nethvplan_bindConnection($data, $dest, $id) {
 
 			array_push($arrayTmp, $con2);
 
-			foreach ($data[$dest][$id]['selections'] as $value) {
-				$res = nethvplan_getDestination($value['dest']);
-				$destNew = $res[0];
-				$idDest = $res[1];
+			if (array_key_exists('selections', $data[$dest][$id])) {
+				foreach ($data[$dest][$id]['selections'] as $value) {
+					$res = nethvplan_getDestination($value['dest']);
+					$destNew = $res[0];
+					$idDest = $res[1];
 
-				$con3 = $connectionTemplate;
-				$con3['id'] = $dest."%".$id."=".$value['dest'];
-				$con3['source'] = array(
-					"node"=> $dest."%".$id,
-					"port"=> "output_selection_".$value['selection']."-".$dest."%".$id
-				);
-				$con3['target'] = array(
-					"node"=> $destNew."%".$idDest,
-					"port"=> "input_".$destNew."%".$idDest,
-					"decoration"=> "draw2d.decoration.connection.ArrowDecorator"
-				);
+					$con3 = $connectionTemplate;
+					$con3['id'] = $dest."%".$id."=".$value['dest'];
+					$con3['source'] = array(
+						"node"=> $dest."%".$id,
+						"port"=> "output_selection_".$value['selection']."-".$dest."%".$id
+					);
+					$con3['target'] = array(
+						"node"=> $destNew."%".$idDest,
+						"port"=> "input_".$destNew."%".$idDest,
+						"decoration"=> "draw2d.decoration.connection.ArrowDecorator"
+					);
 
-				array_push($arrayTmp, $con3);
+					array_push($arrayTmp, $con3);
+				}
 			}
 			$connection = $arrayTmp;
 		break;
@@ -1061,8 +1092,10 @@ function nethvplan_explore($data, $destination, $destArray) {
 
 				nethvplan_explore($data, $data[$dest][$id]['invalid_destination'], $destArray);
 				nethvplan_explore($data, $data[$dest][$id]['timeout_destination'], $destArray);
-				foreach ($data[$dest][$id]['selections'] as $value) {
-					nethvplan_explore($data, $value['dest'], $destArray);
+				if (array_key_exists('selections', $data[$dest][$id])) {
+					foreach ($data[$dest][$id]['selections'] as $value) {
+						nethvplan_explore($data, $value['dest'], $destArray);
+					}
 				}
 			break;
 			case "ext-queues":

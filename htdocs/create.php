@@ -1,6 +1,32 @@
 <?php
 
-require('/etc/freepbx.conf');
+if (!@include_once(getenv('FREEPBX_CONF') ? getenv('FREEPBX_CONF') : '/etc/freepbx.conf')) {
+	include_once('/etc/asterisk/freepbx.conf');
+}
+
+// bypass freepbx authentication
+define('FREEPBX_IS_AUTH', 1);
+
+// Include all installed modules class
+if ($handle = opendir(__DIR__. '/../..')) {
+    while (false !== ($entry = readdir($handle))) {
+        if ($entry != "." && $entry != "..") {
+					$moduleClass = __DIR__. '/../../'. $entry. '/'. ucfirst($entry). '.class.php';
+					$funcFile = __DIR__. '/../../'. $entry. '/functions.inc.php';
+
+					// include main module class
+					if (is_file($moduleClass)) {
+						include_once($moduleClass);
+					}
+
+					// include functions.inc.php (deprecated but neeeded for some modules)
+					if (is_file($funcFile)) {
+						include_once($funcFile);
+					}
+        }
+    }
+    closedir($handle);
+}
 
 $json = $_POST['jsonData'];
 $json = base64_decode($json);
@@ -86,14 +112,16 @@ function nethvplan_switchCreate($wType, $value, $connectionArray) {
 					"extension" => $extension,
 					"cidnum" => $cidnum,
 					"description" => $description,
-					"destination" => $destination
+					"destination" => $destination,
+					"mohclass" => "default"
 				), $destination);
 			} else {
 				core_did_add(array(
 					"extension" => $extension,
 					"cidnum" => $cidnum,
 					"description" => $description,
-					"destination" => $destination
+					"destination" => $destination,
+					"mohclass" => "default"
 				), $destination);
 			}
 		break;
@@ -309,12 +337,12 @@ function nethvplan_switchCreate($wType, $value, $connectionArray) {
 			if(!array_key_exists($value['id'], $currentCreated)) {
 
 				if(empty($id)) {
-					$idAnn = announcement_add($name, $rec_id, "", $destination);
+					$idAnn = announcement_add($name, $rec_id, "", $destination, null, null, null);
 					$idReturn = $idAnn;
 					$currentCreated[$value['id']] = $idReturn;
 					$destinations = nethvplan_getDestination($value, $connectionArray);
 					$destination = trim($destinations["output_".$value['entities'][2]['id']]);
-					announcement_edit($idReturn, $name, $rec_id, "", $destination);
+					announcement_edit($idReturn, $name, $rec_id, "", $destination, null, null, null);
 				} else {
 					$currentCreated[$value['id']] = $id;
 					$destinations = nethvplan_getDestination($value, $connectionArray);
@@ -457,7 +485,7 @@ function nethvplan_switchCreate($wType, $value, $connectionArray) {
 				}
 
 				$ivrArray = array();
-				$ivrArray['ivr_ret'] = 0;
+				$ivrArray['ivr_ret'] = array();
 
 				foreach($value['entities'] as $k => $v) {
 					if ($k < 4) continue;
