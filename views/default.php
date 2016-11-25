@@ -10,11 +10,6 @@
 					</div>
 				</div>
 			</div>
-			<div class="col-sm-3 hidden-xs bootnav">
-				<div class="list-group">
-					<?php echo load_view(__DIR__.'/bootnav.php')?>
-				</div>
-			</div>
 		</div>
 	</div>
 </div>

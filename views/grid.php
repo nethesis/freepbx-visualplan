@@ -4,16 +4,24 @@
 //Via BMO AJAX call
 $dataurl = "ajax.php?module=visualplan&command=getJSON&jdata=grid";
 ?>
-<div id="toolbar-all">
-	<button id="remove-all" class="btn btn-danger btn-remove" data-type="extensions" disabled data-section="all">
-		<i class="glyphicon glyphicon-remove"></i> <span><?php echo _('Delete')?></span>
-	</button>
-</div>
-<table id="mygrid" data-url="<?php echo $dataurl?>" data-cache="false" data-toolbar="#toolbar-all" data-maintain-selected="true" data-show-columns="true" data-show-toggle="true" data-toggle="table" data-pagination="true" data-search="true" class="table table-striped">
+<table id="mygrid" data-cache="false" data-toolbar="#toolbar-all" data-maintain-selected="true" data-show-columns="true" data-show-toggle="true" data-toggle="table" data-pagination="true" data-search="true" class="table table-striped">
 	<thead>
 		<tr>
 			<th data-field="name"><?php echo _("Items")?></th>
 			<th data-field="link" data-formatter="linkFormatter"><?php echo _("Actions")?></th>
 		</tr>
 	</thead>
+	<tbody>
+		<?php foreach ($routes as $key => $value): ?>
+			<?php if ($value['extension']): ?>
+				<tr>
+					<?php $id = $value['extension']. ' / '. ($value['cidnum'] ? $value['cidnum'] : '') ?>
+					<td>
+						<?php echo $id ?>
+					</td>
+					<td><?php echo urlencode($id) ?></td>
+				</tr>
+			<?php endif; ?>
+		<?php endforeach; ?>
+	</tbody>
 </table>

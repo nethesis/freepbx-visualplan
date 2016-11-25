@@ -17,10 +17,13 @@ msgstr ""
 "X-Poedit-Language: Italian\n"
 "X-Poedit-Country: ITALY\n"
 
-msgid "Add new incoming route"
-msgstr "Aggiungi rotta in entrata"
+msgid "Visual Plan"
+msgstr "Visual Plan"
 
-msgid "Incoming routes list"
+msgid "Visual Plan List"
 msgstr "Lista rotte in entrata"
+
+msgid "Actions"
+msgstr "Azioni"
 
 

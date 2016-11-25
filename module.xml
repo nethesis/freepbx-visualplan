@@ -2,7 +2,7 @@
   <rawname>visualplan</rawname>
   <repo>unsupported</repo>
   <name>Visual Plan</name>
-  <version>1.0.0</version>
+  <version>0.0.1</version>
   <category>Applications</category>
   <Publisher>Nethesis</Publisher>
   <info></info>
@@ -18,7 +18,7 @@
 
 <description>Visual Plan is intuitive graphic mode to create new route</description>
 <changelog>
-  *0.1* Nethesis: Starting point
+  *0.0.1* First version.
 </changelog>
 
 </module>
