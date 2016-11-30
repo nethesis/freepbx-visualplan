@@ -1,46 +1,46 @@
-﻿<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 
 <head>
-    <title>Visual Plan</title>
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="viewport" content="width=device-width, minimum-scale=1.0" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <!-- stylesheet include -->
-    <link type="text/css" rel="stylesheet" href="assets/css/application.css" />
-    <link type="text/css" rel="stylesheet" href="assets/css/spinner.css" />
-    <link type="text/css" rel="stylesheet" href="assets/css/contextmenu.css" />
-    <link type="text/css" rel="stylesheet" href="assets/css/font-awesome.css" />
-    <link type="text/css" rel="stylesheet" href="assets/css/jquery-ui.css" />
-    <!-- languages -->
-    <script type="text/javascript">
+  <title>Visual Plan</title>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <!-- stylesheet include -->
+  <link type="text/css" rel="stylesheet" href="assets/css/application.css" />
+  <link type="text/css" rel="stylesheet" href="assets/css/spinner.css" />
+  <link type="text/css" rel="stylesheet" href="assets/css/contextmenu.css" />
+  <link type="text/css" rel="stylesheet" href="assets/css/font-awesome.css" />
+  <link type="text/css" rel="stylesheet" href="assets/css/jquery-ui.css" />
+  <!-- languages -->
+  <script type="text/javascript">
     var languages = {};
-    </script>
-    <script src="i18n/en.js"></script>
-    <script src="i18n/it.js"></script>
-    <!-- js library include -->
-    <script src="lib/shifty.js"></script>
-    <script src="lib/raphael.js"></script>
-    <script src="lib/jquery-1.10.2.min.js"></script>
-    <script src="lib/jquery.autoresize.js"></script>
-    <script src="lib/jquery-touch_punch.js"></script>
-    <script src="lib/jquery.contextmenu.js"></script>
-    <script src="lib/jquery.browser.js"></script>
-    <script src="lib/jquery-ui-1.8.23.custom.min.js"></script>
-    <script src="lib/rgbcolor.js"></script>
-    <script src="lib/canvg.js"></script>
-    <script src="lib/Class.js"></script>
-    <script src="lib/json2.js"></script>
-    <script src="lib/pathfinding-browser.min.js"></script>
-    <script src="lib/draw2d.js"></script>
-    <script src="lib/dagre.min.js"></script>
-    <script src="lib/svg-pan-zoom.min.js"></script>
-    <!-- application js -->
-    <script src="app/Application.js"></script>
-    <script src="app/View.js"></script>
-    <script src="app/Toolbar.js"></script>
-    <!-- widgets -->
-    <script src="app/widgets/Base.js"></script>
-    <script type="text/javascript">
+  </script>
+  <script src="i18n/en.js"></script>
+  <script src="i18n/it.js"></script>
+  <!-- js library include -->
+  <script src="lib/shifty.js"></script>
+  <script src="lib/raphael.js"></script>
+  <script src="lib/jquery-1.10.2.min.js"></script>
+  <script src="lib/jquery.autoresize.js"></script>
+  <script src="lib/jquery-touch_punch.js"></script>
+  <script src="lib/jquery.contextmenu.js"></script>
+  <script src="lib/jquery.browser.js"></script>
+  <script src="lib/jquery-ui-1.8.23.custom.min.js"></script>
+  <script src="lib/rgbcolor.js"></script>
+  <script src="lib/canvg.js"></script>
+  <script src="lib/Class.js"></script>
+  <script src="lib/json2.js"></script>
+  <script src="lib/pathfinding-browser.min.js"></script>
+  <script src="lib/draw2d.js"></script>
+  <script src="lib/dagre.min.js"></script>
+  <script src="lib/svg-pan-zoom.min.js"></script>
+  <!-- application js -->
+  <script src="app/Application.js"></script>
+  <script src="app/View.js"></script>
+  <script src="app/Toolbar.js"></script>
+  <!-- widgets -->
+  <script src="app/widgets/Base.js"></script>
+  <script type="text/javascript">
     /**
      * @method
      * Factory method to provide a default connection for all drag&drop connections. You
@@ -52,17 +52,17 @@
      * @returns {draw2d.Connection}
      */
     draw2d.Configuration.factory.createConnection = function(sourcePort, targetPort) {
-        var c = new MyConnection({
-            targetDecorator: new draw2d.decoration.connection.ArrowDecorator(),
-            color: "#4caf50",
-            stroke: 2,
-            outlineStroke: 1,
-            router: new draw2d.layout.connection.SplineConnectionRouter()
-        });
-        c.targetDecorator.setDimension(10, 10);
-        c.targetDecorator.setBackgroundColor("#4caf50");
+      var c = new MyConnection({
+        targetDecorator: new draw2d.decoration.connection.ArrowDecorator(),
+        color: "#4caf50",
+        stroke: 2,
+        outlineStroke: 1,
+        router: new draw2d.layout.connection.SplineConnectionRouter()
+      });
+      c.targetDecorator.setDimension(10, 10);
+      c.targetDecorator.setBackgroundColor("#4caf50");
 
-        return c;
+      return c;
     };
 
     var app = null;
@@ -71,135 +71,144 @@
 
     $(window).load(function() {
 
-        // set widget name
-        $('#incoming').text(languages[browserLang]["base_incoming_string"]);
+      // set widget name
+      $('#incoming').text(languages[browserLang]["base_incoming_string"]);
 
-        $('#night').text(languages[browserLang]["base_night_service_string"]);
-        $('#ext-group').text(languages[browserLang]["base_ext_group_string"]);
-        $('#ext-queues').text(languages[browserLang]["base_ext_queues_string"]);
-        $('#ivr').text(languages[browserLang]["base_ivr_string"]);
-        $('#app-announcement').text(languages[browserLang]["base_app_announcement_string"]);
-        $('#timeconditions').text(languages[browserLang]["base_timeconditions_string"]);
-        $('#app-daynight').text(languages[browserLang]["base_app_daynight_string"]);
+      $('#night').text(languages[browserLang]["base_night_service_string"]);
+      $('#ext-group').text(languages[browserLang]["base_ext_group_string"]);
+      $('#ext-queues').text(languages[browserLang]["base_ext_queues_string"]);
+      $('#ivr').text(languages[browserLang]["base_ivr_string"]);
+      $('#app-announcement').text(languages[browserLang]["base_app_announcement_string"]);
+      $('#timeconditions').text(languages[browserLang]["base_timeconditions_string"]);
+      $('#app-daynight').text(languages[browserLang]["base_app_daynight_string"]);
 
-        $('#from-did-direct').text(languages[browserLang]["base_from_did_direct_string"]);
-        $('#ext-local').text(languages[browserLang]["base_ext_local_string"]);
-        $('#ext-meetme').text(languages[browserLang]["base_ext_meetme_string"]);
-        $('#app-blackhole').text(languages[browserLang]["base_hangup_string"]);
+      $('#from-did-direct').text(languages[browserLang]["base_from_did_direct_string"]);
+      $('#ext-local').text(languages[browserLang]["base_ext_local_string"]);
+      $('#ext-meetme').text(languages[browserLang]["base_ext_meetme_string"]);
+      $('#app-blackhole').text(languages[browserLang]["base_hangup_string"]);
 
-        app = new example.Application();
-        var id = window.location.search.replace("?", "").split("=")[1];
+      app = new example.Application();
+      var id = window.location.search.replace("?", "").split("=")[1];
 
-        if (id != "new_route") {
-            $.ajax({
-                url: "./visualize.php?id=" + id,
-                context: document.body,
-                beforeSend: function(xhr) {
-                    $('#loader').show();
-                }
-            }).done(function(c) {
-                try {
-                    var jsonDocument = JSON.parse(c);
+      if (id != "new_route") {
+        $.ajax({
+          url: "./visualize.php?id=" + id,
+          context: document.body,
+          beforeSend: function(xhr) {
+            $('#loader').show();
+          }
+        }).done(function(c) {
+          try {
+            var jsonDocument = JSON.parse(c);
 
-                    var g = new dagre.graphlib.Graph();
-                    g.setGraph({});
-                    g.setDefaultEdgeLabel(function() {
-                        return {};
-                    });
-                    g.graph().rankdir = "LR";
-
-                    for (var i in jsonDocument) {
-                        if (jsonDocument[i].type === "Base") {
-                            g.setNode(jsonDocument[i].id, {
-                                width: 350,
-                                height: 200
-                            });
-                        }
-
-                        if (jsonDocument[i].type === "MyConnection") {
-                            g.setEdge(jsonDocument[i].source.node, jsonDocument[i].target.node);
-                        }
-                    };
-
-                    dagre.layout(g);
-
-                    g.nodes().forEach(function(v) {
-                        jsonDocument[v].x = g.node(v).x;
-                        jsonDocument[v].y = g.node(v).y;
-                    });
-
-                    var reader = new draw2d.io.json.Reader();
-                    reader.unmarshal(app.view, jsonDocument);
-
-                    $('#loader').hide();
-
-                    var zoomLevel = g.nodes().length / 5.9 > 1.2 ? g.nodes().length / 5.9 : 1.3;
-                    app.view.setZoom(zoomLevel, 0, 0, true);
-                } catch (e) {
-                    $('#loader').hide();
-                }
+            var g = new dagre.graphlib.Graph();
+            g.setGraph({});
+            g.setDefaultEdgeLabel(function() {
+              return {};
             });
-        }
+            g.graph().rankdir = "LR";
+
+            for (var i in jsonDocument) {
+              if (jsonDocument[i].type === "Base") {
+                g.setNode(jsonDocument[i].id, {
+                  width: 350,
+                  height: 200
+                });
+              }
+
+              if (jsonDocument[i].type === "MyConnection") {
+                g.setEdge(jsonDocument[i].source.node, jsonDocument[i].target.node);
+              }
+            };
+
+            dagre.layout(g);
+
+            g.nodes().forEach(function(v) {
+              jsonDocument[v].x = g.node(v).x;
+              jsonDocument[v].y = g.node(v).y;
+            });
+
+            var reader = new draw2d.io.json.Reader();
+            reader.unmarshal(app.view, jsonDocument);
+
+            $('#loader').hide();
+
+            var zoomLevel = g.nodes().length / 5.9 > 1.2 ? g.nodes().length / 5.9 : 1.3;
+            app.view.setZoom(zoomLevel, 0, 0, true);
+          } catch (e) {
+            $('#loader').hide();
+          }
+        });
+      }
     });
-    </script>
+  </script>
 </head>
 
 <body id="container">
-    <div id="toolbar" class="navbar-default">
+  <div id="toolbar" class="navbar-default">
+    <button id="hamburger" onclick="hideSidenav()"><i class="fa fa-bars" aria-hidden="true"></i></button>
+    <span id="logo">Visual Plan</span>
+  </div>
+  <div id="loader" class="loading">Loading&#8230;</div>
+  <div id="saver" class="saving">
+    <i class='fa fa-check fa-3x saving-icon'></i>
+  </div>
+  <div id="typer" class="typing">
+    <i class='fa fa-check fa-3x typing-icon'></i>
+  </div>
+  <div id="errorer" class="erroring">
+    <i class='fa fa-close fa-3x close-icon'></i>
+    <p class="error-par"></p>
+  </div>
+  <div id="emptier" class="empting">
+    <i class='fa fa-close fa-3x close-icon'></i>
+  </div>
+  <div id="side-nav">
+    <div id="layer_elements"></div>
+    <div id="layer_header" class="highlight panetitle blackgradient">
+      <!-- Cerchio -->
+      <div data-shape="Base" data-radius="20" id="incoming" class="palette_node_element draw2d_droppable startWidget" title="drag&amp;drop the table into the canvas..">
+      </div>
+      <!-- -->
+      <!-- Rettangolo -->
+      <div data-shape="Base" id="night" class="palette_node_element draw2d_droppable" title="drag&amp;drop the table into the canvas..">
+      </div>
+      <div data-shape="Base" id="ext-group" class="palette_node_element draw2d_droppable" title="drag&amp;drop the table into the canvas..">
+      </div>
+      <div data-shape="Base" id="ext-queues" class="palette_node_element draw2d_droppable" title="drag&amp;drop the table into the canvas..">
+      </div>
+      <div data-shape="Base" id="ivr" class="palette_node_element draw2d_droppable" title="drag&amp;drop the table into the canvas..">
+      </div>
+      <div data-shape="Base" id="app-announcement" class="palette_node_element draw2d_droppable" title="drag&amp;drop the table into the canvas..">
+      </div>
+      <div data-shape="Base" id="timeconditions" class="palette_node_element draw2d_droppable" title="drag&amp;drop the table into the canvas..">
+      </div>
+      <div data-shape="Base" id="app-daynight" class="palette_node_element draw2d_droppable" title="drag&amp;drop the table into the canvas..">
+      </div>
+      <!-- -->
+      <!-- Cerchio -->
+      <div data-shape="Base" data-radius="20" id="from-did-direct" class="palette_node_element draw2d_droppable endWidget" title="drag&amp;drop the table into the canvas..">
+      </div>
+      <div data-shape="Base" data-radius="20" id="ext-local" class="palette_node_element draw2d_droppable endWidget" title="drag&amp;drop the table into the canvas..">
+      </div>
+      <div data-shape="Base" data-radius="20" id="ext-meetme" class="palette_node_element draw2d_droppable endWidget" title="drag&amp;drop the table into the canvas..">
+      </div>
+      <div data-shape="Base" data-radius="20" id="app-blackhole" class="palette_node_element draw2d_droppable endWidget" title="drag&amp;drop the table into the canvas..">
+      </div>
+      <!-- -->
     </div>
-    <div id="loader" class="loading">Loading&#8230;</div>
-    <div id="saver" class="saving">
-        <i class='fa fa-check fa-3x saving-icon'></i>
-    </div>
-    <div id="typer" class="typing">
-        <i class='fa fa-check fa-3x typing-icon'></i>
-    </div>
-    <div id="errorer" class="erroring">
-        <i class='fa fa-close fa-3x close-icon'></i>
-        <p class="error-par"></p>
-    </div>
-    <div id="emptier" class="empting">
-        <i class='fa fa-close fa-3x close-icon'></i>
-    </div>
-    <div id="side-nav">
-        <span id="logo">Visual Plan</span>
-        <div id="layer_elements"></div>
-        <div id="layer_header" class="highlight panetitle blackgradient">
-            <!-- Cerchio -->
-            <div data-shape="Base" data-radius="20" id="incoming" class="palette_node_element draw2d_droppable startWidget" title="drag&amp;drop the table into the canvas..">
-            </div>
-            <!-- -->
-            <!-- Rettangolo -->
-            <div data-shape="Base" id="night" class="palette_node_element draw2d_droppable" title="drag&amp;drop the table into the canvas..">
-            </div>
-            <div data-shape="Base" id="ext-group" class="palette_node_element draw2d_droppable" title="drag&amp;drop the table into the canvas..">
-            </div>
-            <div data-shape="Base" id="ext-queues" class="palette_node_element draw2d_droppable" title="drag&amp;drop the table into the canvas..">
-            </div>
-            <div data-shape="Base" id="ivr" class="palette_node_element draw2d_droppable" title="drag&amp;drop the table into the canvas..">
-            </div>
-            <div data-shape="Base" id="app-announcement" class="palette_node_element draw2d_droppable" title="drag&amp;drop the table into the canvas..">
-            </div>
-            <div data-shape="Base" id="timeconditions" class="palette_node_element draw2d_droppable" title="drag&amp;drop the table into the canvas..">
-            </div>
-            <div data-shape="Base" id="app-daynight" class="palette_node_element draw2d_droppable" title="drag&amp;drop the table into the canvas..">
-            </div>
-            <!-- -->
-            <!-- Cerchio -->
-            <div data-shape="Base" data-radius="20" id="from-did-direct" class="palette_node_element draw2d_droppable endWidget" title="drag&amp;drop the table into the canvas..">
-            </div>
-            <div data-shape="Base" data-radius="20" id="ext-local" class="palette_node_element draw2d_droppable endWidget" title="drag&amp;drop the table into the canvas..">
-            </div>
-            <div data-shape="Base" data-radius="20" id="ext-meetme" class="palette_node_element draw2d_droppable endWidget" title="drag&amp;drop the table into the canvas..">
-            </div>
-            <div data-shape="Base" data-radius="20" id="app-blackhole" class="palette_node_element draw2d_droppable endWidget" title="drag&amp;drop the table into the canvas..">
-            </div>
-            <!-- -->
-        </div>
-    </div>
-    <div id="canvas">
-    </div>
-    </pre>
+  </div>
+  <div id="canvas">
+  </div>
+  </pre>
+  <footer>
+    <p>
+      <a href="#">Copyright © 2016 Nethesis</a>
+    </p>
+    <p class="right_floated">
+      <a href="#">Documentazione</a>
+    </p>
+  </footer>
 </body>
 
 </html>
