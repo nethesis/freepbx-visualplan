@@ -96,13 +96,239 @@ button.mainmenu_btns:active, button.mainmenu_btns:focus {
   z-index: 4;
   overflow-y: auto;
   overflow-x: hidden;
-  width: 190px;
+  max-width: 200px;
+  -webkit-transition: max-width 200ms linear;
+  -moz-transition: max-width 200ms linear;
+  -ms-transition: max-width 200ms linear;
+  -o-transition: max-width 200ms linear;
+  transition: max-width 200ms linear;
+}
+
+/*---- draggable elements ----*/
+
+.palette_node_element {
+  padding: 10px 15px;
+  cursor: move;
+  width: 180px;
+  margin: 20px 15px;
+}
+.small {
+  width: 50px;
   -webkit-transition: width 200ms linear;
   -moz-transition: width 200ms linear;
   -ms-transition: width 200ms linear;
   -o-transition: width 200ms linear;
   transition: width 200ms linear;
-  text-align: center;
+}
+.startWidget {
+  border-radius: 20px;
+}
+#incoming {
+  color: #ffffff;
+  border: none;
+  background-color: #87d37c;
+}
+#night {
+  color: #ffffff;
+  border: none;
+  background-color: #34495e;
+}
+#ext-group {
+  color: #ffffff;
+  border: none;
+  background-color: #2980b9;
+}
+#ext-queues {
+  color: #ffffff;
+  border: none;
+  background-color: #9b59b6;
+}
+#ivr {
+  color: #ffffff;
+  border: none;
+  background-color: #7f8c8d;
+}
+#app-announcement {
+  color: #ffffff;
+  border: none;
+  background-color: #f4b350;
+}
+#timeconditions {
+  color: #ffffff;
+  border: none;
+  background-color: #D35400;
+}
+#app-daynight {
+  color: #ffffff;
+  border: none;
+  background-color: #2c3e50;
+}
+#from-did-direct {
+  color: #ffffff;
+  border: none;
+  background-color: #27ae60;
+}
+#ext-local {
+  color: #ffffff;
+  border: none;
+  background-color: #16a085;
+}
+#ext-meetme {
+  color: #ffffff;
+  border: none;
+  background-color: #65c6bb;
+}
+#app-blackhole {
+  color: #ffffff;
+  border: none;
+  background-color: #cf000f;
+}
+
+/*---- icons ----*/
+
+
+/*rotta in entrata*/
+
+#incoming::before {
+  font-family: 'FontAwesome';
+  content: "\f178";
+  vertical-align: middle;
+  margin-right: 8px;
+  font-size: 22px;
+}
+
+/*servizio notte*/
+
+#night::before {
+  font-family: 'FontAwesome';
+  content: "\f186";
+  vertical-align: middle;
+  margin-right: 8px;
+  font-size: 22px;
+}
+
+/*interno*/
+
+#from-did-direct::before {
+  font-family: 'FontAwesome';
+  content: "\f0c0";
+  vertical-align: middle;
+  margin-right: 8px;
+  font-size: 22px;
+}
+
+/*voicemail*/
+
+#ext-local::before {
+  font-family: 'FontAwesome';
+  content: "\f0e0";
+  vertical-align: middle;
+  margin-right: 8px;
+  font-size: 22px;
+}
+
+/*gruppo di chiamata*/
+
+#ext-group::before {
+  font-family: 'FontAwesome';
+  content: "\f0c0";
+  vertical-align: middle;
+  margin-right: 8px;
+  font-size: 22px;
+}
+
+/*coda*/
+
+#ext-queues::before {
+  font-family: 'FontAwesome';
+  content: "\f0c0";
+  vertical-align: middle;
+  margin-right: 8px;
+  font-size: 22px;
+}
+
+/*ivr*/
+
+#ivr::before {
+  font-family: 'FontAwesome';
+  content: "\f00a";
+  vertical-align: middle;
+  margin-right: 8px;
+  font-size: 22px;
+}
+
+/*annuncio*/
+
+#app-announcement::before {
+  font-family: 'FontAwesome';
+  content: "\f0a1";
+  vertical-align: middle;
+  margin-right: 8px;
+  font-size: 22px;
+}
+
+/*condizione temporale*/
+
+#timeconditions::before {
+  font-family: 'FontAwesome';
+  content: "\f0c0";
+  vertical-align: middle;
+  margin-right: 8px;
+  font-size: 22px;
+}
+
+/*controllo flusso di chiamata*/
+
+#app-daynight::before {
+  font-family: 'FontAwesome';
+  content: "\f0c0";
+  vertical-align: middle;
+  margin-right: 8px;
+  font-size: 22px;
+}
+
+/*conferenza*/
+
+#ext-meetme::before {
+  font-family: 'FontAwesome';
+  content: "\f0c0";
+  vertical-align: middle;
+  margin-right: 8px;
+  font-size: 22px;
+}
+
+/*termina chiamata*/
+
+#app-blackhole::before {
+  font-family: 'FontAwesome';
+  content: "\f057";
+  vertical-align: middle;
+  margin-right: 8px;
+  font-size: 22px;
+}
+
+/*------------------------------ FOOTER ------------------------------*/
+
+footer {
+  background: #171717;
+  color: #CFCFCF;
+  line-height: 27px;
+  padding: 5px 0;
+  position: fixed;
+  bottom: 0;
+  z-index: 1000;
+  width: 100%;
+}
+footer p {
+  display: inline-block;
+  margin: 0 7px;
+}
+footer a {
+  font-size: 12px;
+  color: #6ec664;
+}
+footer a:hover {
+  color: #3f9c35;
 }
 
 /*------------------------------ /// ------------------------------*/
@@ -203,66 +429,6 @@ body {
   background: transparent;
   margin-left: 4px;
 }
-#incoming {
-  color: #ffffff;
-  border: none;
-  background-color: #87d37c;
-}
-#night {
-  color: #ffffff;
-  border: none;
-  background-color: #34495e;
-}
-#ext-group {
-  color: #ffffff;
-  border: none;
-  background-color: #2980b9;
-}
-#ext-queues {
-  color: #ffffff;
-  border: none;
-  background-color: #9b59b6;
-}
-#ivr {
-  color: #ffffff;
-  border: none;
-  background-color: #7f8c8d;
-}
-#app-announcement {
-  color: #ffffff;
-  border: none;
-  background-color: #f4b350;
-}
-#timeconditions {
-  color: #ffffff;
-  border: none;
-  background-color: #D35400;
-}
-#app-daynight {
-  color: #ffffff;
-  border: none;
-  background-color: #2c3e50;
-}
-#from-did-direct {
-  color: #ffffff;
-  border: none;
-  background-color: #27ae60;
-}
-#ext-local {
-  color: #ffffff;
-  border: none;
-  background-color: #16a085;
-}
-#ext-meetme {
-  color: #ffffff;
-  border: none;
-  background-color: #65c6bb;
-}
-#app-blackhole {
-  color: #ffffff;
-  border: none;
-  background-color: #cf000f;
-}
 #canvas {
   padding: 0px;
   margin: 0px;
@@ -278,20 +444,6 @@ body {
   cursor: move;
   /*width: 10000px;
     height: 10000px;*/
-}
-.palette_node_element {
-  border-bottom: 1px solid #000;
-  ;
-  background-color: transparent;
-  padding: 10px;
-  cursor: move;
-  width: 140px;
-  margin: 25px 26px;
-  text-align: center;
-  align: center;
-}
-.startWidget {
-  border-radius: 20px;
 }
 .endWidget {
   border-radius: 20px;
@@ -452,25 +604,4 @@ textarea {
   color: rgb(255, 97, 97);
   text-align: center;
   font-weight: bold;
-}
-footer {
-  background: #171717;
-  color: #CFCFCF;
-  line-height: 27px;
-  padding: 5px 0;
-  position: fixed;
-  bottom: 0;
-  z-index: 1000;
-  width: 100%;
-}
-footer p {
-  display: inline-block;
-  margin: 0 7px;
-}
-footer a {
-  font-size: 12px;
-  color: #6ec664;
-}
-footer a:hover {
-  color: #3f9c35;
 }

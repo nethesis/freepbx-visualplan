@@ -15,7 +15,7 @@ example.Toolbar = Class.extend({
     //
     view.on("select", $.proxy(this.onSelectionChanged, this));
 
-    this.zoomInButton = $("<button  class='mainmenu_btns'><i class='fa fa-search-plus fa-lg'></i></button>");
+    this.zoomInButton = $("<button  class='mainmenu_btns right_floated'><i class='fa fa-search-plus fa-lg'></i></button>");
     this.html.append(this.zoomInButton);
     this.zoomInButton.button().click($.proxy(function() {
       if (app.view.getZoom() > 1)
@@ -27,7 +27,7 @@ example.Toolbar = Class.extend({
 
     // Inject the DELETE Button
     //
-    this.resetButton = $("<button  class='mainmenu_btns'>1:1</button>");
+    this.resetButton = $("<button  class='mainmenu_btns right_floated'>1:1</button>");
     this.html.append(this.resetButton);
     this.resetButton.button().click($.proxy(function() {
       this.view.setZoom(1.2, true);
@@ -38,7 +38,7 @@ example.Toolbar = Class.extend({
 
     // Inject the REDO Button and the callback
     //
-    this.zoomOutButton = $("<button  class='mainmenu_btns'><i class='fa fa-search-minus fa-lg'></i></button>");
+    this.zoomOutButton = $("<button  class='mainmenu_btns right_floated'><i class='fa fa-search-minus fa-lg'></i></button>");
     this.html.append(this.zoomOutButton);
     this.zoomOutButton.button().click($.proxy(function() {
       this.view.setZoom(this.view.getZoom() * 1.25, true);
@@ -434,9 +434,45 @@ example.Toolbar = Class.extend({
 function hideSidenav() {
   console.log("onclick shot");
   var sidenav = document.getElementById("side-nav");
-  if (sidenav.style.width !== "70px") {
-    sidenav.style.width = "70px";
+  var droppable = document.getElementsByClassName("palette_node_element");
+  var icons = document.getElementsByClassName("icon");
+  if (sidenav.style.maxWidth !== "70px") {
+    sidenav.style.maxWidth = "70px";
+    for (i = 0; i < droppable.length; i++) {
+      droppable[i].className += " small";
+    }
+    $('#incoming').text(" ").fadeIn('slow');
+    $('#night').text(" ");
+    $('#ext-group').text(" ");
+    $('#ext-queues').text(" ");
+    $('#ivr').text(" ");
+    $('#app-announcement').text(" ");
+    $('#timeconditions').text(" ");
+    $('#app-daynight').text(" ");
+
+    $('#from-did-direct').text(" ");
+    $('#ext-local').text(" ");
+    $('#ext-meetme').text(" ");
+    $('#app-blackhole').text(" ");
   } else {
-    sidenav.style.width = "190px";
+    sidenav.style.maxWidth = "300px";
+    for (i = 0; i < droppable.length; i++) {
+      droppable[i].classList.remove("small");
+    }
+    // set widget name
+    $('#incoming').text(languages[browserLang]["base_incoming_string"]);
+
+    $('#night').text(languages[browserLang]["base_night_service_string"]);
+    $('#ext-group').text(languages[browserLang]["base_ext_group_string"]);
+    $('#ext-queues').text(languages[browserLang]["base_ext_queues_string"]);
+    $('#ivr').text(languages[browserLang]["base_ivr_string"]);
+    $('#app-announcement').text(languages[browserLang]["base_app_announcement_string"]);
+    $('#timeconditions').text(languages[browserLang]["base_timeconditions_string"]);
+    $('#app-daynight').text(languages[browserLang]["base_app_daynight_string"]);
+
+    $('#from-did-direct').text(languages[browserLang]["base_from_did_direct_string"]);
+    $('#ext-local').text(languages[browserLang]["base_ext_local_string"]);
+    $('#ext-meetme').text(languages[browserLang]["base_ext_meetme_string"]);
+    $('#app-blackhole').text(languages[browserLang]["base_hangup_string"]);
   };
 };
