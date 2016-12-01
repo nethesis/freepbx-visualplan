@@ -436,12 +436,16 @@ function hideSidenav() {
   var sidenav = document.getElementById("side-nav");
   var droppable = document.getElementsByClassName("palette_node_element");
   var icons = document.getElementsByClassName("icon");
+  var canvas = document.getElementById("canvas");
+  var loader = document.getElementById("loader");
   if (sidenav.style.maxWidth !== "70px") {
     sidenav.style.maxWidth = "70px";
     for (i = 0; i < droppable.length; i++) {
       droppable[i].className += " small";
     }
-    $('#incoming').text(" ").fadeIn('slow');
+    canvas.style.left = "70px";
+    loader.style.left = "70px"
+    $('#incoming').text(" ");
     $('#night').text(" ");
     $('#ext-group').text(" ");
     $('#ext-queues').text(" ");
@@ -455,10 +459,12 @@ function hideSidenav() {
     $('#ext-meetme').text(" ");
     $('#app-blackhole').text(" ");
   } else {
-    sidenav.style.maxWidth = "300px";
+    sidenav.style.maxWidth = "250px";
     for (i = 0; i < droppable.length; i++) {
       droppable[i].classList.remove("small");
     }
+    canvas.style.left = "210px";
+    loader.style.left = "210px"
     // set widget name
     $('#incoming').text(languages[browserLang]["base_incoming_string"]);
 
