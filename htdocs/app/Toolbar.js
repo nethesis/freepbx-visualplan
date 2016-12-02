@@ -432,53 +432,30 @@ example.Toolbar = Class.extend({
 });
 
 function hideSidenav() {
-  console.log("onclick shot");
   var sidenav = document.getElementById("side-nav");
   var droppable = document.getElementsByClassName("palette_node_element");
-  var icons = document.getElementsByClassName("icon");
   var canvas = document.getElementById("canvas");
   var loader = document.getElementById("loader");
-  if (sidenav.style.maxWidth !== "70px") {
-    sidenav.style.maxWidth = "70px";
+  if (sidenav.style.maxWidth !== "80px") {
+    sidenav.style.maxWidth = "80px";
     for (i = 0; i < droppable.length; i++) {
       droppable[i].className += " small";
     }
-    canvas.style.left = "70px";
-    loader.style.left = "70px"
-    $('#incoming').text(" ");
-    $('#night').text(" ");
-    $('#ext-group').text(" ");
-    $('#ext-queues').text(" ");
-    $('#ivr').text(" ");
-    $('#app-announcement').text(" ");
-    $('#timeconditions').text(" ");
-    $('#app-daynight').text(" ");
+    canvas.style.left = "80px";
+    loader.style.left = "80px";
+    $('.palette_node_element').addClass('hide_text');
 
-    $('#from-did-direct').text(" ");
-    $('#ext-local').text(" ");
-    $('#ext-meetme').text(" ");
-    $('#app-blackhole').text(" ");
+    $(".ui-widget-overlay").addClass("sm");
+    $(".ui-dialog").css("margin-left", "80px");
   } else {
-    sidenav.style.maxWidth = "250px";
+    sidenav.style.maxWidth = "220px";
     for (i = 0; i < droppable.length; i++) {
       droppable[i].classList.remove("small");
     }
     canvas.style.left = "210px";
-    loader.style.left = "210px"
-    // set widget name
-    $('#incoming').text(languages[browserLang]["base_incoming_string"]);
-
-    $('#night').text(languages[browserLang]["base_night_service_string"]);
-    $('#ext-group').text(languages[browserLang]["base_ext_group_string"]);
-    $('#ext-queues').text(languages[browserLang]["base_ext_queues_string"]);
-    $('#ivr').text(languages[browserLang]["base_ivr_string"]);
-    $('#app-announcement').text(languages[browserLang]["base_app_announcement_string"]);
-    $('#timeconditions').text(languages[browserLang]["base_timeconditions_string"]);
-    $('#app-daynight').text(languages[browserLang]["base_app_daynight_string"]);
-
-    $('#from-did-direct').text(languages[browserLang]["base_from_did_direct_string"]);
-    $('#ext-local').text(languages[browserLang]["base_ext_local_string"]);
-    $('#ext-meetme').text(languages[browserLang]["base_ext_meetme_string"]);
-    $('#app-blackhole').text(languages[browserLang]["base_hangup_string"]);
+    loader.style.left = "210px";
+    $('.palette_node_element').removeClass('hide_text');
+    $(".ui-widget-overlay").removeClass("sm");
+    $(".ui-dialog").css("margin-left", "210px");
   };
 };
