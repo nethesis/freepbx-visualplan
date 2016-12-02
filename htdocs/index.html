@@ -22,10 +22,10 @@
   <script src="lib/raphael.js"></script>
   <script src="lib/jquery-1.10.2.min.js"></script>
   <script src="lib/jquery.autoresize.js"></script>
+  <script src="lib/jquery-ui-1.8.23.custom.min.js"></script>
   <script src="lib/jquery-touch_punch.js"></script>
   <script src="lib/jquery.contextmenu.js"></script>
   <script src="lib/jquery.browser.js"></script>
-  <script src="lib/jquery-ui-1.8.23.custom.min.js"></script>
   <script src="lib/rgbcolor.js"></script>
   <script src="lib/canvg.js"></script>
   <script src="lib/Class.js"></script>
@@ -146,7 +146,11 @@
 
 <body id="container">
   <div id="toolbar" class="navbar-default">
-    <button id="hamburger" onclick="hideSidenav()"><i class="fa fa-bars" aria-hidden="true"></i></button>
+    <button id="hamburger" onclick="hideSidenav()">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
     <span id="logo">Visual Plan</span>
   </div>
   <div id="saver" class="saving">
@@ -198,15 +202,15 @@
     </div>
   </div>
   <div id="canvas">
-      <div id="loader" class="loading">Loading&#8230;</div>
+    <div id="loader" class="loading">Loading&#8230;</div>
   </div>
   </pre>
   <footer>
     <p>
-      <a href="#">Copyright © 2016 Nethesis</a>
+      <a href="http://www.nethvoice.it" target="_blank">Copyright © 2016 NethVoice</a>
     </p>
     <p class="right_floated">
-      <a href="#">Documentazione</a>
+      <a href="http://nethvoice.docs.nethesis.it/it/latest/amministrazione.html#visual-plan-ref-label" target="_blank">Documentazione</a>
     </p>
   </footer>
 </body>

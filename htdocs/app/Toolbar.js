@@ -15,7 +15,7 @@ example.Toolbar = Class.extend({
     //
     view.on("select", $.proxy(this.onSelectionChanged, this));
 
-    this.zoomInButton = $("<button  class='mainmenu_btns right_floated'><i class='fa fa-search-plus fa-lg'></i></button>");
+    this.zoomInButton = $("<button id='last_btn' class='mainmenu_btns right_floated'><i class='fa fa-search-plus fa-lg'></i></button>");
     this.html.append(this.zoomInButton);
     this.zoomInButton.button().click($.proxy(function() {
       if (app.view.getZoom() > 1)
@@ -436,17 +436,17 @@ function hideSidenav() {
   var droppable = document.getElementsByClassName("palette_node_element");
   var canvas = document.getElementById("canvas");
   var loader = document.getElementById("loader");
-  if (sidenav.style.maxWidth !== "80px") {
-    sidenav.style.maxWidth = "80px";
+  if (sidenav.style.maxWidth !== "75px") {
+    sidenav.style.maxWidth = "75px";
     for (i = 0; i < droppable.length; i++) {
       droppable[i].className += " small";
     }
-    canvas.style.left = "80px";
-    loader.style.left = "80px";
+    canvas.style.left = "75px";
+    loader.style.left = "75px";
     $('.palette_node_element').addClass('hide_text');
 
     $(".ui-widget-overlay").addClass("sm");
-    $(".ui-dialog").css("margin-left", "80px");
+    $(".ui-dialog").css("margin-left", "75px");
   } else {
     sidenav.style.maxWidth = "220px";
     for (i = 0; i < droppable.length; i++) {
