@@ -204,7 +204,14 @@ example.View = draw2d.Canvas.extend({
                                 $('.ui-widget-overlay').bind('click', function() {
                                     dialog.dialog('destroy').remove();
                                 });
-                            });
+                            }).fail(function(err) {
+                              $('#loader').hide();
+                              $('#errorer').children().eq(0).html("&nbsp;&nbsp;" + languages[browserLang]["base_no_elements_string"]);
+                              $('#errorer').fadeIn("slow");
+                              setTimeout(function() {
+                                $('#errorer').fadeOut("slow");
+                              }, 5000);
+                            })
 
                             break;
                         default:
