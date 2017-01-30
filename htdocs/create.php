@@ -102,9 +102,6 @@ function nethvplan_switchCreate($wType, $value, $connectionArray) {
 
 			// check night service
 			$did = $extension."/".$cidnum;
-			if (count($value['entities']) == 1) {
-				$results = sql("DELETE from night_did WHERE did = '$did'","query");
-			}
 
 			if($exists) {
 				core_did_del($extension, $cidnum);
