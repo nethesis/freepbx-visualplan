@@ -88,9 +88,11 @@ foreach ($get_data as $key => $row) {
 // internal data - from-did-direct,id,1
 $get_data = FreePBX::Core()->listUsers(false);
 foreach ($get_data as $key => $row) {
-	$data['from-did-direct'][$row[0]] = array("name" => $row[1],
-											  "voicemail" => $row[2]
-											 );
+    if (preg_match('/^9\d(\d){3,}$/', $row[0]) < 1) {
+    	$data['from-did-direct'][$row[0]] = array("name" => $row[1],
+	    										  "voicemail" => $row[2]
+		    									 );
+    }
 }
 
 // voicemail - ext-local,vm(b|s|u)201,1
