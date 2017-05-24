@@ -268,11 +268,11 @@ function nethvplan_switchCreate($wType, $value, $connectionArray) {
 			$destination = trim($destinations["output_".$value['entities'][3]['id']]);
 			$exists = ringgroups_get($extension);
 			if(count($exists) <= 2 ) {
-				ringgroups_add($extension, "ringall", "300", $list, $destination, $name);
+				ringgroups_add($extension, "ringall", "300", $list, $destination, $name,'','','','','','','','','','','','','','','');
 			} else {
 				ringgroups_del($extension);
 				ringgroups_add($extension, $exists['strategy'], $exists['grptime'], $list, $destination, $name,
-                $exists['grppre'],$exists['annmsg_id'],$exists['alertinfo'],$exists['needsconf'],$exists['remotealert_id'],$exists['toolate_id'],$exists['ringing'],$exists['cwignore'],$exists['cfignore'],$exists['changecid'],$exists['fixedcid'],$exists['cpickup'],$exists['recording']);
+                $exists['grppre'],$exists['annmsg_id'],$exists['alertinfo'],$exists['needsconf'],$exists['remotealert_id'],$exists['toolate_id'],$exists['ringing'],$exists['cwignore'],$exists['cfignore'],$exists['changecid'],$exists['fixedcid'],$exists['cpickup'],$exists['recording'],'','');
 			}
 		break;
 		case "ext-queues":
@@ -513,6 +513,7 @@ function nethvplan_switchCreate($wType, $value, $connectionArray) {
 						"time" => $time,
 						"goto1" => "truegoto",
 						"goto0" => "falsegoto",
+						"mode" => "time-group",
 						"truegoto1" => trim($destinations["output_".$value['entities'][3]['id']]),
 						"falsegoto0" => trim($destinations["output_".$value['entities'][2]['id']]),
 						"deptname" => ""
@@ -525,6 +526,7 @@ function nethvplan_switchCreate($wType, $value, $connectionArray) {
 						"time" => $time,
 						"goto1" => "truegoto",
 						"goto0" => "falsegoto",
+						"mode" => "time-group",
 						"truegoto1" => trim($destinations["output_".$value['entities'][3]['id']]),
 						"falsegoto0" => trim($destinations["output_".$value['entities'][2]['id']]),
 						"deptname" => ""
@@ -538,6 +540,7 @@ function nethvplan_switchCreate($wType, $value, $connectionArray) {
 						"time" => $time,
 						"goto1" => "truegoto",
 						"goto0" => "falsegoto",
+						"mode" => $exists['mode'],
 						"truegoto1" => trim($destinations["output_".$value['entities'][3]['id']]),
 						"falsegoto0" => trim($destinations["output_".$value['entities'][2]['id']]),
 						"deptname" => $exists['deptname'],
