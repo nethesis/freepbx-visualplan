@@ -2,7 +2,7 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
 
     NAME: "Base",
 
-    init: function(attr) {
+    init: function (attr) {
         this.tooltip = null;
 
         this._super($.extend({
@@ -23,7 +23,7 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
         this.add(this.classLabel);
     },
 
-    addEntity: function(txt, type, optionalIndex) {
+    addEntity: function (txt, type, optionalIndex) {
         var padding = {
             left: 30,
             top: 5,
@@ -106,21 +106,21 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
         return label;
     },
 
-    contextMenu: function(label, table) {
+    contextMenu: function (label, table) {
         var idType = table.id.split("%")[0];
 
         switch (idType) {
             case "incoming":
-                label.on("contextmenu", function(emitter, event) {
+                label.on("contextmenu", function (emitter, event) {
                     if (table.children.data.length > 2) {
                         $.contextMenu({
                             selector: 'body',
                             events: {
-                                hide: function() {
+                                hide: function () {
                                     $.contextMenu('destroy');
                                 }
                             },
-                            callback: $.proxy(function(key, options) {
+                            callback: $.proxy(function (key, options) {
                                 switch (key) {
                                     case "delete":
                                         var cmd = new draw2d.command.CommandDelete(table.children.data[2].figure);
@@ -142,14 +142,14 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                         $.contextMenu({
                             selector: 'body',
                             events: {
-                                hide: function() {
+                                hide: function () {
                                     $.contextMenu('destroy');
                                 }
                             },
-                            callback: $.proxy(function(key, options) {
+                            callback: $.proxy(function (key, options) {
                                 switch (key) {
                                     case "action":
-                                        setTimeout(function() {
+                                        setTimeout(function () {
                                             table.addEntity(languages[browserLang]["base_night_service_string"], "output", "false");
                                         }, 10);
                                         break;
@@ -169,7 +169,7 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                 });
                 break;
             case "ivr":
-                label.on("contextmenu", function(emitter, event) {
+                label.on("contextmenu", function (emitter, event) {
                     var items = {};
                     if (isNaN(emitter.text)) {
                         items["add"] = {
@@ -186,11 +186,11 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                     $.contextMenu({
                         selector: 'body',
                         events: {
-                            hide: function() {
+                            hide: function () {
                                 $.contextMenu('destroy');
                             }
                         },
-                        callback: $.proxy(function(key, options) {
+                        callback: $.proxy(function (key, options) {
                             switch (key) {
                                 case "add":
                                     var cNum = table.children.data.length - 5;
@@ -201,18 +201,18 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                                             resizable: false,
                                             width: 250,
                                             modal: true,
-                                            close: function(ev, ui) {
+                                            close: function (ev, ui) {
                                                 $(this).dialog('destroy').remove();
                                             },
                                             buttons: {
-                                                Cancel: function() {
+                                                Cancel: function () {
                                                     $(this).dialog('destroy').remove();
                                                 },
-                                                Save: function(e) {
+                                                Save: function (e) {
                                                     var ivrVal = $('#ivr-option').val();
 
                                                     // update values
-                                                    setTimeout(function() {
+                                                    setTimeout(function () {
                                                         table.addEntity(ivrVal, "output", "false");
                                                     }, 10);
 
@@ -231,7 +231,7 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
 
                                     // show dialog
                                     dialog.dialog("open");
-                                    $('.ui-widget-overlay').bind('click', function() {
+                                    $('.ui-widget-overlay').bind('click', function () {
                                         dialog.dialog('destroy').remove();
                                     });
                                     break;
@@ -246,7 +246,7 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                                     break;
                             }
                         }, this),
-                        position: function(opt, x, y) {
+                        position: function (opt, x, y) {
                             var scrollTopVal = app.view.getScrollArea().scrollTop();
                             var scrollLeftVal = app.view.getScrollArea().scrollLeft();
                             opt.$menu.css({
@@ -261,11 +261,11 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
         }
     },
 
-    onDrop: function(droppedDomNode, x, y, elements) {
+    onDrop: function (droppedDomNode, x, y, elements) {
         this.creationSwitch(elements, droppedDomNode[0].id, $(droppedDomNode[0]).text().trim());
     },
 
-    creationSwitch: function(elem, type, title) {
+    creationSwitch: function (elem, type, title) {
         var randLetter = String.fromCharCode(65 + Math.floor(Math.random() * 26));
         var id = randLetter + Date.now();
 
@@ -300,14 +300,6 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                     id: "incoming_route-num%" + id,
                     type: "output"
                 }];
-
-                if (parseInt(elem[3].value)) {
-                    templateObj.entities.push({
-                        text: languages[browserLang]["base_night_service_string"],
-                        id: "night_service%" + id,
-                        type: "output"
-                    });
-                }
                 break;
 
             case "night":
@@ -523,26 +515,26 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
         this.setPersistentAttributes(templateObj);
     },
 
-    removeEntity: function(index) {
+    removeEntity: function (index) {
         this.remove(this.children.get(index + 1).figure);
     },
 
-    getEntity: function(index) {
+    getEntity: function (index) {
         return this.children.get(index + 1).figure;
     },
 
-    setName: function(name) {
+    setName: function (name) {
         this.classLabel.setText(name);
 
         return this;
     },
 
-    getPersistentAttributes: function() {
+    getPersistentAttributes: function () {
         var memento = this._super();
 
         memento.name = this.classLabel.getText();
         memento.entities = [];
-        this.children.each(function(i, e) {
+        this.children.each(function (i, e) {
 
             if (i > 0) {
                 memento.entities.push({
@@ -555,13 +547,13 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
         return memento;
     },
 
-    setPersistentAttributes: function(memento) {
+    setPersistentAttributes: function (memento) {
         this._super(memento);
 
         this.setName(memento.name);
 
         if (typeof memento.entities !== "undefined") {
-            $.each(memento.entities, $.proxy(function(i, e) {
+            $.each(memento.entities, $.proxy(function (i, e) {
                 var entity = this.addEntity(e.text, e.type);
                 entity.id = e.id;
                 if (e.type == "output")
@@ -580,11 +572,11 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
 MyConnection = draw2d.Connection.extend({
     NAME: "MyConnection",
 
-    init: function(attr) {
+    init: function (attr) {
         this._super(attr);
     },
 
-    getPersistentAttributes: function() {
+    getPersistentAttributes: function () {
         var memento = this._super();
 
         if (this.sourceDecorator !== null) {
@@ -598,7 +590,7 @@ MyConnection = draw2d.Connection.extend({
         return memento;
     },
 
-    setPersistentAttributes: function(memento) {
+    setPersistentAttributes: function (memento) {
         this._super(memento);
 
         if (typeof memento.target.decoration !== "undefined" && memento.target.decoration != null) {
