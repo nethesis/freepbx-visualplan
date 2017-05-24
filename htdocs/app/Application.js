@@ -2,9 +2,9 @@
 var example = {};
 
 /**
- * 
+ *
  * The **GraphicalEditor** is responsible for layout and dialog handling.
- * 
+ *
  * @author Andreas Herz
  * @extends draw2d.ui.parts.GraphicalEditor
  */
@@ -13,10 +13,10 @@ example.Application = Class.extend({
 
     /**
      * @constructor
-     * 
+     *
      * @param {String} canvasId the id of the DOM element to use as paint container
      */
-    init: function() {
+    init: function () {
         this.view = new example.View("canvas");
         var canvas = document.getElementById("canvas");
 
