@@ -46,6 +46,7 @@ languages.en = {
     "view_recording_string": "Recording",
     "view_timegroup_string": "Time group",
     "view_control_code_string": "Control code",
+    "view_error_empty": "Inseted value is not valid",
 
     "base_hangup_string": "Hangup",
     "base_incoming_string": "Incoming route",

@@ -46,6 +46,7 @@ languages.it = {
     "view_recording_string": "Registrazione",
     "view_timegroup_string": "Gruppo Temporale",
     "view_control_code_string": "Codice di controllo",
+    "view_error_empty": "Il valore inserito non è valido",
 
     "base_hangup_string": "Termina Chiamata",
     "base_incoming_string": "Rotta in Entrata",

@@ -1,6 +1,6 @@
 example.View = draw2d.Canvas.extend({
 
-    init: function(id) {
+    init: function (id) {
         this._super(id, 5000, 5000);
 
         var canvas = document.getElementById(id);
@@ -24,7 +24,7 @@ example.View = draw2d.Canvas.extend({
     //     }
     // },
 
-    onDoubleClick: function(the, mouseX, mouseY, shiftKey, ctrlKey) {
+    onDoubleClick: function (the, mouseX, mouseY, shiftKey, ctrlKey) {
         var e = document.getElementById('canvasPolicy');
         var currentBtn = e.attributes.currentBtn.value;
         var canvas = document.getElementById("canvas");
@@ -37,7 +37,7 @@ example.View = draw2d.Canvas.extend({
             $('#typer').children().html("&nbsp;&nbsp;" + languages[browserLang]["toolbar_select_string"]);
             $('#typer').children().attr('class', 'fa fa-crosshairs fa-3x typing-icon');
             $('#typer').fadeIn("slow");
-            setTimeout(function() {
+            setTimeout(function () {
                 $('#typer').fadeOut("slow");
             }, 1000);
             var policy = new draw2d.policy.canvas.BoundingboxSelectionPolicy;
@@ -50,7 +50,7 @@ example.View = draw2d.Canvas.extend({
             $('#typer').children().html("&nbsp;&nbsp;" + languages[browserLang]["toolbar_pan_string"]);
             $('#typer').children().attr('class', 'fa fa-arrows-alt fa-3x typing-icon');
             $('#typer').fadeIn("slow");
-            setTimeout(function() {
+            setTimeout(function () {
                 $('#typer').fadeOut("slow");
             }, 1000);
             var policy = new draw2d.policy.canvas.PanningSelectionPolicy;
@@ -58,7 +58,7 @@ example.View = draw2d.Canvas.extend({
         }
     },
 
-    MouseWheelHandler: function(e) {
+    MouseWheelHandler: function (e) {
         var e = window.event || e;
         var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
 
@@ -70,7 +70,7 @@ example.View = draw2d.Canvas.extend({
         if (delta < 0)
             app.view.setZoom(app.view.getZoom() * 1.25, true);
 
-        setTimeout(function() {
+        setTimeout(function () {
             if (svgElem.viewBox.baseVal.width < 5000) {
                 app.view.setZoom(1, true);
             }
@@ -79,19 +79,19 @@ example.View = draw2d.Canvas.extend({
         return false;
     },
 
-    contextMenu: function() {
-        $('#container').on("contextmenu", function(emitter, event) {
+    contextMenu: function () {
+        $('#container').on("contextmenu", function (emitter, event) {
             $.contextMenu({
                 selector: 'body',
                 trigger: 'none',
                 events: {
-                    hide: function() {
+                    hide: function () {
                         $('#container').unbind("contextmenu");
                         $.contextMenu('destroy');
                         $('.context-menu-list').remove();
                     }
                 },
-                callback: $.proxy(function(key, options) {
+                callback: $.proxy(function (key, options) {
                     switch (key) {
                         case "add":
                             var data = {};
@@ -109,10 +109,10 @@ example.View = draw2d.Canvas.extend({
                             $.ajax({
                                 url: "./visualize.php?getAll=" + event.dropped[0].id,
                                 context: document.body,
-                                beforeSend: function(xhr) {
+                                beforeSend: function (xhr) {
                                     $('#loader').show();
                                 }
-                            }).done(function(c) {
+                            }).done(function (c) {
                                 $('#loader').hide();
                                 containerData = JSON.parse(c);
                                 // populate dialog
@@ -123,7 +123,7 @@ example.View = draw2d.Canvas.extend({
                                         resizable: false,
                                         width: 500,
                                         modal: true,
-                                        close: function(ev, ui) {
+                                        close: function (ev, ui) {
                                             $(this).dialog('destroy').remove();
                                         },
                                         title: $(event.dropped[0]).text() + " " + languages[browserLang]["view_selection_string"]
@@ -134,7 +134,7 @@ example.View = draw2d.Canvas.extend({
                                 dialog.html(event.context.switchDescription(containerData, event.dropped[0].id));
 
                                 // bind click on buttons
-                                $('.button-elem-list').bind('click', function(el) {
+                                $('.button-elem-list').bind('click', function (el) {
                                     var elemId = el.target.attributes.elemId.value;
                                     var getChildId = window.btoa(unescape(encodeURIComponent(containerData[elemId].id)));
 
@@ -149,10 +149,10 @@ example.View = draw2d.Canvas.extend({
                                     $.ajax({
                                         url: "./visualize.php?getChild=" + getChildId + "&getChildDest=" + getChildDest,
                                         context: document.body,
-                                        beforeSend: function(xhr) {
+                                        beforeSend: function (xhr) {
                                             $('#loader').show();
                                         }
-                                    }).done(function(c) {
+                                    }).done(function (c) {
                                         dialog.dialog('destroy').remove();
 
                                         // dropped obj
@@ -167,7 +167,7 @@ example.View = draw2d.Canvas.extend({
 
                                         var g = new dagre.graphlib.Graph();
                                         g.setGraph({});
-                                        g.setDefaultEdgeLabel(function() {
+                                        g.setDefaultEdgeLabel(function () {
                                             return {};
                                         });
                                         g.graph().rankdir = "LR";
@@ -187,7 +187,7 @@ example.View = draw2d.Canvas.extend({
 
                                         dagre.layout(g);
 
-                                        g.nodes().forEach(function(v) {
+                                        g.nodes().forEach(function (v) {
                                             jsonMarshal[v].x = event.x + g.node(v).x;
                                             jsonMarshal[v].y = event.y + g.node(v).y;
                                         });
@@ -201,7 +201,7 @@ example.View = draw2d.Canvas.extend({
 
                                 // show dialog
                                 dialog.dialog("open");
-                                $('.ui-widget-overlay').bind('click', function() {
+                                $('.ui-widget-overlay').bind('click', function () {
                                     dialog.dialog('destroy').remove();
                                 });
                             });
@@ -211,7 +211,7 @@ example.View = draw2d.Canvas.extend({
                             break;
                     }
                 }, this),
-                position: function(opt, x, y) {
+                position: function (opt, x, y) {
                     var scrollTopVal = app.view.getScrollArea().scrollTop();
                     var scrollLeftVal = app.view.getScrollArea().scrollLeft();
                     opt.$menu.css({
@@ -231,7 +231,7 @@ example.View = draw2d.Canvas.extend({
         });
     },
 
-    createDialog: function(event) {
+    createDialog: function (event) {
         var dialog = $('<div id="modalCreation"></div>')
             .dialog({
                 position: 'center',
@@ -239,14 +239,14 @@ example.View = draw2d.Canvas.extend({
                 resizable: false,
                 width: 500,
                 modal: true,
-                close: function(ev, ui) {
+                close: function (ev, ui) {
                     $(this).dialog('destroy').remove();
                 },
                 buttons: {
-                    Cancel: function() {
+                    Cancel: function () {
                         $(this).dialog('destroy').remove();
                     },
-                    Save: function() {
+                    Save: function () {
                         var usableElem = event.context.getElemByAttr("usable");
 
                         // check existing data
@@ -262,12 +262,12 @@ example.View = draw2d.Canvas.extend({
 
         // show dialog
         dialog.dialog("open");
-        $('.ui-widget-overlay').bind('click', function() {
+        $('.ui-widget-overlay').bind('click', function () {
             dialog.dialog('destroy').remove();
         });
     },
 
-    getElemByAttr: function(attr) {
+    getElemByAttr: function (attr) {
         var matchingElements = [];
         var allElements = $("#modalCreation").children();
         for (var i = 0, n = allElements.length; i < n; i++) {
@@ -278,7 +278,7 @@ example.View = draw2d.Canvas.extend({
         return matchingElements;
     },
 
-    checkData: function(elem, type, event) {
+    checkData: function (elem, type, event) {
         var number = elem[0].value;
         if (type === "incoming") {
             var sufx = elem[1].value;
@@ -289,10 +289,10 @@ example.View = draw2d.Canvas.extend({
         $.ajax({
             url: "./visualize.php?readData=" + type,
             context: document.body,
-            beforeSend: function(xhr) {
+            beforeSend: function (xhr) {
                 $('#loader').show();
             }
-        }).done(function(c) {
+        }).done(function (c) {
             $('#loader').hide();
             var data = JSON.parse(c);
             var missing = false;
@@ -313,6 +313,10 @@ example.View = draw2d.Canvas.extend({
                 missing = true;
             }
 
+            if (number.length == 0 || number.indexOf('-') > -1) {
+                missing = false;
+            }
+
             if (missing) {
                 var typeFig = $(event.dropped).data("shape") || event.shape;
                 var figure = eval("new " + typeFig + "();");
@@ -323,11 +327,15 @@ example.View = draw2d.Canvas.extend({
                 event.context.getCommandStack().execute(command);
 
                 $('#modalCreation').dialog('destroy').remove();
+            } else {
+                $(".error-message").html("");
+                $(elem[0]).css("border", "1px solid rgb(255, 97, 97)");
+                $('#modalCreation').append('<p class="error-message">' + languages[browserLang]["view_error_empty"] + '</p>');
             }
         });
     },
 
-    extracInfo: function(data, type) {
+    extracInfo: function (data, type) {
         switch (type) {
             case "incoming":
                 var v1 = data[1].figure.text.split('/')[0].trim();
@@ -418,7 +426,7 @@ example.View = draw2d.Canvas.extend({
         }
     },
 
-    modalCreate: function(elem, mod) {
+    modalCreate: function (elem, mod) {
         var html = "";
         var isDisabled = "";
         values = ["", "", "", "", "", "", "", "", ""];
@@ -430,13 +438,13 @@ example.View = draw2d.Canvas.extend({
         switch (elem.id) {
             case "incoming":
                 html += '<label class="label-creation">' + languages[browserLang]["view_number_string"] + ': </label>';
-                html += '<input '+isDisabled+' autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="input-creation-mini"></input>';
+                html += '<input ' + isDisabled + ' autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="input-creation-mini"></input>';
                 html += ' / ';
-                html += '<input '+isDisabled+' value="' + values[1] + '" usable id="' + elem.id + '-cidnum" class="input-creation-mini"></input>';
+                html += '<input ' + isDisabled + ' value="' + values[1] + '" usable id="' + elem.id + '-cidnum" class="input-creation-mini"></input>';
                 html += '<label class="label-creation">' + languages[browserLang]["view_description_string"] + ': </label>';
                 html += '<input value="' + values[2] + '" usable id="' + elem.id + '-description" class="input-creation"></input>';
                 html += '<label class="label-creation">' + languages[browserLang]["base_night_service_string"] + ': </label>';
-                html += '<select '+isDisabled+' usable id="' + elem.id + '-nightService" class="input-creation"><option ' + values[3] + ' value="1">' + languages[browserLang]["base_active_string"] + '</option><option ' + values[4] + ' value="0">' + languages[browserLang]["base_not_active_string"] + '</option></select>';
+                html += '<select ' + isDisabled + ' usable id="' + elem.id + '-nightService" class="input-creation"><option ' + values[3] + ' value="1">' + languages[browserLang]["base_active_string"] + '</option><option ' + values[4] + ' value="0">' + languages[browserLang]["base_not_active_string"] + '</option></select>';
                 break;
             case "night":
                 html += '<label class="label-creation">' + languages[browserLang]["view_name_string"] + ': </label>';
@@ -448,7 +456,7 @@ example.View = draw2d.Canvas.extend({
 
             case "from-did-direct":
                 html += '<label class="label-creation">' + languages[browserLang]["view_number_string"] + ': </label>';
-                html += '<input '+isDisabled+' autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="input-creation"></input>';
+                html += '<input ' + isDisabled + ' autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="input-creation"></input>';
                 html += '<label class="label-creation">' + languages[browserLang]["view_name_string"] + ': </label>';
                 html += '<input usable value="' + values[1] + '" id="' + elem.id + '-name" class="input-creation"></input>';
                 break;
@@ -457,10 +465,10 @@ example.View = draw2d.Canvas.extend({
                 $.ajax({
                     url: "./visualize.php?readData=from-did-direct",
                     context: document.body,
-                    beforeSend: function(xhr) {
+                    beforeSend: function (xhr) {
                         $('#loader').show();
                     }
-                }).done(function(c) {
+                }).done(function (c) {
                     $('#loader').hide();
                     var data = JSON.parse(c);
                     var htmlSelect = "";
@@ -477,7 +485,7 @@ example.View = draw2d.Canvas.extend({
 
             case "ext-group":
                 html += '<label class="label-creation">' + languages[browserLang]["view_number_string"] + ': </label>';
-                html += '<input '+isDisabled+' autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="input-creation"></input>';
+                html += '<input ' + isDisabled + ' autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="input-creation"></input>';
                 html += '<label class="label-creation">' + languages[browserLang]["view_description_string"] + ': </label>';
                 html += '<input usable value="' + values[1] + '" id="' + elem.id + '-description" class="input-creation"></input>';
                 html += '<label class="label-creation">' + languages[browserLang]["base_ext_list_string"] + ': </label>';
@@ -486,7 +494,7 @@ example.View = draw2d.Canvas.extend({
 
             case "ext-queues":
                 html += '<label class="label-creation">' + languages[browserLang]["view_number_string"] + ': </label>';
-                html += '<input '+isDisabled+' autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="input-creation"></input>';
+                html += '<input ' + isDisabled + ' autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="input-creation"></input>';
                 html += '<label class="label-creation">' + languages[browserLang]["view_name_string"] + ': </label>';
                 html += '<input usable value="' + values[1] + '" id="' + elem.id + '-name" class="input-creation"></input>';
                 html += '<label class="label-creation">' + languages[browserLang]["base_static_memb_string"] + ': </label>';
@@ -499,10 +507,10 @@ example.View = draw2d.Canvas.extend({
                 $.ajax({
                     url: "./visualize.php?readData=recordings",
                     context: document.body,
-                    beforeSend: function(xhr) {
+                    beforeSend: function (xhr) {
                         $('#loader').show();
                     }
-                }).done(function(c) {
+                }).done(function (c) {
                     $('#loader').hide();
                     var data = JSON.parse(c);
                     var htmlSelect = "";
@@ -530,10 +538,10 @@ example.View = draw2d.Canvas.extend({
                 $.ajax({
                     url: "./visualize.php?readData=recordings",
                     context: document.body,
-                    beforeSend: function(xhr) {
+                    beforeSend: function (xhr) {
                         $('#loader').show();
                     }
-                }).done(function(c) {
+                }).done(function (c) {
                     $('#loader').hide();
                     var data = JSON.parse(c);
                     var htmlSelect = "";
@@ -560,10 +568,10 @@ example.View = draw2d.Canvas.extend({
                 $.ajax({
                     url: "./visualize.php?readData=timegroups",
                     context: document.body,
-                    beforeSend: function(xhr) {
+                    beforeSend: function (xhr) {
                         $('#loader').show();
                     }
-                }).done(function(c) {
+                }).done(function (c) {
                     $('#loader').hide();
                     var data = JSON.parse(c);
                     var htmlSelect = "";
@@ -589,10 +597,10 @@ example.View = draw2d.Canvas.extend({
                 $.ajax({
                     url: "./visualize.php?readData=codeavailable",
                     context: document.body,
-                    beforeSend: function(xhr) {
+                    beforeSend: function (xhr) {
                         $('#loader').show();
                     }
-                }).done(function(c) {
+                }).done(function (c) {
                     $('#loader').hide();
                     var data = JSON.parse(c);
                     var htmlSelect = "";
@@ -605,7 +613,7 @@ example.View = draw2d.Canvas.extend({
                     html += '<label class="label-creation">' + languages[browserLang]["view_name_string"] + ': </label>';
                     html += '<input autofocus value="' + values[0] + '" usable id="' + elem.id + '-name" class="input-creation"></input>';
                     html += '<label class="label-creation">' + languages[browserLang]["view_control_code_string"] + ': </label>';
-                    html += '<select '+isDisabled+' usable id="' + elem.id + '-controlcode" class="input-creation">' + htmlSelect + '</select>';
+                    html += '<select ' + isDisabled + ' usable id="' + elem.id + '-controlcode" class="input-creation">' + htmlSelect + '</select>';
 
                     $("#modalCreation").html(html);
                 });
@@ -613,7 +621,7 @@ example.View = draw2d.Canvas.extend({
 
             case "ext-meetme":
                 html += '<label class="label-creation">' + languages[browserLang]["view_number_string"] + ': </label>';
-                html += '<input '+isDisabled+' autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="input-creation"></input>';
+                html += '<input ' + isDisabled + ' autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="input-creation"></input>';
                 html += '<label class="label-creation">' + languages[browserLang]["view_name_string"] + ': </label>';
                 html += '<input value="' + values[1] + '" usable id="' + elem.id + '-name" class="input-creation"></input>';
                 break;
@@ -622,7 +630,7 @@ example.View = draw2d.Canvas.extend({
         return html;
     },
 
-    getDestination: function(destination) {
+    getDestination: function (destination) {
         var values, dests, dest, id, idlong, ids = null;
 
         if (destination.match(/ivr-*/)) {
@@ -650,7 +658,7 @@ example.View = draw2d.Canvas.extend({
         return [dest, id];
     },
 
-    switchDescription: function(dataArray, type) {
+    switchDescription: function (dataArray, type) {
         var htmlInj = "";
         for (elem in dataArray) {
             var text = dataArray[elem].entities[0].text;
@@ -663,7 +671,7 @@ example.View = draw2d.Canvas.extend({
         return htmlInj;
     },
 
-    onDrop: function(droppedDomNode, x, y, shiftKey, ctrlKey) {
+    onDrop: function (droppedDomNode, x, y, shiftKey, ctrlKey) {
         if (droppedDomNode[0].id !== "app-blackhole" && droppedDomNode[0].id !== "incoming") {
             // add context menu
             this.contextMenu();
