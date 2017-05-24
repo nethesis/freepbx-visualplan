@@ -536,8 +536,8 @@ function nethvplan_switchCreate($wType, $value, $connectionArray) {
 				"fc_description" => $name,
 				"goto1" => "truegoto",
 				"goto0" => "falsegoto",
-				"truegoto1" => trim($destinations["output_".$value['entities'][1]['id']]),
-				"falsegoto0" => trim($destinations["output_".$value['entities'][2]['id']]),
+				"truegoto1" => trim($destinations["output_".$value['entities'][2]['id']]),
+				"falsegoto0" => trim($destinations["output_".$value['entities'][1]['id']]),
 			), $controlCode);
 		break;
 	}
