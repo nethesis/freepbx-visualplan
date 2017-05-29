@@ -1,5 +1,5 @@
 Name:		nethvoice-module-nethvplan
-Version: 1.1.1
+Version: 1.1.2
 Release: 1%{?dist}
 Summary:	A module to visualize and edit FreePBX dialplan
 Group:		Networking/Daemons
@@ -40,6 +40,10 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_nseventsdir}/nethvoice-module-nethvplan-update
 
 %changelog
+* Mon May 29 2017 Edoardo Spadoni <edoardo.spadoni@nethesis.it> - 1.1.2-1
+  - fixed obj saving with dash string
+  - fix call flow control save order. Nethesis/dev#5139
+
 * Mon May 22 2017 Edoardo Spadoni <edoardo.spadoni@nethesis.it> - 1.1.1-1
  - fix reset music class on queues save. Nethesis/dev#5071
 
