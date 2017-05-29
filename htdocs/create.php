@@ -108,7 +108,7 @@ function nethvplan_switchCreate($wType, $value, $connectionArray) {
 				core_did_add(array(
 					"extension" => $extension,
 					"cidnum" => $cidnum,
-					"alertinfo" => "<http://www.notused >\;info=ring2"
+					"alertinfo" => "<http://www.notused >\;info=ring2",
 					"description" => $description,
 					"destination" => $destination,
 					"mohclass" => "default"
@@ -117,7 +117,7 @@ function nethvplan_switchCreate($wType, $value, $connectionArray) {
 				core_did_add(array(
 					"extension" => $extension,
 					"cidnum" => $cidnum,
-					"alertinfo" => "<http://www.notused >\;info=ring2"
+					"alertinfo" => "<http://www.notused >\;info=ring2",
 					"description" => $description,
 					"destination" => $destination,
 					"mohclass" => "default"
@@ -281,10 +281,14 @@ function nethvplan_switchCreate($wType, $value, $connectionArray) {
 			$extParts = explode(")", $parts[1]);
 			$extension = trim($extParts[0]);
 
-			$listStatic = explode("\n", $value['entities'][2]['text']);
-			foreach ($listStatic as $k => $v) {
-				$listStatic[$k] = "Local/".$v."@from-queue/n,0";
+			$listStaticArr = explode("\n", $value['entities'][2]['text']);
+			$listStatic = [];
+			if(count($listStaticArr) > 0 && $listStaticArr[0] !== "") {
+				foreach ($listStaticArr as $k => $v) {
+					$listStatic[$k] = "Local/".$v."@from-queue/n,0";
+				}
 			}
+
 			$listDynamic = explode("\n", $value['entities'][4]['text']);
 
 			$destinations = nethvplan_getDestination($value, $connectionArray, $currentCreated, $wType);

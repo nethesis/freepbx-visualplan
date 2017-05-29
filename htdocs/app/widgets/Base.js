@@ -57,11 +57,6 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                     members = txt.replace(/-/g, " ").match(/-?\d+/g).filter(Number);
                     txt = members.join("\n");
                 }
-                if (txt.length == 0) {
-                    txt = languages[browserLang]["base_no_elements_string"];
-                }
-            } else {
-                txt = languages[browserLang]["base_no_elements_string"];
             }
 
             padding = {
