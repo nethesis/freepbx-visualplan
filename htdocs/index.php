@@ -1,3 +1,12 @@
+<?php
+/*check auth*/
+include_once '/etc/freepbx.conf';
+session_start();
+if (!isset($_SESSION['AMP_user']) || !$_SESSION['AMP_user']->checkSection('visualplan')) {
+    header("location: /freepbx/wizard");
+    exit(1);
+}
+?>
 <html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 
 <head>

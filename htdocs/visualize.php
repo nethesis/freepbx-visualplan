@@ -4,6 +4,12 @@ if (!@include_once(getenv('FREEPBX_CONF') ? getenv('FREEPBX_CONF') : '/etc/freep
 	include_once('/etc/asterisk/freepbx.conf');
 }
 
+/*check auth*/
+session_start();
+if (!isset($_SESSION['AMP_user']) || !$_SESSION['AMP_user']->checkSection('visualplan')) {
+    exit(1);
+}
+
 // bypass freepbx authentication
 define('FREEPBX_IS_AUTH', 1);
 
