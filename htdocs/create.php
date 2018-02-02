@@ -68,6 +68,7 @@ function nethvplan_extraction($dataArray, $connectionArray) {
 		// create object
 		nethvplan_switchCreate($wType, $value, $connectionArray);
 	}
+	system('/var/www/html/freepbx/rest/lib/retrieveHelper.sh > /dev/null &');
 }
 
 $returnedIdArray = array("success" => $returnedIdArray);
