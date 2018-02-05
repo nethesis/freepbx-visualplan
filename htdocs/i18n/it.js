@@ -39,6 +39,11 @@ languages.it = {
     "view_modification_string": "- Modifica",
     "view_error_inserted_string": "Errore: Il valore inserito è già in uso",
     "view_number_string": "Numero",
+
+    "view_number_string_did": "Numero Chiamato",
+    "view_number_string_cid": "Numero Chiamante",
+    "view_any_string": "TUTTI",
+
     "view_description_string": "Descrizione",
     "view_name_string": "Nome",
     "view_manual_act_string": "Attivazione Manuale",

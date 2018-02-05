@@ -39,6 +39,11 @@ languages.en = {
     "view_modification_string": "- Modification",
     "view_error_inserted_string": "Error: The inserted value is used",
     "view_number_string": "Number",
+
+    "view_number_string_did": "DID Number",
+    "view_number_string_cid": "CallerID Number",
+    "view_any_string": "ANY",
+
     "view_description_string": "Description",
     "view_name_string": "Name",
     "view_manual_act_string": "Manual activation",

@@ -254,10 +254,28 @@ example.View = draw2d.Canvas.extend({
                         $(this).dialog('destroy').remove();
                     },
                     Save: function () {
+                        var pattern = event.context.getElemByAttr("pattern");
                         var usableElem = event.context.getElemByAttr("usable");
-
-                        // check existing data
-                        var result = event.context.checkData(usableElem, event.dropped[0].id, event);
+                        var valid = true;
+                        for (n in pattern) {
+                            var val = pattern[n].value;
+                            var patt = pattern[n].pattern;
+                            var reg = new RegExp(patt);
+                            if (!reg.test(val)) {
+                                valid = false;
+                                $(pattern[n]).css("border", "1px solid rgb(255, 97, 97)");
+                            } else {
+                                $(pattern[n]).css("border", "1px solid #a9a9a9");
+                            }
+                        }
+                        if (valid) {
+                            $(".error-message").html("");
+                            // check existing data
+                            var result = event.context.checkData(usableElem, event.dropped[0].id, event);
+                        } else {
+                            $(".error-message").html("");
+                            $('#modalCreation').append('<p class="error-message">' + languages[browserLang]["view_error_empty"] + '</p>');
+                        }
                     }
                 },
                 title: $(event.dropped[0]).text() + " " + languages[browserLang]["view_creation_string"]
@@ -443,12 +461,12 @@ example.View = draw2d.Canvas.extend({
 
         switch (elem.id) {
             case "incoming":
-                html += '<label class="label-creation">' + languages[browserLang]["view_number_string"] + ': </label>';
-                html += '<input ' + isDisabled + ' autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="input-creation-mini"></input>';
-                html += ' / ';
-                html += '<input ' + isDisabled + ' value="' + values[1] + '" usable id="' + elem.id + '-cidnum" class="input-creation-mini"></input>';
+                html += '<label class="label-creation">' + languages[browserLang]["view_number_string_did"] + ': </label>';
+                html += '<input pattern="^(_[\\dNXZ\\.\\-\\[\\]]*|[\\d]*)$" ' + isDisabled + ' autofocus value="' + values[0] + '" usable id="' + elem.id + '-number"></input>';
+                html += '<label class="label-creation">' + languages[browserLang]["view_number_string_cid"] + ': </label>';
+                html += '<input pattern="^(_[\\dNXZ\\.\\-\\[\\]]*|[\\d]*)$" placeholder="' + languages[browserLang]["view_any_string"] + '" ' + isDisabled + ' value="' + values[1] + '" usable id="' + elem.id + '-cidnum"></input>';
                 html += '<label class="label-creation">' + languages[browserLang]["view_description_string"] + ': </label>';
-                html += '<input value="' + values[2] + '" usable id="' + elem.id + '-description" class="input-creation"></input>';
+                html += '<input value="' + values[2] + '" usable id="' + elem.id + '-description"></input>';
                 break;
             case "night":
                 html += '<label class="label-creation">' + languages[browserLang]["view_name_string"] + ': </label>';
@@ -460,7 +478,7 @@ example.View = draw2d.Canvas.extend({
 
             case "from-did-direct":
                 html += '<label class="label-creation">' + languages[browserLang]["view_number_string"] + ': </label>';
-                html += '<input ' + isDisabled + ' autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="input-creation"></input>';
+                html += '<input pattern="^(_[\\dNXZ\\.\\-\\[\\]]*|[\\d]*)$" ' + isDisabled + ' autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="input-creation"></input>';
                 html += '<label class="label-creation">' + languages[browserLang]["view_name_string"] + ': </label>';
                 html += '<input usable value="' + values[1] + '" id="' + elem.id + '-name" class="input-creation"></input>';
                 break;
@@ -489,7 +507,7 @@ example.View = draw2d.Canvas.extend({
 
             case "ext-group":
                 html += '<label class="label-creation">' + languages[browserLang]["view_number_string"] + ': </label>';
-                html += '<input ' + isDisabled + ' autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="input-creation"></input>';
+                html += '<input pattern="^(_[\\dNXZ\\.\\-\\[\\]]*|[\\d]*)$" ' + isDisabled + ' autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="input-creation"></input>';
                 html += '<label class="label-creation">' + languages[browserLang]["view_description_string"] + ': </label>';
                 html += '<input usable value="' + values[1] + '" id="' + elem.id + '-description" class="input-creation"></input>';
                 html += '<label class="label-creation">' + languages[browserLang]["base_ext_list_string"] + ': </label>';
@@ -498,7 +516,7 @@ example.View = draw2d.Canvas.extend({
 
             case "ext-queues":
                 html += '<label class="label-creation">' + languages[browserLang]["view_number_string"] + ': </label>';
-                html += '<input ' + isDisabled + ' autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="input-creation"></input>';
+                html += '<input pattern="^(_[\\dNXZ\\.\\-\\[\\]]*|[\\d]*)$" ' + isDisabled + ' autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="input-creation"></input>';
                 html += '<label class="label-creation">' + languages[browserLang]["view_name_string"] + ': </label>';
                 html += '<input usable value="' + values[1] + '" id="' + elem.id + '-name" class="input-creation"></input>';
                 html += '<label class="label-creation">' + languages[browserLang]["base_static_memb_string"] + ': </label>';
@@ -625,7 +643,7 @@ example.View = draw2d.Canvas.extend({
 
             case "ext-meetme":
                 html += '<label class="label-creation">' + languages[browserLang]["view_number_string"] + ': </label>';
-                html += '<input ' + isDisabled + ' autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="input-creation"></input>';
+                html += '<input pattern="^(_[\\dNXZ\\.\\-\\[\\]]*|[\\d]*)$" ' + isDisabled + ' autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="input-creation"></input>';
                 html += '<label class="label-creation">' + languages[browserLang]["view_name_string"] + ': </label>';
                 html += '<input value="' + values[1] + '" usable id="' + elem.id + '-name" class="input-creation"></input>';
                 break;
