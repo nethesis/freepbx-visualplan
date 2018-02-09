@@ -66,5 +66,6 @@ languages.it = {
     "base_from_did_direct_string": "Interno",
     "base_ext_local_string": "Voice Mail",
     "base_ext_meetme_string": "Conferenza",
-    "base_alternative_string": "Destinazione Alternativa"
+    "base_alternative_string": "Destinazione Alternativa",
+    "base_ivr_suggest_string": "Aggiungi un'opzione cliccando il tasto destro del mouse"
 };

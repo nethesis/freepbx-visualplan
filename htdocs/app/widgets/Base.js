@@ -51,10 +51,10 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
 
         if (type === "list") {
             if (txt && txt !== "") {
-                var membersCheck = txt.match(/-?\d+/g);
+                var membersCheck = txt.match(/(-?\d+,*\d+#*)/g);
                 var members = "";
                 if (membersCheck) {
-                    members = txt.replace(/-/g, " ").match(/-?\d+/g).filter(Number);
+                    members = txt.replace(/-/g, " ").match(/(\d+,*\d+#*)/g);
                     txt = members.join("\n");
                 }
             }
@@ -432,6 +432,10 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                     text: languages[browserLang]["base_time_dest_string"],
                     id: "ivr_timeout-dest%" + id,
                     type: "output"
+                }, {
+                    text: languages[browserLang]["base_ivr_suggest_string"],
+                    id: "ivr_suggest-dest%" + id,
+                    type: "text"
                 }];
                 break;
 

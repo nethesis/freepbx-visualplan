@@ -292,7 +292,11 @@ function nethvplan_switchCreate($wType, $value, $connectionArray) {
 			$listStatic = [];
 			if(count($listStaticArr) > 0 && $listStaticArr[0] !== "") {
 				foreach ($listStaticArr as $k => $v) {
-					$listStatic[$k] = "Local/".$v."@from-queue/n,0";
+                                        $tmp = explode(",",$v);
+                                        if (!isset($tmp[1])) {
+                                            $tmp[1] = "0";
+                                        }
+					$listStatic[$k] = "Local/".$tmp[0]."@from-queue/n,".$tmp[1];
 				}
 			}
 

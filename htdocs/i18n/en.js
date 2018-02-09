@@ -66,5 +66,6 @@ languages.en = {
     "base_from_did_direct_string": "Extension",
     "base_ext_local_string": "Voice Mail",
     "base_ext_meetme_string": "Conference",
-    "base_alternative_string": "Alternative Destination"
+    "base_alternative_string": "Alternative Destination",
+    "base_ivr_suggest_string": "Right-click to add option"
 };
