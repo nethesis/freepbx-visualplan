@@ -283,12 +283,15 @@ example.View = draw2d.Canvas.extend({
         $(".ui-dialog-titlebar").css("background", $(event.dropped[0]).css("backgroundColor"));
 
         // inject html
-        dialog.html(event.context.modalCreate(event.dropped[0]));
+        dialog.html(event.context.modalCreate(event.dropped[0],"", event));
 
         // show dialog
         dialog.dialog("open");
-        $('.ui-widget-overlay').bind('click', function () {
-            dialog.dialog('destroy').remove();
+
+        $(".ui-widget-overlay").bind("click", function () {
+            $("textarea").unbind();
+            $("select").unbind();
+            dialog.dialog("destroy").remove();
         });
     },
 
@@ -301,6 +304,26 @@ example.View = draw2d.Canvas.extend({
             }
         }
         return matchingElements;
+    },
+
+    bindExtSelect: function (obj, htmlSelect, regex) {
+        for (n in obj) {
+            $.each(obj[n], function(i) {
+                $( obj[n][i].selId ).bind("change", function(){
+                    var select = $( this );
+                    $( obj[n][i].textId ).val(function(){
+                        var res = $( this ).val() + "\n" + select.val();
+                        return res.match(regex).join("\n");
+                    });
+                    $( select ).find("option:selected").remove();
+                });
+                $( obj[n][i].textId ).bind("input propertychange", function() {
+                    if (this.value == "") {
+                        $( obj[n][i].selId ).html(htmlSelect);
+                    }
+                });
+            })
+        }
     },
 
     checkData: function (elem, type, event) {
@@ -450,7 +473,7 @@ example.View = draw2d.Canvas.extend({
         }
     },
 
-    modalCreate: function (elem, mod) {
+    modalCreate: function (elem, mod, event) {
         var html = "";
         var isDisabled = "";
         values = ["", "", "", "", "", "", "", "", ""];
@@ -475,7 +498,6 @@ example.View = draw2d.Canvas.extend({
                 html += '<select id="selectNightType" usable onchange="if(this.selectedIndex==2)$(\'#calGroup\').show();else $(\'#calGroup\').hide();" id="' + elem.id + '-activation" class="input-creation"><option ' + values[1] + ' value="1">' + languages[browserLang]["base_active_string"] + '</option><option ' + values[2] + ' value="0">' + languages[browserLang]["base_not_active_string"] + '</option><option ' + values[3] + ' value="period">' + languages[browserLang]["base_period_string"] + '</option></select>';
                 html += '<script>if($("#selectNightType").val() === "period")$("#calGroup").show();</script><div usable id="calGroup" style="display:none;"><label class="label-creation">' + languages[browserLang]["base_period_from_string"] + ': </label><input value="' + values[4] + '" placeholder="dd/mm/yyyy" usable id="' + elem.id + '-fromperiod" class="input-creation"></input><label class="label-creation">' + languages[browserLang]["base_period_to_string"] + ': </label><input value="' + values[5] + '" placeholder="dd/mm/yyyy" usable id="' + elem.id + '-toperiod" class="input-creation"></input></div>';
                 break;
-
             case "from-did-direct":
                 html += '<label class="label-creation">' + languages[browserLang]["view_number_string"] + ': </label>';
                 html += '<input pattern="^(_[\\dNXZ\\.\\-\\[\\]]*|[\\d]*)$" ' + isDisabled + ' autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="input-creation"></input>';
@@ -506,23 +528,85 @@ example.View = draw2d.Canvas.extend({
                 break;
 
             case "ext-group":
-                html += '<label class="label-creation">' + languages[browserLang]["view_number_string"] + ': </label>';
-                html += '<input pattern="^(_[\\dNXZ\\.\\-\\[\\]]*|[\\d]*)$" ' + isDisabled + ' autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="input-creation"></input>';
-                html += '<label class="label-creation">' + languages[browserLang]["view_description_string"] + ': </label>';
-                html += '<input usable value="' + values[1] + '" id="' + elem.id + '-description" class="input-creation"></input>';
-                html += '<label class="label-creation">' + languages[browserLang]["base_ext_list_string"] + ': </label>';
-                html += '<textarea usable id="' + elem.id + '-extensionList" class="input-creation">' + values[2] + '</textarea>';
+                $.ajax({
+                    url: "./visualize.php?readData=from-did-direct",
+                    context: document.body,
+                    beforeSend: function (xhr) {
+                        $('#loader').show();
+                    }
+                }).done(function (c) {
+                    $('#loader').hide();
+                    var data = JSON.parse(c);
+                    var htmlSelect = "<option>-</option>";
+                    for (e in data) {
+                        htmlSelect += '<option value="' + e + '">' + e + '</option>';
+                    }
+                    html += '<label class="label-creation">' + languages[browserLang]["view_number_string"] + ': </label>';
+                    html += '<input pattern="^(_[\\dNXZ\\.\\-\\[\\]]*|[\\d]*)$" ' + isDisabled + ' autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="input-creation"></input>';
+                    html += '<label class="label-creation">' + languages[browserLang]["view_description_string"] + ': </label>';
+                    html += '<input usable value="' + values[1] + '" id="' + elem.id + '-description" class="input-creation"></input>';
+                    html += '<label class="label-creation">' + languages[browserLang]["base_ext_list_string"] + ': </label>';
+                    html += '<select id="selectExtGroup" class="input-creation">' + htmlSelect + '</select>';
+                    html += '<label class="label-creation"></label>';
+                    html += '<textarea id="textareaExtGroup" usable id="' + elem.id + '-extensionList" class="input-creation">' + values[2] + '</textarea>';
+
+                    $("#modalCreation").html(html);
+
+                    event.context.bindExtSelect({
+                        "group": {
+                          0: {
+                            "selId": "#selectExtGroup",
+                            "textId": "#textareaExtGroup"
+                          }
+                        }
+                    }, htmlSelect, /\d+/g);
+
+                });
                 break;
 
             case "ext-queues":
-                html += '<label class="label-creation">' + languages[browserLang]["view_number_string"] + ': </label>';
-                html += '<input pattern="^(_[\\dNXZ\\.\\-\\[\\]]*|[\\d]*)$" ' + isDisabled + ' autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="input-creation"></input>';
-                html += '<label class="label-creation">' + languages[browserLang]["view_name_string"] + ': </label>';
-                html += '<input usable value="' + values[1] + '" id="' + elem.id + '-name" class="input-creation"></input>';
-                html += '<label class="label-creation">' + languages[browserLang]["base_static_memb_string"] + ': </label>';
-                html += '<textarea usable id="' + elem.id + '-staticMem" class="input-creation">' + values[2] + '</textarea>';
-                html += '<label class="label-creation">' + languages[browserLang]["base_dyn_memb_string"] + ': </label>';
-                html += '<textarea usable id="' + elem.id + '-dynamicMem" class="input-creation">' + values[3] + '</textarea>';
+                $.ajax({
+                    url: "./visualize.php?readData=from-did-direct",
+                    context: document.body,
+                    beforeSend: function (xhr) {
+                        $('#loader').show();
+                    }
+                }).done(function (c) {
+                    $('#loader').hide();
+                    var data = JSON.parse(c);
+                    var htmlSelect = "<option>-</option>";
+                    for (e in data) {
+                        htmlSelect += '<option value="' + e + ',0">' + e + '</option>';
+                    }
+                    html += '<label class="label-creation">' + languages[browserLang]["view_number_string"] + ': </label>';
+                    html += '<input pattern="^(_[\\dNXZ\\.\\-\\[\\]]*|[\\d]*)$" ' + isDisabled + ' autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="input-creation"></input>';
+                    html += '<label class="label-creation">' + languages[browserLang]["view_name_string"] + ': </label>';
+                    html += '<input usable value="' + values[1] + '" id="' + elem.id + '-name" class="input-creation"></input>';
+                    html += '<label class="label-creation">' + languages[browserLang]["base_static_memb_string"] + ': </label>';
+                    html += '<select id="selectExtQueue1" class="input-creation">' + htmlSelect + '</select>';
+                    html += '<label class="label-creation"></label>';
+                    html += '<textarea id="textareaExtQueue1" usable id="' + elem.id + '-staticMem" class="input-creation">' + values[2] + '</textarea>';
+                    html += '<label class="label-creation">' + languages[browserLang]["base_dyn_memb_string"] + ': </label>';
+                    html += '<select id="selectExtQueue2" class="input-creation">' + htmlSelect + '</select>';
+                    html += '<label class="label-creation"></label>';
+                    html += '<textarea id="textareaExtQueue2" usable id="' + elem.id + '-dynamicMem" class="input-creation">' + values[3] + '</textarea>';
+
+                    $("#modalCreation").html(html);
+
+                    event.context.bindExtSelect({
+                        "queues": {
+                          0: {
+                            "selId": "#selectExtQueue1",
+                            "textId": "#textareaExtQueue1"
+                          },
+                          1: {
+                            "selId": "#selectExtQueue2",
+                            "textId": "#textareaExtQueue2"
+                          }
+                        }
+                    }, htmlSelect, /(\d+,\d+)|(\d+)/g);
+
+                });
                 break;
 
             case "ivr":
