@@ -4,6 +4,15 @@
 //Via BMO AJAX call
 $dataurl = "ajax.php?module=visualplan&command=getJSON&jdata=grid";
 ?>
+
+<div class="bs-bars pull-left">
+	<div id="toolbar-all">
+		<div class="dropdown">
+			<a href="/freepbx/visualplan/?did=new_route" target="_blank" class="btn btn-default"><i class="fa fa-plus"></i> <?php echo _("Create new route")?></a>
+		</div>
+	</div>
+</div>
+
 <table id="mygrid" data-cache="false" data-toolbar="#toolbar-all" data-maintain-selected="true" data-show-columns="true" data-show-toggle="true" data-toggle="table" data-pagination="true" data-search="true" class="table table-striped">
 	<thead>
 		<tr>
