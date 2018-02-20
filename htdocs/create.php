@@ -512,6 +512,178 @@ function nethvplan_switchCreate($wType, $value, $connectionArray) {
 				ivr_save_entries($idIVR, $ivrArray);
 			}
 		break;
+
+		case "cqr":
+
+			$parts = explode("(", $value['entities'][0]['text']);
+
+			$name = trim($parts[0]);
+			$extParts = explode(")", $parts[1]);
+			$description = trim($extParts[0]);
+
+		 	$idParts = explode("-", $value['entities'][0]['text']);
+		 	$id = trim($idParts[1]);
+
+			$annParts = explode("(", $value['entities'][1]['text']);
+			$annExParts = explode(")", $annParts[1]);
+			$announcement = trim($annExParts[0]);
+
+		 	if(!array_key_exists($value['id'], $currentCreated)) {
+
+				if(empty($defDest)) $defDest = "";
+
+				if(empty($id)) {
+
+			 		$idCQR = nethcqr_save_details(array(
+						"name" => $name,
+						"description" => $description,
+						"announcement" => $announcement,
+						"use_code" => "on",
+						"use_workphone" => "on",
+						"manual_code" => "on",
+						"cod_cli_announcement" => "",
+						"err_announcement" => "",
+						"code_length" => 5,
+						"code_retries" => 3,
+						"default_destination" => $defDest,
+						"db_type" => "mysql",
+						"db_url" => "localhost",
+						"db_name" => "",
+						"db_user" => "",
+						"db_pass" => "",
+						"query" => "",
+						"cc_db_type" => "mysql",
+						"cc_db_url" => "localhost",
+						"cc_db_name" => "",
+						"cc_db_user" => "",
+						"cc_db_pass" => "",
+						"cc_query" => "",
+						"ccc_query" => ""
+					));
+
+				 	$idReturn = $idCQR;
+
+					$currentCreated[$value['id']] = $idCQR;
+					$destinations = nethvplan_getDestination($value, $connectionArray, $currentCreated, $wType);
+
+					$defDest = trim($destinations["output_".$value['entities'][2]['id']]);
+				 	$idCQR = nethcqr_save_details(array(
+				   	"id_cqr" => $idReturn,
+				 		"name" => $name,
+						"description" => $description,
+						"announcement" => $announcement,
+						"use_code" => "on",
+						"use_workphone" => "on",
+						"manual_code" => "on",
+						"cod_cli_announcement" => "",
+						"err_announcement" => "",
+						"code_length" => 5,
+						"code_retries" => 3,
+            "default_destination" => $defDest,
+            "db_type" => "mysql",
+						"db_url" => "localhost",
+						"db_name" => "",
+						"db_user" => "",
+						"db_pass" => "",
+						"query" => "",
+						"cc_db_type" => "mysql",
+						"cc_db_url" => "localhost",
+						"cc_db_name" => "",
+						"cc_db_user" => "",
+						"cc_db_pass" => "",
+						"cc_query" => "",
+						"ccc_query" => ""
+					));
+
+			 } else {
+
+					$exists = nethcqr_get_details($id);
+					if($exists[0]["use_code"]==1) $exists[0]["use_code"] = 'on';
+					if($exists[0]["use_workphone"]==1) $exists[0]["use_workphone"] = 'on';
+					if($exists[0]["manual_code"]==1) $exists[0]["manual_code"] = 'on';
+
+					$idCQR = nethcqr_save_details(array(
+						"id_cqr" => $id,
+						"name" => $name,
+						"description" => $description,
+						"announcement" => $announcement,
+						"use_code" => $exists[0]['use_code'],
+						"use_workphone" => $exists[0]['use_workphone'],
+						"manual_code" => $exists[0]['manual_code'],
+						"cod_cli_announcement" => $exists[0]['cod_cli_announcement'],
+						"err_announcement" => $exists[0]['err_announcement'],
+						"code_length" => $exists[0]['code_length'],
+						"code_retries" => $exists[0]['code_retries'],
+						"default_destination" => $defDest,
+						"db_type" => $exists[0]['db_type'],
+						"db_url" => $exists[0]['db_url'],
+						"db_name" => $exists[0]['db_name'],
+						"db_user" => $exists[0]['db_user'],
+						"db_pass" => $exists[0]['db_pass'],
+						"query" => $exists[0]['query'],
+						"cc_db_type" => $exists[0]['cc_db_type'],
+						"cc_db_url" => $exists[0]['cc_db_url'],
+						"cc_db_name" => $exists[0]['cc_db_name'],
+						"cc_db_user" => $exists[0]['cc_db_user'],
+						"cc_db_pass" => $exists[0]['cc_db_pass'],
+						"cc_query" => $exists[0]['cc_query'],
+						"ccc_query" => $exists[0]['ccc_query']
+					));
+
+					$currentCreated[$value['id']] = $idCQR;
+					$destinations = nethvplan_getDestination($value, $connectionArray, $currentCreated, $wType);
+
+					$defDest = trim($destinations["output_".$value['entities'][2]['id']]);
+					$idCQR = nethcqr_save_details(array(
+						"id_cqr" => $idCQR,
+						"name" => $name,
+						"description" => $description,
+						"announcement" => $announcement,
+						"use_code" => $exists[0]['use_code'],
+						"use_workphone" => $exists[0]['use_workphone'],
+						"manual_code" => $exists[0]['manual_code'],
+						"cod_cli_announcement" => $exists[0]['cod_cli_announcement'],
+						"err_announcement" => $exists[0]['err_announcement'],
+						"code_length" => $exists[0]['code_length'],
+						"code_retries" => $exists[0]['code_retries'],
+						"default_destination" => $defDest,
+						"db_type" => $exists[0]['db_type'],
+						"db_url" => $exists[0]['db_url'],
+						"db_name" => $exists[0]['db_name'],
+						"db_user" => $exists[0]['db_user'],
+						"db_pass" => $exists[0]['db_pass'],
+						"query" => $exists[0]['query'],
+						"cc_db_type" => $exists[0]['cc_db_type'],
+						"cc_db_url" => $exists[0]['cc_db_url'],
+						"cc_db_name" => $exists[0]['cc_db_name'],
+						"cc_db_user" => $exists[0]['cc_db_user'],
+						"cc_db_pass" => $exists[0]['cc_db_pass'],
+						"cc_query" => $exists[0]['cc_query'],
+						"ccc_query" => $exists[0]['ccc_query']
+					));
+					$idReturn = $idCQR;
+
+			 	}
+
+				$cqrArray = array();
+
+				$position = 1;
+				foreach($value['entities'] as $k => $v) {
+					if ($k > 3) {
+						$pos[] = $position;
+						$position += 1;
+						$cond[] = $v['text'];
+						$goto[] = trim($destinations["output_".$v['id']]);
+					}
+				}
+			 	$cqrArray['position'] = $pos;
+			 	$cqrArray['condition'] = $cond;
+			 	$cqrArray['goto'] = $goto;
+
+			 	nethcqr_save_entries($idCQR, $cqrArray);
+			}
+		break;
+
 		case "timeconditions":
 			$nameParts = explode("-", $value['entities'][0]['text']);
 			$name = trim($nameParts[0]);
@@ -616,13 +788,15 @@ function nethvplan_checkDestination($destination, $type, $value, $connectionArra
 }
 
 function nethvplan_getDestination($values, $connectionArray) {
+
 	$id = $values['id'];
 	foreach ($connectionArray as $key => $value) {
 		if($value['source']['node'] == $id) {
 			$destination = $value['target']['node'];
+
 			$parts = explode("%", $destination);
 
-			if($parts[0] === "app-announcement" || $parts[0] === "ivr" || $parts[0] === "timeconditions") {
+			if($parts[0] === "app-announcement" || $parts[0] === "ivr" || $parts[0] === "cqr" || $parts[0] === "timeconditions") {
 				$result = nethvplan_checkDestination($destination, $parts[0], $values, $connectionArray);
 			}
 
@@ -655,6 +829,9 @@ function nethvplan_getDestination($values, $connectionArray) {
 				break;
 				case "ivr":
 					$destAsterisk[$value['source']['port']] = trim($parts[0])."-".trim($result).",s,1";
+				break;
+				case "cqr":
+					$destAsterisk[$value['source']['port']] = "nethcqr,".$result.",1";
 				break;
 				case "timeconditions":
 					$destAsterisk[$value['source']['port']] = trim($parts[0]).",".trim($result).",1";

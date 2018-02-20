@@ -450,6 +450,12 @@ example.View = draw2d.Canvas.extend({
                 var v3 = data[2].figure.text.split(':')[1].split('(')[0].trim();
                 return [v1, v2, v3];
                 break;
+            case "cqr":
+                var v1 = data[1].figure.text.split('(')[0].trim();
+                var v2 = data[1].figure.text.split('(')[1].split(')')[0].trim();
+                var v3 = data[2].figure.text.split(':')[1].split('(')[0].trim();
+                return [v1, v2, v3];
+                break;
             case "app-announcement":
                 var v1 = data[1].figure.text.split('-')[0].trim();
                 var v2 = data[2].figure.text.split(':')[1].split('(')[0].trim();
@@ -639,6 +645,37 @@ example.View = draw2d.Canvas.extend({
                     $("#modalCreation").html(html);
                 });
                 break;
+
+          case "cqr":
+              $.ajax({
+                  url: "./visualize.php?readData=recordings",
+                  context: document.body,
+                  beforeSend: function (xhr) {
+                      $('#loader').show();
+                  }
+              }).done(function (c) {
+                  $('#loader').hide();
+                  var data = JSON.parse(c);
+                  var htmlSelect = "";
+                  var selectedOption = "";
+                  for (e in data) {
+                      if (data[e].name === values[2]) {
+                          selectedOption = "selected";
+                      } else {
+                          selectedOption = "";
+                      }
+                      htmlSelect += '<option ' + selectedOption + ' value="' + data[e].name + ' ( ' + e + ' )">' + data[e].name + '</option>';
+                  }
+                  html += '<label class="label-creation">' + languages[browserLang]["view_name_string"] + ': </label>';
+                  html += '<input autofocus value="' + values[0] + '" usable id="' + elem.id + '-name" class="input-creation"></input>';
+                  html += '<label class="label-creation">' + languages[browserLang]["view_description_string"] + ': </label>';
+                  html += '<input usable value="' + values[1] + '" id="' + elem.id + '-description" class="input-creation"></input>';
+                  html += '<label class="label-creation">' + languages[browserLang]["view_recording_string"] + ': </label>';
+                  html += '<select usable id="' + elem.id + '-recording" class="input-creation">' + htmlSelect + '</select>';
+
+                  $("#modalCreation").html(html);
+              });
+              break;
 
             case "app-announcement":
                 $.ajax({

@@ -253,6 +253,96 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                     });
                 });
                 break;
+                case "cqr":
+                    label.on("contextmenu", function (emitter, event) {
+                        var items = {};
+                        if (isNaN(emitter.text)) {
+                            items["add"] = {
+                                name: languages[browserLang]["base_add_ivr_opt_string"]
+                            };
+                        } else {
+                            items["add"] = {
+                                name: languages[browserLang]["base_add_ivr_opt_string"]
+                            };
+                            items["delete"] = {
+                                name: languages[browserLang]["base_delete_ivr_opt_string"] + " " + emitter.text
+                            };
+                        }
+                        $.contextMenu({
+                            selector: 'body',
+                            events: {
+                                hide: function () {
+                                    $.contextMenu('destroy');
+                                }
+                            },
+                            callback: $.proxy(function (key, options) {
+                                switch (key) {
+                                    case "add":
+                                        var cNum = table.children.data.length - 5;
+                                        var dialog = $('<div id="modalCreation"></div>')
+                                            .dialog({
+                                                position: 'center',
+                                                autoOpen: false,
+                                                resizable: false,
+                                                width: 250,
+                                                modal: true,
+                                                close: function (ev, ui) {
+                                                    $(this).dialog('destroy').remove();
+                                                },
+                                                buttons: {
+                                                    Cancel: function () {
+                                                        $(this).dialog('destroy').remove();
+                                                    },
+                                                    Save: function (e) {
+                                                        var cqrVal = $('#cqr-option').val();
+
+                                                        // update values
+                                                        setTimeout(function () {
+                                                            table.addEntity(cqrVal, "output", "false");
+                                                        }, 10);
+
+                                                        $('#modalCreation').dialog('destroy').remove();
+                                                    }
+                                                },
+                                                title: languages[browserLang]["base_cqr_option_string"]
+                                            });
+                                        $(".ui-dialog-titlebar").css("background", "#7f8c8d");
+
+                                        // inject html
+                                        var html = "";
+                                        html += '<label class="label-creation-mini">' + languages[browserLang]["view_number_string"] + ': </label>';
+                                        html += '<input autofocus type="number" value="" usable id="cqr-option" class="input-creation-mini"></input>';
+                                        dialog.html(html);
+
+                                        // show dialog
+                                        dialog.dialog("open");
+                                        $('.ui-widget-overlay').bind('click', function () {
+                                            dialog.dialog('destroy').remove();
+                                        });
+                                        break;
+                                    case "delete":
+                                        if (table.children.data.length > 5) {
+                                            var cmd = new draw2d.command.CommandDelete(emitter);
+                                            emitter.getCanvas().getCommandStack().execute(cmd);
+                                        }
+
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            }, this),
+                            position: function (opt, x, y) {
+                                var scrollTopVal = app.view.getScrollArea().scrollTop();
+                                var scrollLeftVal = app.view.getScrollArea().scrollLeft();
+                                opt.$menu.css({
+                                    top: event.y / app.view.getZoom() + 25 - scrollTopVal,
+                                    left: event.x / app.view.getZoom() + 55 - scrollLeftVal
+                                });
+                            },
+                            items: items
+                        });
+                    });
+                    break;
         }
     },
 
@@ -435,6 +525,29 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                 }, {
                     text: languages[browserLang]["base_ivr_suggest_string"],
                     id: "ivr_suggest-dest%" + id,
+                    type: "text"
+                }];
+                break;
+
+            case "cqr":
+                templateObj.id = type + "%" + id;
+                templateObj.bgColor = "#528ba7";
+                templateObj.radius = 0;
+                templateObj.entities = [{
+                    text: elem[0].value + " ( " + elem[1].value + " )",
+                    id: "cqr_name%" + id,
+                    type: "input"
+                }, {
+                    text: languages[browserLang]["base_app_announcement_string"] + ": " + elem[2].value,
+                    id: "cqr_announc%" + id,
+                    type: "text"
+                }, {
+                    text: languages[browserLang]["base_def_dest_string"],
+                    id: "cqr_default-dest%" + id,
+                    type: "output"
+                }, {
+                    text: languages[browserLang]["base_ivr_suggest_string"],
+                    id: "cqr_suggest-dest%" + id,
                     type: "text"
                 }];
                 break;

@@ -287,6 +287,23 @@ button.mainmenu_btns:active, button.mainmenu_btns:focus {
   background-color: #7f8c8d;
 }
 
+/*cqr*/
+
+#cqr {
+  background-color: #528ba7;
+}
+#cqr::before {
+  font-family: 'FontAwesome';
+  content: "\f1c0";
+  margin: 0 3px;
+  margin-right: 14.3px;
+  font-size: 22px;
+  font-weight: 100;
+}
+#iqr:hover {
+  background-color: #528ba7;
+}
+
 /*annuncio*/
 
 #app-announcement {
@@ -313,7 +330,7 @@ button.mainmenu_btns:active, button.mainmenu_btns:focus {
   font-family: 'FontAwesome';
   content: "\f017";
   margin: 0 3px;
-  margin-right: 14px;
+  margin-right: 14.6px;
   font-size: 22px;
   font-weight: 100;
 }
