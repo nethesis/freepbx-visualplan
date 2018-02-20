@@ -22,7 +22,6 @@ perl createlinks
 %install
 rm -rf %{buildroot}
 (cd root; find . -depth -print | cpio -dump %{buildroot})
-
 mkdir -p %{buildroot}/usr/src/nethvoice/modules
 mv %{S:1} %{buildroot}/usr/src/nethvoice/modules/
 
@@ -35,8 +34,7 @@ rm -rf %{buildroot}
 
 %files -f %{name}-%{version}-filelist
 %defattr(-,root,root,-)
-
-%doc
 %dir %{_nseventsdir}/%{name}-update
+%doc
 
 %changelog
