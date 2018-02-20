@@ -401,6 +401,16 @@ example.Toolbar = Class.extend({
         }
         node.children.data[2].figure.setText(languages[browserLang]["base_app_announcement_string"] + ': ' + elems[2].value);
         break;
+      case "cqr":
+        var id = node.children.data[1].figure.text.split('-')[1];
+        if (id) {
+          id = id.trim();
+          node.children.data[1].figure.setText(elems[0].value + ' ( ' + elems[1].value + ' )' + ' - ' + id);
+        } else {
+          node.children.data[1].figure.setText(elems[0].value + ' ( ' + elems[1].value + ' )');
+        }
+        node.children.data[2].figure.setText(languages[browserLang]["base_app_announcement_string"] + ': ' + elems[2].value);
+        break;
       case "app-announcement":
         var id = node.children.data[1].figure.text.split('-')[1];
         if (id) {

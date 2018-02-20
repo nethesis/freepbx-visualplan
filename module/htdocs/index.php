@@ -87,6 +87,7 @@ if (!isset($_SESSION['AMP_user']) || !$_SESSION['AMP_user']->checkSection('visua
       $('#ext-group').text(languages[browserLang]["base_ext_group_string"]);
       $('#ext-queues').text(languages[browserLang]["base_ext_queues_string"]);
       $('#ivr').text(languages[browserLang]["base_ivr_string"]);
+      $('#cqr').text(languages[browserLang]["base_cqr_string"]);
       $('#app-announcement').text(languages[browserLang]["base_app_announcement_string"]);
       $('#timeconditions').text(languages[browserLang]["base_timeconditions_string"]);
       $('#app-daynight').text(languages[browserLang]["base_app_daynight_string"]);
@@ -190,6 +191,8 @@ if (!isset($_SESSION['AMP_user']) || !$_SESSION['AMP_user']->checkSection('visua
       <div data-shape="Base" id="ext-queues" class="palette_node_element draw2d_droppable" title="drag&amp;drop the table into the canvas..">
       </div>
       <div data-shape="Base" id="ivr" class="palette_node_element draw2d_droppable" title="drag&amp;drop the table into the canvas..">
+      </div>
+      <div data-shape="Base" id="cqr" class="palette_node_element draw2d_droppable" title="drag&amp;drop the table into the canvas..">
       </div>
       <div data-shape="Base" id="app-announcement" class="palette_node_element draw2d_droppable" title="drag&amp;drop the table into the canvas..">
       </div>

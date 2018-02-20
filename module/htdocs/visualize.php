@@ -131,7 +131,24 @@ foreach ($get_data as $key => $row) {
 
 }
 
-// timeconditions - timeconditions,id,1
+// cqr - nethcqr-id,s,1
+$get_cqr = nethcqr_get_details();
+foreach ($get_cqr as $row) {
+	$data['cqr'][$row['id_cqr']]["id"] = $row['id_cqr'];
+	$data['cqr'][$row['id_cqr']]["name"] = $row['name'];
+	$data['cqr'][$row['id_cqr']]["description"] = $row['description'];
+	$data['cqr'][$row['id_cqr']]["announcement"] = $row['announcement'];
+	$data['cqr'][$row['id_cqr']]["default_destination"] = $row['default_destination'];
+
+	$get_entries = nethcqr_get_entries($row['id_cqr']);
+	foreach ($get_entries as $key => $value) {
+		$data['cqr'][$row['id_cqr']]['selections'][$value['position']] = array( "position" => $value['pisition'],
+			"condition" => $value['condition'],
+			"dest" => $value['destination']
+		);
+	}
+}
+
 $get_data = FreePBX::Timeconditions()->listTimeconditions(false);
 foreach ($get_data as $key => $row) {
 	$data['timeconditions'][$row['timeconditions_id']] = array(	"displayname" => $row['displayname'],
@@ -398,6 +415,10 @@ function nethvplan_getDestination($destination) {
 		$values = explode(",", $destination);
 		$dest = $values[0];
 		$id = substr($values[1], 1, -1);
+	} else if(preg_match('/nethcqr*/', $destination)) {
+		$values = explode(",", $destination);
+		$dest = "cqr";
+		$id = $values[1];
 	} else {
 		$values = explode(",", $destination);
 		$dest = $values[0];
@@ -684,11 +705,57 @@ function nethvplan_bindData($data, $dest, $id) {
 				"type"=> "output",
 				"destination"=> $data[$dest][$id]['timeout_destination']
 			);
+			$widget['entities'][] = array(
+				"text"=> $langArray["base_ivr_suggest_string"],
+				"id"=> "suggest-".$dest."%".$id,
+				"type"=> "text"
+			);
 			if (array_key_exists('selections', $data[$dest][$id])) {
 				foreach ($data[$dest][$id]['selections'] as $value) {
 					$widget['entities'][] = array(
 						"text"=> $value['selection'],
 						"id"=> "selection_".$value['selection']."-".$dest."%".$id,
+						"type"=> "output",
+						"destination"=> $value['dest']
+					);
+				}
+			}
+		break;
+		case "cqr":
+			$widget = $widgetTemplate;
+			$widget['type'] = "Base";
+			$widget['radius'] = "0";
+			$widget['bgColor'] = "#528ba7";
+			$widget['id'] = $dest."%".$id;
+			$widget['x'] = $xPos;
+			$widget['y'] = $yPos;
+			$widget['name'] = $langArray["base_cqr_string"];
+			$widget['entities'][] = array(
+				"text"=> $data[$dest][$id]['name']." ( ".$data[$dest][$id]['description']." ) - ".$data[$dest][$id]['id'],
+				"id"=> $dest."%".$id,
+				"type"=> "input"
+			);
+			$widget['entities'][] = array(
+				"text"=> $langArray["base_app_announcement_string"].": ".$data['recordings'][$data[$dest][$id]['announcement']]['name']." ( ".$data[$dest][$id]['announcement']." )",
+				"id"=> "announcement-".$dest."%".$id,
+				"type"=> "text"
+			);
+			$widget['entities'][] = array(
+				"text"=> $langArray["base_def_dest_string"],
+				"id"=> "default_destination-".$dest."%".$id,
+				"type"=> "output",
+				"destination"=> $data[$dest][$id]['default_destination']
+			);
+			$widget['entities'][] = array(
+				"text"=> $langArray["base_ivr_suggest_string"],
+				"id"=> "suggest-".$dest."%".$id,
+				"type"=> "text"
+			);
+			if (array_key_exists('selections', $data[$dest][$id])) {
+				foreach ($data[$dest][$id]['selections'] as $value) {
+					$widget['entities'][] = array(
+						"text"=> $value['condition'],
+						"id"=> "selection_".$value['condition']."-".$dest."%".$id,
 						"type"=> "output",
 						"destination"=> $value['dest']
 					);
@@ -938,7 +1005,7 @@ function nethvplan_bindConnection($data, $dest, $id) {
 					$idDest = $res[1];
 
 					$con3 = $connectionTemplate;
-					$con3['id'] = $dest."%".$id."=".$value['dest'];
+					$con3['id'] = $dest."%".$id."=".$value['dest']."-".$value['selection'];
 					$con3['source'] = array(
 						"node"=> $dest."%".$id,
 						"port"=> "output_selection_".$value['selection']."-".$dest."%".$id
@@ -954,7 +1021,49 @@ function nethvplan_bindConnection($data, $dest, $id) {
 			}
 			$connection = $arrayTmp;
 		break;
+		case "cqr":
+			$arrayTmp = array();
+			$res = nethvplan_getDestination($data[$dest][$id]['default_destination']);
+			$destNew = $res[0];
+			$idDest = $res[1];
 
+			$con1 = $connectionTemplate;
+			$con1['id'] = $dest."%".$id."=".$data[$dest][$id]['default_destination']."-default";
+			$con1['source'] = array(
+				"node"=> $dest."%".$id,
+				"port"=> "output_default_destination-".$dest."%".$id
+			);
+			$con1['target'] = array(
+				"node"=> $destNew."%".$idDest,
+				"port"=> "input_".$destNew."%".$idDest,
+				"decoration"=> "draw2d.decoration.connection.ArrowDecorator"
+			);
+
+			array_push($arrayTmp, $con1);
+
+			if (array_key_exists('selections', $data[$dest][$id])) {
+				foreach ($data[$dest][$id]['selections'] as $value) {
+					$res = nethvplan_getDestination($value['dest']);
+					$destNew = $res[0];
+					$idDest = $res[1];
+
+					$con2 = $connectionTemplate;
+					$con2['id'] = $dest."%".$id."=".$value['dest']."-".$value['condition'];
+					$con2['source'] = array(
+						"node"=> $dest."%".$id,
+						"port"=> "output_selection_".$value['condition']."-".$dest."%".$id
+					);
+					$con2['target'] = array(
+						"node"=> $destNew."%".$idDest,
+						"port"=> "input_".$destNew."%".$idDest,
+						"decoration"=> "draw2d.decoration.connection.ArrowDecorator"
+					);
+
+					array_push($arrayTmp, $con2);
+				}
+			}
+			$connection = $arrayTmp;
+		break;
 		case "ext-queues":
 			$res = nethvplan_getDestination($data[$dest][$id]['dest']);
 			$destNew = $res[0];
@@ -1100,6 +1209,24 @@ function nethvplan_explore($data, $destination, $destArray) {
 
 				nethvplan_explore($data, $data[$dest][$id]['invalid_destination'], $destArray);
 				nethvplan_explore($data, $data[$dest][$id]['timeout_destination'], $destArray);
+				if (array_key_exists('selections', $data[$dest][$id])) {
+					foreach ($data[$dest][$id]['selections'] as $value) {
+						nethvplan_explore($data, $value['dest'], $destArray);
+					}
+				}
+			break;
+			case "cqr":
+				$widget = nethvplan_bindData($data, $dest, $id);
+				// add widget
+				array_push($widgets, $widget);
+
+				$connection = nethvplan_bindConnection($data, $dest, $id);
+				foreach ($connection as $arr) {
+					// add connection
+					array_push($connections, $arr);
+				}
+
+				nethvplan_explore($data, $data[$dest][$id]['default_destination'], $destArray);
 				if (array_key_exists('selections', $data[$dest][$id])) {
 					foreach ($data[$dest][$id]['selections'] as $value) {
 						nethvplan_explore($data, $value['dest'], $destArray);
