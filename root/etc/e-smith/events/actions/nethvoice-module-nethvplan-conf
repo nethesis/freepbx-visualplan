@@ -14,7 +14,7 @@ tar xf $m -C $modules_dir$name --strip-components 1
 chown -R asterisk:asterisk $modules_dir$name
 
 # Install module
-/usr/bin/scl enable rh-php56 '/usr/sbin/fwconsole moduleadmin installlocal'
+/usr/bin/scl enable rh-php56 '/usr/sbin/fwconsole moduleadmin installlocal' || exit 0
 
 # Apply config
 /usr/bin/scl enable rh-php56 '/var/lib/asterisk/bin/retrieve_conf'
