@@ -12,7 +12,6 @@ rm -fr visualplan.tar.gz
 # Compile transloations
 for PO in $(find module -name "*\.po" | grep 'i18n\/[a-z][a-z]_[A-Z][A-Z]')
     do msgfmt -o $(echo ${PO} | sed 's/\.po$/.mo/g') ${PO}
-    /bin/rm ${PO}
 done
 
 # Sign the module 

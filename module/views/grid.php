@@ -16,7 +16,7 @@ $dataurl = "ajax.php?module=visualplan&command=getJSON&jdata=grid";
 <table id="mygrid" data-cache="false" data-toolbar="#toolbar-all" data-maintain-selected="true" data-show-columns="true" data-show-toggle="true" data-toggle="table" data-pagination="true" data-search="true" class="table table-striped">
 	<thead>
 		<tr>
-			<th data-field="name"><?php echo _("Items")?></th>
+			<th data-field="name"><?php echo _("Inbound Routes")?></th>
 			<th data-field="link" data-formatter="linkFormatter"><?php echo _("Actions")?></th>
 		</tr>
 	</thead>
