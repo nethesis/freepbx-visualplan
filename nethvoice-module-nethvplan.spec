@@ -38,3 +38,10 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
+* Fri Feb 23 2018 Stefano Fancello <stefano.fancello@nethesis.it> - 14.0.0-1
+- Separated nethvoice-module-nethvplan RPM from nethserver-nethvoice14. Nethesis/dev#5341
+- Add CQR to Visual Plan. Nethesis/dev#5339
+- Readded translations. Nethesis/dev#5336
+- Create select extensions lists and add new route button. Nethesis/dev#5338
+- Fix group # numbers, ivr note and queues. Nethesis/dev#5326
+
