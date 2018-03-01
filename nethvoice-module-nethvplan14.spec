@@ -1,5 +1,5 @@
 Name: nethvoice-module-nethvplan14
-Version: 14.0.0
+Version: 14.0.1
 Release: 1%{?dist}
 Summary: Visualplan for NethVoice14
 Group: Network
@@ -40,6 +40,9 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
+* Thu Mar 01 2018 Stefano Fancello <stefano.fancello@nethesis.it> - 14.0.1-1
+- Change name nethvoice-module-nethvplan -> nethvoice-module-nethvplan14
+
 * Fri Feb 23 2018 Stefano Fancello <stefano.fancello@nethesis.it> - 14.0.0-1
 - Separated nethvoice-module-nethvplan RPM from nethserver-nethvoice14. Nethesis/dev#5341
 - Add CQR to Visual Plan. Nethesis/dev#5339
