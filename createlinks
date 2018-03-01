@@ -1,10 +1,10 @@
 #!/usr/bin/perl -w
 
 use esmith::Build::CreateLinks qw(:all);
-my $event = 'nethvoice-module-nethvplan-update';
+my $event = 'nethvoice-module-nethvplan14-update';
 
 event_actions($event, qw(
     initialize-default-databases 00
-    nethvoice-module-nethvplan-conf 50
+    nethvoice-module-nethvplan14-conf 50
 ));
 

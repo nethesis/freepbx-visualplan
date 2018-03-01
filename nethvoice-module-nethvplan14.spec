@@ -1,4 +1,4 @@
-Name: nethvoice-module-nethvplan
+Name: nethvoice-module-nethvplan14
 Version: 14.0.0
 Release: 1%{?dist}
 Summary: Visualplan for NethVoice14
@@ -8,6 +8,7 @@ Source0: %{name}-%{version}.tar.gz
 Source1: visualplan.tar.gz
 BuildRequires: nethserver-devtools
 Buildarch: noarch
+Conflicts: nethserver-nethvoice
 
 %description
 Visualplan for NethVoice14
