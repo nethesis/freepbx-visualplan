@@ -14,13 +14,19 @@ for PO in $(find module -name "*\.po" | grep 'i18n\/[a-z][a-z]_[A-Z][A-Z]')
     do msgfmt -o $(echo ${PO} | sed 's/\.po$/.mo/g') ${PO}
 done
 
-# Sign the module 
-[[ -n "${PASSPHRASE}" ]] && /usr/bin/expect <<EOD
+# Sign the module
+if [[ -n "${PASSPHRASE}" ]]; then
+    echo "Signing the module..."
+    /usr/bin/expect <<EOD
 spawn ./sign.php module/ $GPGASH
 expect "Enter passphrase:"
 send "$PASSPHRASE\n"
 expect eof
 EOD
+else
+    echo "Missing passphrase, not signing the module"
+fi
+
 
 # Pack the module
 tar czpf visualplan.tar.gz module
