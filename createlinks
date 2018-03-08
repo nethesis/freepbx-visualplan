@@ -2,7 +2,7 @@
 
 use esmith::Build::CreateLinks qw(:all);
 
-my $event = 'nethvoice-module-nethvplan-update';
+my $event = 'nethvoice-module-nethvplan11-update';
 
 event_link ("nethvoice-module-nethvplan-install", $event ,'90');
 templates2events ("/etc/asterisk/freepbx_menu.conf",$event);

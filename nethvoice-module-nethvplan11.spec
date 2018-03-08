@@ -1,5 +1,5 @@
-Name:		nethvoice-module-nethvplan
-Version: 1.1.2
+Name:		nethvoice-module-nethvplan11
+Version: 1.1.3
 Release: 1%{?dist}
 Summary:	A module to visualize and edit FreePBX dialplan
 Group:		Networking/Daemons
@@ -10,6 +10,8 @@ BuildArch:	noarch
 BuildRequires:  nethserver-devtools
 BuildRequires:  gettext
 Requires:   	nethserver-nethvoice
+Conflicts:      nethserver-nethvoice14
+Obsoletes:      nethvoice-module-nethvplan
 
 %description
 A module to visualize and edit FreePBX dialplan
@@ -36,7 +38,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files -f %{name}-%{version}-%{release}-filelist
 %defattr(-,asterisk,asterisk)
-%dir %{_nseventsdir}/nethvoice-module-nethvplan-update
+%dir %{_nseventsdir}/nethvoice-module-nethvplan11-update
 
 %changelog
 * Mon May 29 2017 Edoardo Spadoni <edoardo.spadoni@nethesis.it> - 1.1.2-1
