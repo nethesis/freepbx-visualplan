@@ -9,7 +9,6 @@ Source1: visualplan.tar.gz
 BuildRequires: nethserver-devtools
 Buildarch: noarch
 Conflicts: nethserver-nethvoice
-Obsoletes: nethvoice-module-nethvplan >= 14
 
 %description
 Visualplan for NethVoice14
