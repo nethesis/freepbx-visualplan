@@ -41,6 +41,9 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_nseventsdir}/nethvoice-module-nethvplan11-update
 
 %changelog
+* Mon Mar 12 2018 Stefano Fancello <stefano.fancello@nethesis.it> - 1.1.3-1
+- change name nethvoice-module-nethvplan -> nethvoice-module-nethvplan11 and make sure to not update NethVoice14
+
 * Mon May 29 2017 Edoardo Spadoni <edoardo.spadoni@nethesis.it> - 1.1.2-1
   - fixed obj saving with dash string
   - fix call flow control save order. Nethesis/dev#5139
