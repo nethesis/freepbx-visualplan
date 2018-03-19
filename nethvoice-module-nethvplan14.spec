@@ -1,5 +1,5 @@
 Name: nethvoice-module-nethvplan14
-Version: 14.0.2
+Version: 14.0.3
 Release: 1%{?dist}
 Summary: Visualplan for NethVoice14
 Group: Network
@@ -39,6 +39,9 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
+* Mon Mar 19 2018 Stefano Fancello <stefano.fancello@nethesis.it> - 14.0.3-1
+- Version bump
+
 * Mon Mar 12 2018 Stefano Fancello <stefano.fancello@nethesis.it> - 14.0.2-1
 - Remove obsoletes for 11 version
 
