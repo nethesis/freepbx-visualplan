@@ -544,6 +544,7 @@ example.View = draw2d.Canvas.extend({
                     $('#loader').hide();
                     var data = JSON.parse(c);
                     var htmlSelect = "<option>-</option>";
+                    values[3] = 20;
                     for (e in data) {
                         htmlSelect += '<option value="' + e + '">' + (data[e].name && data[e].name !== '' ? (data[e].name + ' (' + e + ')') : e) + '</option>';
                     }
@@ -551,6 +552,10 @@ example.View = draw2d.Canvas.extend({
                     html += '<input pattern="^(_[\\dNXZ\\.\\-\\[\\]]*|[\\d]*)$" ' + isDisabled + ' autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="input-creation"></input>';
                     html += '<label class="label-creation">' + languages[browserLang]["view_description_string"] + ': </label>';
                     html += '<input usable value="' + values[1] + '" id="' + elem.id + '-description" class="input-creation"></input>';
+
+                    html += '<label class="label-creation">' + languages[browserLang]["view_ringtime_string"] + ': </label>';
+                    html += '<input pattern="^(([1-2][0-9][0-9])|([1-9][0-9])|([1-9])|(300))$" placeholder="MAX 300 SEC" value="' + values[3] + '" usable id="' + elem.id + '-ringtime" class="input-creation"></input>';
+
                     html += '<label class="label-creation">' + languages[browserLang]["base_ext_list_string"] + ': </label>';
                     html += '<select id="selectExtGroup" class="input-creation">' + htmlSelect + '</select>';
                     html += '<label class="label-creation"></label>';

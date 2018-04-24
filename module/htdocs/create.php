@@ -269,13 +269,19 @@ function nethvplan_switchCreate($wType, $value, $connectionArray) {
 			$name = trim($parts[0]);
 			$extParts = explode(")", $parts[1]);
 			$extension = trim($extParts[0]);
-            $list = preg_replace('/\s+/', '-',$value['entities'][2]['text']);
+            $list = preg_replace('/\s+/', '-',$value['entities'][3]['text']);
 
+			$time = explode("(", $value['entities'][1]['text']);
+			$tmpTime = explode(")", $time[1]);
+			$grpTime = (int)trim($tmpTime[0]);
 			$destinations = nethvplan_getDestination($value, $connectionArray, $currentCreated, $wType);
-			$destination = trim($destinations["output_".$value['entities'][3]['id']]);
+			$destination = trim($destinations["output_".$value['entities'][4]['id']]);
 			$exists = ringgroups_get($extension);
-			if(count($exists) <= 2 ) {
-				ringgroups_add($extension, "ringall", "300", $list, $destination, $name,'','','','','','','','','','','','','','','');
+
+			file_put_contents('newfile.txt', $grpTime);
+
+			if(count($exists) <= 3 ) {
+				ringgroups_add($extension, "ringall", $grpTime, $list, $destination, $name,'','','','','','','','','','','','','','','');
 			} else {
 				ringgroups_del($extension);
 				ringgroups_add($extension, $exists['strategy'], $exists['grptime'], $list, $destination, $name,

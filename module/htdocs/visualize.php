@@ -185,12 +185,14 @@ foreach ($recordings as $key => $row) {
 // call group - ext-group,id,1
 $get_data = FreePBX::Ringgroups()->listRinggroups(false);
 error_log(print_r($get_data, true));
+
 foreach ($get_data as $key => $row) {
 	$group_details = ringgroups_get($row['grpnum']);
 	$data['ext-group'][$row['grpnum']] = array(	"num" => $row['grpnum'],
 												"description" => $group_details['description'],
 												"grplist" => $group_details['grplist'],
-												"postdest" => $group_details['postdest']
+												"postdest" => $group_details['postdest'],
+												"grptime" => $group_details['grptime']
 											);
 }
 
@@ -815,9 +817,14 @@ function nethvplan_bindData($data, $dest, $id) {
 			$widget['y'] = $yPos;
 			$widget['name'] = $langArray["base_ext_group_string"];
 			$widget['entities'][] = array(
-				"text"=> $data[$dest][$id]['description']." (".$data[$dest][$id]['num']." )",
+				"text"=> $data[$dest][$id]['description']." ( ".$data[$dest][$id]['num']." )",
 				"id"=> $dest."%".$id,
 				"type"=> "input"
+			);
+			$widget['entities'][] = array(
+				"text"=> $langArray["view_ringtime_string"]." ( ".$data[$dest][$id]['grptime']." )",
+				"id"=> $dest."%".$id."grptime",
+				"type"=> "text"
 			);
 			$widget['entities'][] = array(
 				"text"=> $langArray["base_ext_list_string"],
