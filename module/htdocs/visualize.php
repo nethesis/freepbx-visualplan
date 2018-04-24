@@ -192,6 +192,7 @@ foreach ($get_data as $key => $row) {
 												"description" => $group_details['description'],
 												"grplist" => $group_details['grplist'],
 												"postdest" => $group_details['postdest'],
+												"strategy" => $group_details['strategy'],
 												"grptime" => $group_details['grptime']
 											);
 }
@@ -822,11 +823,6 @@ function nethvplan_bindData($data, $dest, $id) {
 				"type"=> "input"
 			);
 			$widget['entities'][] = array(
-				"text"=> $langArray["view_ringtime_string"]." ( ".$data[$dest][$id]['grptime']." )",
-				"id"=> $dest."%".$id."grptime",
-				"type"=> "text"
-			);
-			$widget['entities'][] = array(
 				"text"=> $langArray["base_ext_list_string"],
 				"id"=> $dest."%".$id."dtext",
 				"type"=> "text"
@@ -835,6 +831,16 @@ function nethvplan_bindData($data, $dest, $id) {
 				"text"=> $data[$dest][$id]['grplist'],
 				"id"=> $dest."%".$id,
 				"type"=> "list"
+			);
+			$widget['entities'][] = array(
+				"text"=> $langArray["view_strategy_string"]." ( ".$data[$dest][$id]['strategy']." )",
+				"id"=> $dest."%".$id."strategy",
+				"type"=> "text"
+			);
+			$widget['entities'][] = array(
+				"text"=> $langArray["view_ringtime_string"]." ( ".$data[$dest][$id]['grptime']." )",
+				"id"=> $dest."%".$id."grptime",
+				"type"=> "text"
 			);
 			$widget['entities'][] = array(
 				"text"=> $langArray["base_fail_dest_string"],
@@ -1319,8 +1325,8 @@ function nethvplan_json_pretty($json, $options = array()) {
         $ind = $options['indent'];
     }
 
-    $inLiteral = false;
-    foreach ($tokens as $token) {
+		$inLiteral = false;
+		foreach ($tokens as $token) {
         if ($token == '') {
             continue;
         }

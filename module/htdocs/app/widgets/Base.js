@@ -452,23 +452,28 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                 templateObj.id = type + "%" + elem[0].value;
                 templateObj.bgColor = "#2980b9";
                 templateObj.radius = 0;
+                console.log(elem);
 
                 templateObj.entities = [{
                     text: elem[1].value + " ( " + elem[0].value + " )",
                     id: "groups_name%" + id,
                     type: "input"
                 }, {
-                    text: languages[browserLang]["view_ringtime_string"] + " ( " + elem[2].value + " )",
-                    id: "groups_ringtime%" + id,
-                    type: "text"
-                }, {
                     text: languages[browserLang]["base_ext_list_string"],
                     id: "groups_listtext%" + id,
                     type: "text"
                 }, {
-                    text: elem[3].value,
+                    text: elem[2].value,
                     id: "groups_lists%" + id,
                     type: "list"
+                }, {
+                    text: languages[browserLang]["view_strategy_string"] + " ( " + elem[3].value + " )",
+                    id: "groups_strategy%" + id,
+                    type: "text"
+                }, {
+                    text: languages[browserLang]["view_ringtime_string"] + " ( " + elem[4].value + " )",
+                    id: "groups_ringtime%" + id,
+                    type: "text"
                 }, {
                     text: languages[browserLang]["base_fail_dest_string"],
                     id: "groups_output%" + id,
