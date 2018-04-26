@@ -74,9 +74,18 @@ if (!isset($_SESSION['AMP_user']) || !$_SESSION['AMP_user']->checkSection('visua
       return c;
     };
 
+    var prefLang = localStorage.getItem('preferredLanguage');
     var app = null;
-    var browserLangs = navigator.language || navigator.userLanguage;
-    browserLang = browserLangs.split("-")[0];
+    if (prefLang) {
+      var browserLang = prefLang.replace(/\"/g,'');
+    } else {
+      var browserLang = navigator.language || navigator.userLanguage;
+      browserLang = browserLang.split("-")[0];
+    }
+    var now = new Date();
+    var time = now.getTime() + 1000*86400;
+    now.setTime(time);
+    document.cookie = "lang=" + browserLang + ";expires=" + now.toGMTString();
 
     $(window).load(function() {
 

@@ -383,7 +383,6 @@ example.Toolbar = Class.extend({
         node.children.data[1].figure.setText(elems[1].value + ' ( ' + elems[0].value + ' )');
         break;
       case "ext-group":
-        console.log(elems);
         node.children.data[1].figure.setText(elems[1].value + ' ( ' + elems[0].value + ' )');
         node.children.data[3].figure.setText(elems[2].value);
         node.children.data[4].figure.setText(languages[browserLang]["view_strategy_string"] + ' ( ' + elems[3].value + ' )');
