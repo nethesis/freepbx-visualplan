@@ -465,6 +465,14 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                     id: "groups_lists%" + id,
                     type: "list"
                 }, {
+                    text: languages[browserLang]["view_strategy_string"] + " ( " + elem[3].value + " )",
+                    id: "groups_strategy%" + id,
+                    type: "text"
+                }, {
+                    text: languages[browserLang]["view_ringtime_string"] + " ( " + elem[4].value + " )",
+                    id: "groups_ringtime%" + id,
+                    type: "text"
+                }, {
                     text: languages[browserLang]["base_fail_dest_string"],
                     id: "groups_output%" + id,
                     type: "output"

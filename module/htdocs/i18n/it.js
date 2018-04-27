@@ -46,6 +46,8 @@ languages.it = {
     "view_any_string": "TUTTI",
 
     "view_description_string": "Descrizione",
+    "view_ringtime_string": "Tempo di Squillo",
+    "view_strategy_string": "Strategia di Squillo",
     "view_name_string": "Nome",
     "view_manual_act_string": "Attivazione Manuale",
     "view_enable_voicemail_string": "Abilita Voice Mail per",

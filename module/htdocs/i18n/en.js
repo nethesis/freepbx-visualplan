@@ -46,6 +46,8 @@ languages.en = {
     "view_any_string": "ANY",
 
     "view_description_string": "Description",
+    "view_ringtime_string": "Ring Time",
+    "view_strategy_string": "Ring Strategy",
     "view_name_string": "Name",
     "view_manual_act_string": "Manual activation",
     "view_enable_voicemail_string": "Enable Voice Mail for",

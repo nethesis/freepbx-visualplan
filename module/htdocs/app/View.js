@@ -435,7 +435,9 @@ example.View = draw2d.Canvas.extend({
                 var v1 = data[1].figure.text.split('(')[1].split(')')[0].trim();
                 var v2 = data[1].figure.text.split('(')[0].trim();
                 var v3 = data[3].figure.text;
-                return [v1, v2, v3];
+                var v4 = data[4].figure.text.split('(')[1].split(')')[0].trim();
+                var v5 = data[5].figure.text.split('(')[1].split(')')[0].trim();
+                return [v1, v2, v3, v4, v5];
                 break;
             case "ext-queues":
                 var v1 = data[1].figure.text.split('(')[1].split(')')[0].trim();
@@ -482,6 +484,7 @@ example.View = draw2d.Canvas.extend({
     modalCreate: function (elem, mod, event) {
         var html = "";
         var isDisabled = "";
+        var strategyList = new Array('ringall','ringall-prim','hunt','hunt-prim','memoryhunt','memoryhunt-prim','firstavailable','firstnotonphone','random');                            
         values = ["", "", "", "", "", "", "", "", ""];
         if (mod) {
             values = this.extracInfo(elem.data || {}, elem.id);
@@ -534,6 +537,7 @@ example.View = draw2d.Canvas.extend({
                 break;
 
             case "ext-group":
+                var thisApp = this;
                 $.ajax({
                     url: "./visualize.php?readData=from-did-direct",
                     context: document.body,
@@ -544,8 +548,18 @@ example.View = draw2d.Canvas.extend({
                     $('#loader').hide();
                     var data = JSON.parse(c);
                     var htmlSelect = "<option>-</option>";
+                    var htmlStrategy = "";
+                    if (values[4] == "") {
+                        values[4] = 20;                            
+                    }
                     for (e in data) {
                         htmlSelect += '<option value="' + e + '">' + (data[e].name && data[e].name !== '' ? (data[e].name + ' (' + e + ')') : e) + '</option>';
+                    }
+                    for (s in strategyList) {
+                        htmlStrategy += '<option id="opt-' + strategyList[s] + '" value="' + strategyList[s] + '">' + strategyList[s] + '</option>';
+                        if (values[3] == strategyList[s]) {
+                           var strategy = strategyList[s];
+                        }
                     }
                     html += '<label class="label-creation">' + languages[browserLang]["view_number_string"] + ': </label>';
                     html += '<input pattern="^(_[\\dNXZ\\.\\-\\[\\]]*|[\\d]*)$" ' + isDisabled + ' autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="input-creation"></input>';
@@ -555,10 +569,19 @@ example.View = draw2d.Canvas.extend({
                     html += '<select id="selectExtGroup" class="input-creation">' + htmlSelect + '</select>';
                     html += '<label class="label-creation"></label>';
                     html += '<textarea id="textareaExtGroup" usable id="' + elem.id + '-extensionList" class="input-creation">' + values[2] + '</textarea>';
+                    html += '<label class="label-creation">' + languages[browserLang]["view_strategy_string"] + ': </label>';
+                    html += '<select usable id="' + elem.id + '-ringstrategy" class="input-creation">' + htmlStrategy + '</select>';
+                    html += '<label class="label-creation">' + languages[browserLang]["view_ringtime_string"] + ': </label>';
+                    html += '<input pattern="^(([1-2][0-9][0-9])|([1-9][0-9])|([1-9])|(300))$" placeholder="MAX 300 SEC" value="' + values[4] + '" usable id="' + elem.id + '-ringtime" class="input-creation"></input>';
 
                     $("#modalCreation").html(html);
+                    if (strategy) {
+                        $('#opt-' + strategy).attr("selected","selected");                    
+                    } else {
+                        $('#opt-ringall').attr("selected","selected"); 
+                    }
 
-                    event.context.bindExtSelect({
+                    thisApp.bindExtSelect({
                         "group": {
                           0: {
                             "selId": "#selectExtGroup",
@@ -566,11 +589,11 @@ example.View = draw2d.Canvas.extend({
                           }
                         }
                     }, htmlSelect, /\d+/g);
-
                 });
                 break;
 
             case "ext-queues":
+                var thisApp = this;
                 $.ajax({
                     url: "./visualize.php?readData=from-did-direct",
                     context: document.body,
@@ -599,7 +622,7 @@ example.View = draw2d.Canvas.extend({
 
                     $("#modalCreation").html(html);
 
-                    event.context.bindExtSelect({
+                    thisApp.bindExtSelect({
                         "queues": {
                           0: {
                             "selId": "#selectExtQueue1",
@@ -611,7 +634,6 @@ example.View = draw2d.Canvas.extend({
                           }
                         }
                     }, htmlSelect, /(\d+,\d+)|(\d+)/g);
-
                 });
                 break;
 
