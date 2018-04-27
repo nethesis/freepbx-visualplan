@@ -545,7 +545,7 @@ example.View = draw2d.Canvas.extend({
                     var data = JSON.parse(c);
                     var htmlSelect = "<option>-</option>";
                     for (e in data) {
-                        htmlSelect += '<option value="' + e + '">' + e + '</option>';
+                        htmlSelect += '<option value="' + e + '">' + (data[e].name && data[e].name !== '' ? (data[e].name + ' (' + e + ')') : e) + '</option>';
                     }
                     html += '<label class="label-creation">' + languages[browserLang]["view_number_string"] + ': </label>';
                     html += '<input pattern="^(_[\\dNXZ\\.\\-\\[\\]]*|[\\d]*)$" ' + isDisabled + ' autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="input-creation"></input>';
@@ -582,7 +582,7 @@ example.View = draw2d.Canvas.extend({
                     var data = JSON.parse(c);
                     var htmlSelect = "<option>-</option>";
                     for (e in data) {
-                        htmlSelect += '<option value="' + e + ',0">' + e + '</option>';
+                        htmlSelect += '<option value="' + e + ',0">' + (data[e].name && data[e].name !== '' ? (data[e].name + ' (' + e + ')') : e) + '</option>';
                     }
                     html += '<label class="label-creation">' + languages[browserLang]["view_number_string"] + ': </label>';
                     html += '<input pattern="^(_[\\dNXZ\\.\\-\\[\\]]*|[\\d]*)$" ' + isDisabled + ' autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="input-creation"></input>';
