@@ -761,3 +761,44 @@ footer a:hover {
   display: inline-block;
   width: 120px;
 }
+
+/* recordings */
+.hide {
+  display: none;
+}
+#addRecordingBtn {
+  margin-left: 5px;
+}
+.red {
+  color: red;
+}
+.blink {
+  animation: blink-animation 1s steps(5, start) infinite;
+  -webkit-animation: blink-animation 1s steps(5, start) infinite;
+}
+@keyframes blink-animation {
+  to {
+    visibility: hidden;
+  }
+}
+@-webkit-keyframes blink-animation {
+  to {
+    visibility: hidden;
+  }
+}
+.pointer {
+  cursor: pointer;
+}
+#checkRecordingBtn {
+  margin-right: 5px;
+}
+.vmiddle {
+  vertical-align: middle;
+}
+.rowSectionAnn {
+  margin: 15px 0px;
+}
+#saveNewRecordingBtn2,
+#saveNewRecordingBtn {
+  margin-left: 5px;
+}
