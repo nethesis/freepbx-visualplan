@@ -60,11 +60,11 @@ $returnedIdArray = array();
 nethvplan_extraction($widgetArray, $connectionArray);
 
 function nethvplan_extraction($dataArray, $connectionArray) {
-	foreach ($dataArray as $key => $value) {
-		// get type of widget
+  foreach ($dataArray as $key => $value) {
+    // get type of widget
 		$explodeId = explode("%", $value['id']);
-		$wType = $explodeId[0];
-
+    $wType = $explodeId[0];
+    
 		// create object
 		nethvplan_switchCreate($wType, $value, $connectionArray);
 	}
@@ -756,7 +756,7 @@ function nethvplan_switchCreate($wType, $value, $connectionArray) {
 				"truegoto1" => trim($destinations["output_".$value['entities'][2]['id']]),
 				"falsegoto0" => trim($destinations["output_".$value['entities'][1]['id']]),
 			), $controlCode);
-		break;
+    break;
 	}
 
 	if($idReturn) {

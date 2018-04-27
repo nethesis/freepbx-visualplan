@@ -35,6 +35,7 @@ if (!isset($_SESSION['AMP_user']) || !$_SESSION['AMP_user']->checkSection('visua
   <script src="lib/jquery-touch_punch.js"></script>
   <script src="lib/jquery.contextmenu.js"></script>
   <script src="lib/jquery.browser.js"></script>
+  <script src="lib/audioRecorder.js"></script>
   <script src="lib/rgbcolor.js"></script>
   <script src="lib/canvg.js"></script>
   <script src="lib/Class.js"></script>

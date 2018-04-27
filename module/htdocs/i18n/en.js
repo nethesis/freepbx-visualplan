@@ -52,7 +52,7 @@ languages.en = {
     "view_recording_string": "Recording",
     "view_timegroup_string": "Time group",
     "view_control_code_string": "Control code",
-    "view_error_empty": "Inseted value is not valid",
+    "view_error_empty": "Inserted value is not valid",
 
     "base_hangup_string": "Hangup",
     "base_incoming_string": "Incoming route",
@@ -70,5 +70,11 @@ languages.en = {
     "base_ext_local_string": "Voice Mail",
     "base_ext_meetme_string": "Conference",
     "base_alternative_string": "Alternative Destination",
-    "base_ivr_suggest_string": "Right-click to add option"
+    "base_ivr_suggest_string": "Right-click to add option",
+    "view_upload_recording_string": "Upload recording",
+    "view_name_recording_string": "Recording name",
+    "view_add_string": "Add",
+    "view_name_recording_in_browser_string": "Record in browser",
+    "view_start_recording_string": "Start recording",
+    "view_stop_recording_string": "Stop recording"
 };

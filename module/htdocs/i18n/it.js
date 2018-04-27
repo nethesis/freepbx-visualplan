@@ -70,5 +70,11 @@ languages.it = {
     "base_ext_local_string": "Voice Mail",
     "base_ext_meetme_string": "Conferenza",
     "base_alternative_string": "Destinazione Alternativa",
-    "base_ivr_suggest_string": "Aggiungi un'opzione cliccando il tasto destro del mouse"
+    "base_ivr_suggest_string": "Aggiungi un'opzione cliccando il tasto destro del mouse",
+    "view_upload_recording_string": "Upload registrazione",
+    "view_name_recording_string": "Nome registrazione",
+    "view_add_string": "Aggiungi",
+    "view_name_recording_in_browser_string": "Registra da browser",
+    "view_start_recording_string": "Inizia la registrazione",
+    "view_stop_recording_string": "Ferma la registrazione"
 };
