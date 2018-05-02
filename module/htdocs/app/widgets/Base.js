@@ -486,6 +486,25 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                 templateObj.id = type + "%" + elem[0].value;
                 templateObj.bgColor = "#9b59b6";
                 templateObj.radius = 0;
+
+                if (elem[5].value == 1) {
+                    var timeout = "1 " + languages[browserLang]["view_queuesTimeString_second"];
+                } else if (elem[5].value < 60) {
+                    var timeout = elem[5].value + " " + languages[browserLang]["view_queuesTimeString_seconds"];
+                } else {
+                    var tmpTimeout = "view_queuesTimeString_minutes_" + elem[5].value;
+                    var timeout = languages[browserLang][tmpTimeout];
+                }
+
+                if (elem[6].value == 1) {
+                    var maxwait = "1 " + languages[browserLang]["view_queuesTimeString_second"];
+                } else if (elem[6].value < 60) {
+                    var maxwait = elem[6].value + " " + languages[browserLang]["view_queuesTimeString_seconds"];
+                } else {
+                    var tmpMaxwait = "view_queuesTimeString_minutes_" + elem[6].value;
+                    var maxwait = languages[browserLang][tmpMaxwait];
+                }
+
                 templateObj.entities = [{
                     text: elem[1].value + " ( " + elem[0].value + " )",
                     id: "queues_name%" + id,
@@ -506,6 +525,18 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                     text: elem[3].value,
                     id: "queues_dynamiclist%" + id,
                     type: "list"
+                }, {
+                    text: languages[browserLang]["view_strategy_string"] + " ( " + elem[4].value + " )",
+                    id: "queues_dynamicstrategy%" + id,
+                    type: "text"
+                }, {
+                    text: languages[browserLang]["view_agenttimeout_string"] + " ( " + (elem[5].value == '0' ? languages[browserLang]["view_queuesTimeString_unlimited"] : timeout) + " )",
+                    id: "queues_dynamicstimeout%" + id + "|" + elem[5].value,
+                    type: "text"
+                }, {
+                    text: languages[browserLang]["view_queuesTimeString_maxWait"] + " ( " + (elem[6].value == '' ? languages[browserLang]["view_queuesTimeString_unlimited"] : maxwait) + " )",
+                    id: "queues_dynamicmaxwait%" + id + "|" + elem[6].value,
+                    type: "text"
                 }, {
                     text: languages[browserLang]["base_fail_dest_string"],
                     id: "queues_output%" + id,
