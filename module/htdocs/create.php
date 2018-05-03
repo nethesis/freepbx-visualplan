@@ -334,20 +334,32 @@ function nethvplan_switchCreate($wType, $value, $connectionArray)
                 }
             }
 
+            file_put_contents('text.txt', print_r($value['entities'], true));
+
             $listDynamic = explode("\n", $value['entities'][4]['text']);
 
+            $ringStrategy = explode("(", $value['entities'][5]['text']);
+            $tmpStrategy = explode(")", $ringStrategy[1]);
+            $strategy = trim($tmpStrategy[0]);
+            $tmpTimeout = explode("|", $value['entities'][6]['id']);
+            $timeout = trim($tmpTimeout[1]);
+            $tmpMaxwait = explode("|", $value['entities'][7]['id']);
+            $maxwait = trim($tmpMaxwait[1]);
+
             $destinations = nethvplan_getDestination($value, $connectionArray, $currentCreated, $wType);
-            $destination = trim($destinations["output_".$value['entities'][5]['id']]);
+            $destination = trim($destinations["output_".$value['entities'][8]['id']]);
             $exists = queues_get($extension);
             if (empty($exists)) {
-                queues_add($extension, $name, "", "", $destination, "", $listStatic, "", "", "", "", "", "", "0", $listDynamic, "", "", "", "", "", "", "", "", "");
+                $_REQUEST['strategy'] = $strategy;
+                $_REQUEST['timeout'] = $timeout;
+                queues_add($extension, $name, "", "", $destination, "", $listStatic, "", $maxwait, "", "", "", "", "0", $listDynamic, "", "", "", "", "", "", "", "", "");
             } else {
                 queues_del($extension);
                 $_REQUEST['maxlen'] = $exists['maxlen'];
                 $_REQUEST['joinempty'] = $exists['joinempty'];
                 $_REQUEST['leavewhenempty'] = $exists['leavewhenempty'];
-                $_REQUEST['strategy'] = $exists['strategy'];
-                $_REQUEST['timeout'] = $exists['timeout'];
+                $_REQUEST['strategy'] = $strategy;
+                $_REQUEST['timeout'] = $timeout;
                 $_REQUEST['autopause'] = $exists['autopause'];
                 $_REQUEST['retry'] = $exists['retry'];
                 $_REQUEST['wrapuptime'] = $exists['wrapuptime'];
@@ -371,7 +383,7 @@ function nethvplan_switchCreate($wType, $value, $connectionArray)
                 $_REQUEST['servicelevel'] = $exists['servicelevel'];
                 $_REQUEST['memberdelay'] = $exists['memberdelay'];
                 $_REQUEST['timeoutrestart'] = $exists['timeoutrestart'];
-                queues_add($extension, $name, $exists['password'], $exists['prefix'], $destination, $exists['agentannounce_id'], $listStatic, $exists['joinannounce_id'], $exists['maxwait'], $exists['alertinfo'], $exists['cwignore'], $exists['qregex'], $exists['queuewait'], $exists['use_queue_context'], $listDynamic, $exists['dynmemberonly'], $exists['togglehint'], $exists['qnoanswer'], $exists['callconfirm'], $exists['callconfirm_id'], $exists['monitor_type'], $exists['monitor_heard'], $exists['monitor_spoken'], $exists['answered_elsewhere']);
+                queues_add($extension, $name, $exists['password'], $exists['prefix'], $destination, $exists['agentannounce_id'], $listStatic, $exists['joinannounce_id'], $maxwait, $exists['alertinfo'], $exists['cwignore'], $exists['qregex'], $exists['queuewait'], $exists['use_queue_context'], $listDynamic, $exists['dynmemberonly'], $exists['togglehint'], $exists['qnoanswer'], $exists['callconfirm'], $exists['callconfirm_id'], $exists['monitor_type'], $exists['monitor_heard'], $exists['monitor_spoken'], $exists['answered_elsewhere']);
             }
         break;
 

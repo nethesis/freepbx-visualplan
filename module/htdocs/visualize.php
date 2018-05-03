@@ -215,13 +215,15 @@ foreach ($get_data as $key => $row) {
 // queues - ext-queues,id,1
 $get_data = FreePBX::Queues()->listQueues(false);
 foreach ($get_data as $key => $row) {
-    $queues_details = queues_get($row[0]);
-    $data['ext-queues'][$row[0]] = array(
+    $queues_details = queues_get($row[0]);$data['ext-queues'][$row[0]] = array(
         "num" => $row[0],
         "descr" => $queues_details['name'],
         "dest" => $queues_details['goto'],
         "members" => $queues_details['member'],
-        "dynmembers" => $queues_details['dynmembers']
+        "dynmembers" => $queues_details['dynmembers'],
+        "strategy" => $queues_details['strategy'],
+        "maxwait" => $queues_details['maxwait'],
+        "timeout" => $queues_details['timeout']
     );
 }
 
@@ -799,6 +801,26 @@ function nethvplan_bindData($data, $dest, $id)
             $widget['x'] = $xPos;
             $widget['y'] = $yPos;
             $widget['name'] = $langArray["base_ext_queues_string"];
+
+            if ($data[$dest][$id]['timeout'] == 1) {
+                $timeout = "1 ".$langArray["view_queuesTimeString_second"];
+            } else if ($data[$dest][$id]['timeout'] < 60) {
+                $timeout = $data[$dest][$id]['timeout']." ".$langArray["view_queuesTimeString_seconds"];
+            } else {
+                $tmpTimeout = "view_queuesTimeString_minutes_".$data[$dest][$id]['timeout'];
+                $timeout = $langArray[$tmpTimeout];
+            }
+
+            if ($data[$dest][$id]['maxwait'] == 1) {
+                $maxwait = "1 ".$langArray["view_queuesTimeString_second"];
+            } else if ($data[$dest][$id]['maxwait'] < 60) {
+                $maxwait = $data[$dest][$id]['maxwait']." ".$langArray["view_queuesTimeString_seconds"];
+            } else {
+                $tmpMaxwait = "view_queuesTimeString_minutes_".$data[$dest][$id]['maxwait'];
+                $maxwait = $langArray[$tmpMaxwait];
+            }
+
+            $timeoutString = "view_queuesTimeString_minutes_".$data[$dest][$id]['timeout'];
             $widget['entities'][] = array(
                 "text"=> $data[$dest][$id]['descr']." ( ".$data[$dest][$id]['num']." )",
                 "id"=> $dest."%".$id,
@@ -824,6 +846,22 @@ function nethvplan_bindData($data, $dest, $id)
                 "text"=> $data[$dest][$id]['dynmembers'],
                 "id"=> $dest."%".$id."dlist",
                 "type"=> "list"
+            );
+
+            $widget['entities'][] = array(
+                "text"=> $langArray["view_strategy_string"]." ( ".$data[$dest][$id]['strategy']." )",
+                "id"=> $dest."%".$id."stext",
+                "type"=> "text"
+            );
+            $widget['entities'][] = array(
+                "text"=> $langArray["view_agenttimeout_string"]." ( ".($data[$dest][$id]['timeout'] == '0' ? $langArray["view_queuesTimeString_unlimited"] : $timeout)." )",
+                "id"=> "%".$id."attext|".$data[$dest][$id]['timeout'],
+                "type"=> "text"
+            );
+            $widget['entities'][] = array(
+                "text"=> $langArray["view_queuesTimeString_maxWait"]." ( ".($data[$dest][$id]['maxwait'] == '' ? $langArray["view_queuesTimeString_unlimited"] : $maxwait)." )",
+                "id"=> "%".$id."mwtext|".$data[$dest][$id]['maxwait'],
+                "type"=> "text"
             );
 
             $widget['entities'][] = array(

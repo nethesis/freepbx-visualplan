@@ -393,9 +393,36 @@ example.Toolbar = Class.extend({
 				break;
 
 			case "ext-queues":
+
+				if (elems[5].value == 1) {
+					var timeout = "1 " + languages[browserLang]["view_queuesTimeString_second"];
+				} else if (elems[5].value < 60) {
+					var timeout = elems[5].value + " " + languages[browserLang]["view_queuesTimeString_seconds"];
+				} else {
+					var tmpTimeout = "view_queuesTimeString_minutes_" + elems[5].value;
+					var timeout = languages[browserLang][tmpTimeout];
+				}
+
+				if (elems[6].value == 1) {
+					var maxwait = "1 " + languages[browserLang]["view_queuesTimeString_second"];
+				} else if (elems[6].value < 60) {
+					var maxwait = elems[6].value + " " + languages[browserLang]["view_queuesTimeString_seconds"];
+				} else {
+					var tmpMaxwait = "view_queuesTimeString_minutes_" + elems[6].value;
+					var maxwait = languages[browserLang][tmpMaxwait];
+				}
+
+				var tmpid = node.children.data[7].figure['id'].split('|')[0].trim();
+				node.children.data[7].figure['id'] = tmpid + "|" + elems[5].value;
+				var tmpidsec = node.children.data[8].figure['id'].split('|')[0].trim();
+				node.children.data[8].figure['id'] = tmpidsec + "|" + elems[6].value;
+
 				node.children.data[1].figure.setText(elems[1].value + ' ( ' + elems[0].value + ' )');
 				node.children.data[3].figure.setText(elems[2].value);
 				node.children.data[5].figure.setText(elems[3].value);
+				node.children.data[6].figure.setText(languages[browserLang]["view_strategy_string"] + " ( " + elems[4].value + " )");
+				node.children.data[7].figure.setText(languages[browserLang]["view_agenttimeout_string"] + " ( " + (elems[5].value == '0' ? languages[browserLang]["view_queuesTimeString_unlimited"] : timeout) + " )");
+				node.children.data[8].figure.setText(languages[browserLang]["view_queuesTimeString_maxWait"] + " ( " + (elems[6].value == '' ? languages[browserLang]["view_queuesTimeString_unlimited"] : maxwait) + " )");
 				break;
 
 			case "ivr":

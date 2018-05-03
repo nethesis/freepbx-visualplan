@@ -448,7 +448,10 @@ example.View = draw2d.Canvas.extend({
                 var v2 = data[1].figure.text.split('(')[0].trim();
                 var v3 = data[3].figure.text;
                 var v4 = data[5].figure.text;
-                return [v1, v2, v3, v4];
+                var v5 = data[6].figure.text.split('(')[1].split(')')[0].trim();
+                var v6 = data[7].figure.id.split('|')[1].trim();
+                var v7 = data[8].figure.id.split('|')[1].trim();
+                return [v1, v2, v3, v4, v5, v6, v7];
                 break;
 
             case "ivr":
@@ -495,6 +498,8 @@ example.View = draw2d.Canvas.extend({
         var html = "";
         var isDisabled = "";
         var strategyList = new Array('ringall', 'ringall-prim', 'hunt', 'hunt-prim', 'memoryhunt', 'memoryhunt-prim', 'firstavailable', 'firstnotonphone', 'random');
+        var strategyListQueues = new Array('ringall', 'leastrecent', 'fawestcalls', 'random', 'rrmemory', 'rrordered', 'linear', 'wrandom');
+
         values = ["", "", "", "", "", "", "", "", ""];
         if (mod) {
             values = this.extracInfo(elem.data || {}, elem.id);
@@ -615,10 +620,54 @@ example.View = draw2d.Canvas.extend({
                 }).done(function (c) {
                     $('#loader').hide();
                     var data = JSON.parse(c);
+                    var htmlStrategy = "";
+                    var strategy = values[4];
+                    var timeout = values[5];
+                    var maxwait = values[6];
                     var htmlSelect = "<option>-</option>";
+                    var htmlMaxWait = "<option value=''>" + languages[browserLang]["view_queuesTimeString_unlimited"] + "</option>";
+                    var agentTimeout = "<option value='0'>" + languages[browserLang]["view_queuesTimeString_unlimited"] + "</option>";
+
+                    //members select
                     for (e in data) {
                         htmlSelect += '<option value="' + e + ',0">' + (data[e].name && data[e].name !== '' ? (data[e].name + ' (' + e + ')') : e) + '</option>';
                     }
+                    for (var i = 1; i < 30; i++) {
+                        if (i == 1) {
+                            htmlMaxWait += '<option id="qum-' + i + '" value="' + i + '">' + i + ' ' + languages[browserLang]["view_queuesTimeString_second"] + '</option>';
+                        } else {
+                            htmlMaxWait += '<option id="qum-' + i + '" value="' + i + '">' + i + ' ' + languages[browserLang]["view_queuesTimeString_seconds"] + '</option>';
+                        }
+                    }
+                    //maxwait select
+                    for (var i = 30; i < 60; i += 5) {
+                        htmlMaxWait += '<option id="qum-' + i + '" value="' + i + '">' + i + ' ' + languages[browserLang]["view_queuesTimeString_seconds"] + '</option>';
+                    }
+                    for (var i = 60; i < 300; i += 20) {
+                        htmlMaxWait += '<option id="qum-' + i + '" value="' + i + '">' + languages[browserLang]["view_queuesTimeString_minutes_" + i] + '</option>';
+                    }
+                    for (var i = 300; i < 1200; i += 60) {
+                        htmlMaxWait += '<option id="qum-' + i + '" value="' + i + '">' + languages[browserLang]["view_queuesTimeString_minutes_" + i] + '</option>';
+                    }
+                    for (var i = 1200; i <= 7200; i += 300) {
+                        htmlMaxWait += '<option id="qum-' + i + '" value="' + i + '">' + languages[browserLang]["view_queuesTimeString_minutes_" + i] + '</option>';
+                    }
+                    //agent timeout select
+                    for (var i = 1; i < 60; i++) {
+                        if (i == 1) {
+                            agentTimeout += '<option id="qut-' + i + '" value="' + i + '">' + i + ' ' + languages[browserLang]["view_queuesTimeString_second"] + '</option>';
+                        } else {
+                            agentTimeout += '<option id="qut-' + i + '" value="' + i + '">' + i + ' ' + languages[browserLang]["view_queuesTimeString_seconds"] + '</option>';
+                        }
+                    }
+                    for (var i = 60; i <= 120; i++) {
+                        agentTimeout += '<option id="qut-' + i + '" value="' + i + '">' + languages[browserLang]["view_queuesTimeString_minutes_" + i] + '</option>';
+                    }
+                    //strategy select
+                    for (s in strategyListQueues) {
+                        htmlStrategy += '<option id="qus-' + strategyListQueues[s] + '" value="' + strategyListQueues[s] + '">' + strategyListQueues[s] + '</option>';
+                    }
+
                     html += '<label class="label-creation">' + languages[browserLang]["view_number_string"] + ': </label>';
                     html += '<input pattern="^(_[\\dNXZ\\.\\-\\[\\]]*|[\\d]*)$" ' + isDisabled + ' autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="input-creation"></input>';
                     html += '<label class="label-creation">' + languages[browserLang]["view_name_string"] + ': </label>';
@@ -631,8 +680,30 @@ example.View = draw2d.Canvas.extend({
                     html += '<select id="selectExtQueue2" class="input-creation">' + htmlSelect + '</select>';
                     html += '<label class="label-creation"></label>';
                     html += '<textarea id="textareaExtQueue2" usable id="' + elem.id + '-dynamicMem" class="input-creation">' + values[3] + '</textarea>';
+                    html += '<label class="label-creation">' + languages[browserLang]["view_strategy_string"] + ': </label>';
+                    html += '<select id="queueStrategy" usable class="input-creation">' + htmlStrategy + '</select>';
+                    html += '<label class="label-creation">' + languages[browserLang]["view_agenttimeout_string"] + ': </label>';
+                    html += '<select id="selectAgentTimeout" usable class="input-creation">' + agentTimeout + '</select>';
+                    html += '<label class="label-creation">' + languages[browserLang]["view_queuesTimeString_maxWait"] + ': </label>';
+                    html += '<select id="selectMaxWait" usable class="input-creation">' + htmlMaxWait + '</select>';
 
                     $("#modalCreation").html(html);
+                    //select default
+                    if (strategy) {
+                        $('#qus-' + strategy).attr("selected", "selected");
+                    } else {
+                        $('#qus-ringall').attr("selected", "selected");
+                    }
+                    if (timeout) {
+                        $('#qut-' + timeout).attr("selected", "selected");
+                    } else {
+                        $('#qut-0').attr("selected", "selected");
+                    }
+                    if (maxwait) {
+                        $('#qum-' + maxwait).attr("selected", "selected");
+                    } else {
+                        $('#qum-15').attr("selected", "selected");
+                    }
 
                     thisApp.bindExtSelect({
                         "queues": {
