@@ -673,6 +673,9 @@ footer a:hover {
   text-align: center;
   font-weight: bold;
 }
+.error-input {
+  border: 1px solid rgb(255, 97, 97);
+}
 
 /*empty*/
 
@@ -766,8 +769,24 @@ footer a:hover {
 .hide {
   display: none;
 }
-#addRecordingBtn {
+.addButtons {
   margin-left: 5px;
+  height: 24px;
+  width: 28px;  
+  padding: 2px 5.4px 2px 6px;
+  -webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, .1);
+  box-shadow: 0 2px 3px rgba(0, 0, 0, .1);
+  color: #6b6b6b;
+}
+.label-title {
+  margin-left: 55px;
+  margin-bottom: 10px;
+  text-align: left;
+  width: 211px;
+  color: #333333;
+}
+.hr-form {
+  margin-bottom: 6px;
 }
 .red {
   color: red;
@@ -801,4 +820,33 @@ footer a:hover {
 #saveNewRecordingBtn2,
 #saveNewRecordingBtn {
   margin-left: 5px;
+}
+.tg-select {
+  min-width: 87.5px;
+  margin-right: 5px;
+}
+hr {
+  display: block;
+  height: 1px;
+  border: 0;
+  border-top: 1px solid #cacaca;
+  margin: 1em 0;
+  padding: 0; 
+}
+.saveSecElements {
+  border: 1px solid #3f9c35;
+  color: white;
+  border-radius: 1px;
+  background-color: #3f9c35;
+  background-image: linear-gradient(to bottom, #6ec664 0%, #3f9c35 100%);
+}
+.saveSecElements:hover {
+  background-color: #6ec664 !important;
+  border-color: #3f9c35 !important;
+  color: #fff !important;
+  background-image: none;
+}
+
+audio {
+  max-width: 273px;
 }

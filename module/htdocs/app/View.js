@@ -496,6 +496,7 @@ example.View = draw2d.Canvas.extend({
 
     modalCreate: function (elem, mod, event) {
         var html = "";
+        var thisApp = this;
         var isDisabled = "";
         var strategyList = new Array('ringall', 'ringall-prim', 'hunt', 'hunt-prim', 'memoryhunt', 'memoryhunt-prim', 'firstavailable', 'firstnotonphone', 'random');
         var strategyListQueues = new Array('ringall', 'leastrecent', 'fawestcalls', 'random', 'rrmemory', 'rrordered', 'linear', 'wrandom');
@@ -554,7 +555,6 @@ example.View = draw2d.Canvas.extend({
                 break;
 
             case "ext-group":
-                var thisApp = this;
                 $.ajax({
                     url: "./visualize.php?readData=from-did-direct",
                     context: document.body,
@@ -610,7 +610,6 @@ example.View = draw2d.Canvas.extend({
                 break;
 
             case "ext-queues":
-                var thisApp = this;
                 $.ajax({
                     url: "./visualize.php?readData=from-did-direct",
                     context: document.body,
@@ -808,10 +807,9 @@ example.View = draw2d.Canvas.extend({
                         html += '<input autofocus value="' + values[0] + '" usable id="' + elem.id + '-name" class="input-creation"></input><div></div>';
                         html += '<label class="listRecordingSection label-creation">' + languages[browserLang]["view_recording_string"] + ': </label>';
                         html += '<select usable id="' + elem.id + '-recording" class="listRecordingSection input-creation">' + htmlSelect + '</select>';
-                        html += '<button id="addRecordingBtn" class="listRecordingSection">+</button>';
+                        html += '<button id="addRecordingBtn" class="listRecordingSection addButtons"><i class="fa fa-plus"></i></button>';
 
                         html += '<div id="addRecordingSection" class="hide">';
-                        html += '<hr>';
                         html += '<div class="rowSectionAnn">';
                         html += '<label for="fileupload" class="label-creation">' + languages[browserLang]["view_upload_recording_string"] + ': </label>';
                         html += '<input id="fileupload" type="file" accept="audio/mp3,audio/wav">';
@@ -837,7 +835,7 @@ example.View = draw2d.Canvas.extend({
                         html += '</div>';
 
                         $("#modalCreation").html(html);
-                        $('div:has(#modalCreation)').css('width', '560px');
+                        //$('div:has(#modalCreation)').css('width', '560px');
 
                         var tempFilename;
                         var audioFileName;
@@ -890,7 +888,7 @@ example.View = draw2d.Canvas.extend({
                                     var base64data = reader.result;
                                     audioFileName = 'recorded.wav';
                                     $.ajax({
-                                        url: "./fileupload.php?",
+                                        url: "./plugins.php?",
                                         type: "POST",
                                         data: "content=" + base64data + '&name=' + audioFileName,
                                     }).done(function (c) {
@@ -996,7 +994,7 @@ example.View = draw2d.Canvas.extend({
                                     reader.onload = function (ev) {
                                         var file64 = ev.target.result;
                                         $.ajax({
-                                            url: "./fileupload.php?",
+                                            url: "./plugins.php?",
                                             type: "POST",
                                             data: "content=" + file64 + '&name=' + e.target.files[0].name,
                                         }).done(function (c) {
@@ -1020,32 +1018,282 @@ example.View = draw2d.Canvas.extend({
                 break;
 
             case "timeconditions":
-                $.ajax({
-                    url: "./visualize.php?readData=timegroups",
-                    context: document.body,
-                    beforeSend: function (xhr) {
-                        $('#loader').show();
-                    }
-                }).done(function (c) {
-                    $('#loader').hide();
-                    var data = JSON.parse(c);
-                    var htmlSelect = "";
-                    var selectedOption = "";
-                    for (e in data) {
-                        if (data[e].description === values[1]) {
-                            selectedOption = "selected";
-                        } else {
-                            selectedOption = "";
+                function dialogNewTimeCond(selTimeGroup) {
+                    $.ajax({
+                        url: "./visualize.php?readData=timegroups",
+                        context: document.body,
+                        beforeSend: function (xhr) {
+                            $('#loader').show();
                         }
-                        htmlSelect += '<option ' + selectedOption + ' value="' + data[e].description + ' ( ' + e + ' )">' + data[e].description + '</option>';
-                    }
-                    html += '<label class="label-creation">' + languages[browserLang]["view_name_string"] + ': </label>';
-                    html += '<input autofocus value="' + values[0] + '" usable id="' + elem.id + '-name" class="input-creation"></input>';
-                    html += '<label class="label-creation">' + languages[browserLang]["view_timegroup_string"] + ': </label>';
-                    html += '<select usable id="' + elem.id + '-timegroup" class="input-creation">' + htmlSelect + '</select>';
+                    }).done(function (c) {
+                        $('#loader').hide();
+                        var data = JSON.parse(c);
+                        var htmlSelect = "";
+                        var selectedOption = "";
+                        var htmlSelectHours = "<option value='-'>-</option>";
+                        var htmlSelectMin = "<option value='-'>-</option>";
+                        var htmlSelectWeekDays = "<option value='-'>-</option>";
+                        var htmlSelectMonths = "<option value='-'>-</option>";
+                        var htmlSelectMonthDay = "<option value='-'>-</option>";
+                        var weekdays = {
+                            "view_monday_string": "mon",
+                            "view_tuesday_string": "tue",
+                            "view_wednesday_string": "wed",
+                            "view_thursday_string": "thu",
+                            "view_friday_string": "fri",
+                            "view_saturday_string": "sat",
+                            "view_sunday_string": "sun"
+                        };
+                        var months = {
+                            "view_january_string": "jan",
+                            "view_february_string": "feb",
+                            "view_march_string": "mar",
+                            "view_april_string": "apr",
+                            "view_may_string": "may",
+                            "view_june_string": "jun",
+                            "view_july_string": "jul",
+                            "view_august_string": "aug",
+                            "view_september_string": "sept",
+                            "view_octombre_string": "oct",
+                            "view_november_string": "nov",
+                            "view_december_string": "dec"
+                        };
 
-                    $("#modalCreation").html(html);
-                });
+                        for (e in data) {
+                            if ((data[e].description === values[1]) || (selTimeGroup == data[e].description)) {
+                                selectedOption = "selected";
+                            } else {
+                                selectedOption = "";
+                            }
+
+                            htmlSelect += '<option ' + selectedOption + ' value="' + data[e].description + ' ( ' + e + ' )">' + data[e].description + '</option>';
+                        }
+                        for (var k = 0; k < 24; k++) {
+                            htmlSelectHours += '<option value="' + k + '">' + (k < 10 ? '0' + k : k) + '</option>';
+                        }
+                        for (var k = 0; k < 60; k++) {
+                            htmlSelectMin += '<option value="' + k + '">' + (k < 10 ? '0' + k : k) + '</option>';
+                        }
+                        for (var k in weekdays) {
+                            htmlSelectWeekDays += '<option value="' + weekdays[k] + '">' + languages[browserLang][k] + '</option>';
+                        }
+                        for (var k in months) {
+                            htmlSelectMonths += '<option value="' + months[k] + '">' + languages[browserLang][k] + '</option>';
+                        }
+                        for (var k = 0; k <= 31; k++) {
+                            if (k > 0) {
+                                htmlSelectMonthDay += '<option value="' + k + '">' + (k < 10 ? '0' + k : k) + '</option>';
+                            }
+                        }
+
+                        html = '';
+                        //html += '<div id="addCondTemp">';
+                        html += '<label id="' + elem.id + '-namelabel" class="label-creation">' + languages[browserLang]["view_timeconditionname_string"] + ': </label>';
+                        html += '<input autofocus value="' + values[0] + '" usable id="' + elem.id + '-name" class="input-creation"></input>';
+                        html += '<label id="' + elem.id + '-timegrouplabel" class="label-creation">' + languages[browserLang]["view_timegroup_string"] + ': </label>';
+                        html += '<select usable id="' + elem.id + '-timegroup" class="input-creation">' + htmlSelect + '</select>';
+                        html += '<button id="modifyTimeGroupButton" class="addButtons" title="' + languages[browserLang]["view_modifytimegrouptitle_string"] + '" class="listRecordingSection"><i class="fa fa-pencil"></i></button>';
+                        html += '<button id="addTimeGroupButton" class="addButtons" title="' + languages[browserLang]["view_addtimegrouptitle_string"] + '" class="listRecordingSection"><i class="fa fa-plus"></i></button>';
+                        //html += '</div>';
+
+                        //time group creation
+                        html += '<div id="addTimeGroups" class="hide">';
+                        html += '<hr class="hr-form"><br>';
+                        html += '<label id="' + elem.id + '-titleString" class="label-creation label-title"><b>' + languages[browserLang]["view_newtemporalgroup_string"] + ': </b></label>';
+                        html += '<label id="' + elem.id + '-titleStringModify" class="label-creation label-title hide"><b>' + languages[browserLang]["view_modifytemporalgroup_string"] + ': </b></label>';
+
+                        html += '<span id="' + elem.id + '-title" class="input-creation"></span>';
+                        html += '<label class="label-creation">' + languages[browserLang]["view_timegroupname_string"] + ': </label>';
+                        html += '<input autofocus value="' + values[0] + '" id="' + elem.id + '-timegroupname" class="input-creation"></input>';
+                        // time to start
+                        html += '<label class="label-creation">' + languages[browserLang]["view_timetostart_string"] + ': </label>';
+                        html += '<select id="' + elem.id + '-timetostart-hours" class="input-creation tg-select">' + htmlSelectHours + '</select>';
+                        html += '<select id="' + elem.id + '-timetostart-min" class="input-creation tg-select">' + htmlSelectMin + '</select>';
+                        // time to finish
+                        html += '<label class="label-creation">' + languages[browserLang]["view_timetofinish_string"] + ': </label>';
+                        html += '<select id="' + elem.id + '-timetofinish-hours" class="input-creation tg-select">' + htmlSelectHours + '</select>';
+                        html += '<select id="' + elem.id + '-timetofinish-min" class="input-creation tg-select">' + htmlSelectMin + '</select>';
+                        // week day start
+                        html += '<label class="label-creation">' + languages[browserLang]["view_weekdaystart_string"] + ': </label>';
+                        html += '<select id="' + elem.id + '-weekdaystart" class="input-creation">' + htmlSelectWeekDays + '</select>';
+                        // week day finish
+                        html += '<label class="label-creation">' + languages[browserLang]["view_weekdayfinish_string"] + ': </label>';
+                        html += '<select id="' + elem.id + '-weekdayfinish" class="input-creation">' + htmlSelectWeekDays + '</select>';
+                        // month day start
+                        html += '<label class="label-creation">' + languages[browserLang]["view_monthsdaytart_string"] + ': </label>';
+                        html += '<select id="' + elem.id + '-monthsdaystart" class="input-creation">' + htmlSelectMonthDay + '</select>';
+                        // month day finish
+                        html += '<label class="label-creation">' + languages[browserLang]["view_monthdayfinish_string"] + ': </label>';
+                        html += '<select id="' + elem.id + '-monthsdayfinish" class="input-creation">' + htmlSelectMonthDay + '</select>';
+                        // month start
+                        html += '<label class="label-creation">' + languages[browserLang]["view_monthstart_string"] + ': </label>';
+                        html += '<select id="' + elem.id + '-monthstart" class="input-creation">' + htmlSelectMonths + '</select>';
+                        // month finish
+                        html += '<label class="label-creation">' + languages[browserLang]["view_monthfinish_string"] + ': </label>';
+                        html += '<select id="' + elem.id + '-monthfinish" class="input-creation">' + htmlSelectMonths + '</select>';
+                        // error div
+                        html += '<p class="error-message"></p>';
+                        // save button
+                        html += '<label class="label-creation"></label>';
+                        html += '<span id="' + elem.id + '-title" class="input-creation"><button id="updateAddTimeGroups" class="addButtons right_floated saveSecElements hide" title="' + languages[browserLang]["view_savenewtimegroup_string"] + '"><i class="fa fa-check"></i></button><button id="saveAddTimeGroups" class="addButtons right_floated saveSecElements" title="' + languages[browserLang]["view_savenewtimegroup_string"] + '"><i class="fa fa-check"></i></button><button id="cancelTempGroup" class="addButtons right_floated" title="' + languages[browserLang]["view_cancelnewtimegroup_string"] + '"><i class="fa fa-times"></i></button></span>';
+                        html += '</div>';
+
+                        $("#modalCreation").html(html);
+
+                        function clearValues(elem) {
+                            $("#" + elem.id + "-timegroupname").val("");
+                            $("#" + elem.id + "-timetostart-hours").val("-");
+                            $("#" + elem.id + "-timetostart-min").val("-");
+                            $("#" + elem.id + "-timetofinish-hours").val("-");
+                            $("#" + elem.id + "-timetofinish-min").val("-");
+                            $("#" + elem.id + "-weekdaystart").val("-");
+                            $("#" + elem.id + "-weekdayfinish").val("-");
+                            $("#" + elem.id + "-monthsdaystart").val("-");
+                            $("#" + elem.id + "-monthsdayfinish").val("-");
+                            $("#" + elem.id + "-monthstart").val("-");
+                            $("#" + elem.id + "-monthfinish").val("-");
+                        }
+
+                        function getValues(elem) {
+                            var json = {
+                                name: $("#" + elem.id + "-timegroupname").val(),
+                                hour_start: $("#" + elem.id + "-timetostart-hours").val(),
+                                minute_start: $("#" + elem.id + "-timetostart-min").val(),
+                                hour_finish: $("#" + elem.id + "-timetofinish-hours").val(),
+                                minute_finish: $("#" + elem.id + "-timetofinish-min").val(),
+                                wday_start: $("#" + elem.id + "-weekdaystart").val(),
+                                wday_finish: $("#" + elem.id + "-weekdayfinish").val(),
+                                mday_start: $("#" + elem.id + "-monthsdaystart").val(),
+                                mday_finish: $("#" + elem.id + "-monthsdayfinish").val(),
+                                month_start: $("#" + elem.id + "-monthstart").val(),
+                                month_finish: $("#" + elem.id + "-monthfinish").val()
+                            }
+                            return json;
+                        }
+
+                        function resetReload(json, elem) {
+                            $("#" + elem.id + "-timegroupname").removeClass("error-input");
+                            $(".error-message").text("");
+                            $(".error-message").css("margin-bottom", "0px");
+                            dialogNewTimeCond(json.name);
+                            $($(".ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix button")[1]).button('enable');
+                        }
+
+                        $("#cancelTempGroup").click(function () {
+                            $("#addTimeGroupButton").removeAttr('disabled').removeClass('disabled');
+                            $("#modifyTimeGroupButton").removeAttr('disabled').removeClass('disabled');
+                            $("#" + elem.id + "-timegroup").removeAttr('disabled').removeClass('disabled');
+                            $("#" + elem.id + "-name").removeAttr('disabled').removeClass('disabled');
+                            $($(".ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix button")[1]).button('enable');
+                            $("#" + elem.id + "-timegroupname").removeClass("error-input");
+                            $(".error-message").text("");
+                            $(".error-message").css("margin-bottom", "0px");
+                            $("#updateAddTimeGroups").addClass("hide");
+                            $("#saveAddTimeGroups").removeClass("hide");
+                            $("#" + elem.id + "-titleStringModify").addClass("hide");
+                            $("#" + elem.id + "-titleString").removeClass("hide");
+                            clearValues(elem);
+                            $("#addTimeGroups").hide();
+                        });
+
+                        $("#addTimeGroupButton").click(function () {
+                            $(this).attr('disabled', 'disabled').addClass('disabled');
+                            $("#modifyTimeGroupButton").attr('disabled', 'disabled').addClass('disabled');
+                            $("#addTimeGroups").show();
+                            $("#" + elem.id + "-timegroup").attr('disabled', 'disabled').addClass('disabled');
+                            $("#" + elem.id + "-name").attr('disabled', 'disabled').addClass('disabled');
+                            $($(".ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix button")[1]).button('disable');
+                            $("#" + elem.id + "-timegroupname").focus();
+                        });
+
+                        $("#modifyTimeGroupButton").click(function () {
+                            $(this).attr('disabled', 'disabled').addClass('disabled');
+                            $("#addTimeGroupButton").attr('disabled', 'disabled').addClass('disabled');
+                            $("#" + elem.id + "-timegroup").attr('disabled', 'disabled').addClass('disabled');
+                            $("#" + elem.id + "-name").attr('disabled', 'disabled').addClass('disabled');
+                            $($(".ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix button")[1]).button('disable');
+                            $("#" + elem.id + "-titleStringModify").removeClass("hide");
+                            $("#" + elem.id + "-titleString").addClass("hide");
+                            $("#updateAddTimeGroups").removeClass("hide");
+                            $("#saveAddTimeGroups").addClass("hide");
+
+                            var selected = $("#" + elem.id + "-timegroup").val();
+                            var selectedId = selected.split("(")[1].split(")")[0].trim();
+                            var selectedText = $("#" + elem.id + "-timegroup").val().split("(")[0].trim();
+                            $("#" + elem.id + "-timegroupname").val(selectedText);
+
+                            var json = {
+                                type: "timegroup",
+                                rest: "get",
+                                id: selectedId
+                            };
+
+                            $.ajax({
+                                method: "POST",
+                                url: "./plugins.php?",
+                                data: "jsonData=" + window.btoa(unescape(encodeURIComponent(JSON.stringify(json))))
+                            }).done(function (d) {
+                                var time = JSON.parse(d);
+
+                                if (time) {
+                                    $("#" + elem.id + "-timetostart-hours").val(time.hour_start);
+                                    $("#" + elem.id + "-timetostart-min").val(time.minute_start);
+                                    $("#" + elem.id + "-timetofinish-hours").val(time.hour_finish);
+                                    $("#" + elem.id + "-timetofinish-min").val(time.minute_finish);
+                                    $("#" + elem.id + "-weekdaystart").val(time.wday_start);
+                                    $("#" + elem.id + "-weekdayfinish").val(time.wday_finish);
+                                    $("#" + elem.id + "-monthsdaystart").val(time.mday_start);
+                                    $("#" + elem.id + "-monthsdayfinish").val(time.mday_finish);
+                                    $("#" + elem.id + "-monthstart").val(time.month_start);
+                                    $("#" + elem.id + "-monthfinish").val(time.month_finish);
+                                }
+                            });
+                            $("#addTimeGroups").show();
+
+                        });
+
+                        $("#updateAddTimeGroups").click(function () {
+
+                            var selected = $("#" + elem.id + "-timegroup").val();
+                            var selectedId = selected.split("(")[1].split(")")[0].trim();
+
+                            var json = getValues(elem);
+                            json.type = "timegroup";
+                            json.rest = "update";
+                            json.id = selectedId;
+
+                            $.ajax({
+                                method: "POST",
+                                url: "./plugins.php?",
+                                data: "jsonData=" + window.btoa(unescape(encodeURIComponent(JSON.stringify(json))))
+                            }).done(function (d) {
+                                resetReload(json, elem);
+                            });
+                        });
+
+                        $("#saveAddTimeGroups").click(function () {
+
+                            var json = getValues(elem);
+                            json.type = "timegroup";
+                            json.rest = "set";
+
+                            if (json.name != "") {
+                                $.ajax({
+                                    method: "POST",
+                                    url: "./plugins.php?",
+                                    data: "jsonData=" + window.btoa(unescape(encodeURIComponent(JSON.stringify(json))))
+                                }).done(function (d) {
+                                    resetReload(json, elem);
+                                });
+                            } else {
+                                $("#" + elem.id + "-timegroupname").addClass("error-input");
+                                $(".error-message").css("margin-bottom", "15px");
+                                $(".error-message").text(languages[browserLang]["view_error_required_string"]);
+                            }
+                        });
+                    });
+                }
+                dialogNewTimeCond();
                 break;
 
             case "app-daynight":
@@ -1157,6 +1405,5 @@ example.View = draw2d.Canvas.extend({
             }
 
         }
-
     }
 });
