@@ -191,5 +191,6 @@ languages.it = {
     "view_add_string": "Aggiungi",
     "view_name_recording_in_browser_string": "Registra da browser",
     "view_start_recording_string": "Inizia la registrazione",
-    "view_stop_recording_string": "Ferma la registrazione"
+    "view_stop_recording_string": "Ferma la registrazione",
+    "base_details_string": "Dettagli"
 };

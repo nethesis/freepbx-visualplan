@@ -488,6 +488,13 @@ function nethvplan_bindData($data, $dest, $id)
                 "type"=> "output",
                 "destination"=> $data[$dest][$id]['destination']
             );
+            $widget['entities'][] = array(
+              "text"=> $langArray["base_details_string"],
+              "id"=> $id,
+              "type"=> "text",
+              "destination"=> "",
+              "cssClass"=> "link"
+            );
             if ($data['incoming'][$id]['night']) {
                 $widget['entities'][] = array(
                     "text"=> $langArray["base_night_service_string"],
@@ -510,6 +517,13 @@ function nethvplan_bindData($data, $dest, $id)
                 "id"=> $dest."%".$id,
                 "type"=> "input"
             );
+            $widget['entities'][] = array(
+              "text"=> $langArray["base_details_string"],
+              "id"=> $id,
+              "type"=> "text",
+              "destination"=> "",
+              "cssClass"=> "link"
+            );
         break;
         
         case "ext-meetme":
@@ -525,6 +539,13 @@ function nethvplan_bindData($data, $dest, $id)
                 "text"=> $data[$dest][$id]['description']." ( ".$data[$dest][$id]['id']." )",
                 "id"=> $dest."%".$id,
                 "type"=> "input"
+            );
+            $widget['entities'][] = array(
+              "text"=> $langArray["base_details_string"],
+              "id"=> $id,
+              "type"=> "text",
+              "destination"=> "",
+              "cssClass"=> "link"
             );
         break;
         
@@ -639,6 +660,13 @@ function nethvplan_bindData($data, $dest, $id)
                 "type"=> "output",
                 "destination"=> $data[$dest][$id]['postdest']
             );
+            $widget['entities'][] = array(
+              "text"=> $langArray["base_details_string"],
+              "id"=> $id,
+              "type"=> "text",
+              "destination"=> "",
+              "cssClass"=> "link"
+            );
         break;
         
         case "app-daynight":
@@ -666,6 +694,13 @@ function nethvplan_bindData($data, $dest, $id)
                 "id"=> "red_flow-".$dest."%".$id,
                 "type" => "output",
                 "destination"=> $data[$dest][$id]['red_flow']
+            );
+            $widget['entities'][] = array(
+              "text"=> $langArray["base_details_string"],
+              "id"=> $id,
+              "type"=> "text",
+              "destination"=> "",
+              "cssClass"=> "link"
             );
         break;
         
@@ -699,6 +734,13 @@ function nethvplan_bindData($data, $dest, $id)
                 "id"=> "falsegoto-".$dest."%".$id,
                 "type" => "output",
                 "destination"=> $data[$dest][$id]['falsegoto']
+            );
+            $widget['entities'][] = array(
+              "text"=> $langArray["base_details_string"],
+              "id"=> $id,
+              "type"=> "text",
+              "destination"=> "",
+              "cssClass"=> "link"
             );
         break;
         
@@ -737,6 +779,13 @@ function nethvplan_bindData($data, $dest, $id)
                 "text"=> $langArray["base_ivr_suggest_string"],
                 "id"=> "suggest-".$dest."%".$id,
                 "type"=> "text"
+            );
+            $widget['entities'][] = array(
+              "text"=> $langArray["base_details_string"],
+              "id"=> $id,
+              "type"=> "text",
+              "destination"=> "",
+              "cssClass"=> "link"
             );
             if (array_key_exists('selections', $data[$dest][$id])) {
                 foreach ($data[$dest][$id]['selections'] as $value) {
@@ -870,6 +919,13 @@ function nethvplan_bindData($data, $dest, $id)
                 "type"=> "output",
                 "destination"=> $data[$dest][$id]['dest']
             );
+
+            $widget['entities'][] = array(
+              "text"=> $langArray["base_details_string"],
+              "id"=> $id,
+              "type"=> "text",
+              "destination"=> ""
+          );
         break;
         
         case "ext-group":
@@ -911,6 +967,13 @@ function nethvplan_bindData($data, $dest, $id)
                 "id"=> "faildest-".$dest."%".$id,
                 "type"=> "output",
                 "destination"=> $data[$dest][$id]['postdest']
+            );
+            $widget['entities'][] = array(
+              "text"=> $langArray["base_details_string"],
+              "id"=> $id,
+              "type"=> "text",
+              "destination"=> "",
+              "cssClass"=> "link"
             );
         break;
     }

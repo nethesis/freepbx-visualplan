@@ -191,5 +191,6 @@ languages.en = {
     "view_add_string": "Add",
     "view_name_recording_in_browser_string": "Record in browser",
     "view_start_recording_string": "Start recording",
-    "view_stop_recording_string": "Stop recording"
+    "view_stop_recording_string": "Stop recording",
+    "base_details_string": "Details"
 };

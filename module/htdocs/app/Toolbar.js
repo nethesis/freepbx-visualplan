@@ -244,7 +244,18 @@ example.Toolbar = Class.extend({
 										cWid.children.data[1].figure.setText(name + " - " + newId);
 									}
 								}
-							}
+              }
+              if (location.href.indexOf('?did=new_route') !== -1) {
+                for (var i = 0; i < json.length; i++) {
+                  if (json[0].id.indexOf('incoming') === 0) {
+                    var name = json[0].id.split('%')[1];
+                    location.replace(location.origin + '/freepbx/visualplan/?did=' + encodeURIComponent(name));
+                    break;
+                  }
+                }
+              } else {
+                location.reload();
+              }
 						} else { //TODO: maybe never executed?
 							$('#loader').hide();
 							$('#errorer').children().eq(0).html("&nbsp;&nbsp;" + languages[browserLang]["toolbar_not_save_string"]);
