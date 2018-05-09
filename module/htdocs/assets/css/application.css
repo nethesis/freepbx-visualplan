@@ -815,7 +815,8 @@ footer a:hover {
   vertical-align: middle;
 }
 .rowSectionAnn {
-  margin: 15px 0px;
+  margin: 12px 0px;
+  margin-top: 5px;
 }
 #saveNewRecordingBtn2,
 #saveNewRecordingBtn {
@@ -846,7 +847,15 @@ hr {
   color: #fff !important;
   background-image: none;
 }
-
+.addButtonsRecording {
+  margin-left: 5px;
+  height: 22px;
+  width: 26px;
+  padding: 2px 10px 2px 6px;
+  -webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, .1);
+  box-shadow: 0 2px 3px rgba(0, 0, 0, .1);
+  color: #ffffff;
+}
 audio {
   max-width: 273px;
 }

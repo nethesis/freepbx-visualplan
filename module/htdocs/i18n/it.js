@@ -209,6 +209,7 @@ languages.it = {
     "view_sunday_string": "Domenica",
     "view_newtemporalgroup_string": "Nuovo Gruppo Temporale",
     "view_modifytemporalgroup_string": "Modifica Gruppo Temporale",
+    "view_newrecording_string": "Nuova Registrazione",
     "view_addtimegrouptitle_string": "Aggiungi Gruppo Temporale",
     "view_modifytimegrouptitle_string": "Modifica Gruppo Temporale",
     "view_savenewtimegroup_string": "Aggiungi",

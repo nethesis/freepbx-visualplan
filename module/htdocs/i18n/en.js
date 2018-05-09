@@ -209,6 +209,7 @@ languages.en = {
     "view_sunday_string": "Sunday",
     "view_newtemporalgroup_string": "New Time Group",
     "view_modifytemporalgroup_string": "Edit Time Group",
+    "view_newrecording_string": "New Recording",
     "view_addtimegrouptitle_string": "Add Time Group",
     "view_modifytimegrouptitle_string": "Modify Time Group",
     "view_savenewtimegroup_string": "Add",

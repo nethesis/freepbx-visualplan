@@ -803,23 +803,27 @@ example.View = draw2d.Canvas.extend({
                             htmlSelect += '<option ' + selectedOption + ' value="' + data[e].name + ' ( ' + e + ' )">' + data[e].name + '</option>';
                         }
                         html = '';
-                        html += '<label class="label-creation">' + languages[browserLang]["view_name_string"] + ': </label>';
-                        html += '<input autofocus value="' + values[0] + '" usable id="' + elem.id + '-name" class="input-creation"></input><div></div>';
+                        html += '<label class="label-creation listRecordingSection">' + languages[browserLang]["view_name_string"] + ': </label>';
+                        html += '<input autofocus value="' + values[0] + '" usable id="' + elem.id + '-name" class="input-creation listRecordingSection"></input><div></div>';
                         html += '<label class="listRecordingSection label-creation">' + languages[browserLang]["view_recording_string"] + ': </label>';
                         html += '<select usable id="' + elem.id + '-recording" class="listRecordingSection input-creation">' + htmlSelect + '</select>';
-                        html += '<button id="addRecordingBtn" class="listRecordingSection addButtons"><i class="fa fa-plus"></i></button>';
+                        html += '<button id="addRecordingBtn" class="addButtons"><i class="fa fa-plus"></i></button>';
 
                         html += '<div id="addRecordingSection" class="hide">';
+                        html += '<hr class="hr-form"><br>';
+
+                        html += '<label id="' + elem.id + '-titleString" class="label-creation label-title"><b>' + languages[browserLang]["view_newrecording_string"] + ': </b></label>';
+                        
                         html += '<div class="rowSectionAnn">';
                         html += '<label for="fileupload" class="label-creation">' + languages[browserLang]["view_upload_recording_string"] + ': </label>';
                         html += '<input id="fileupload" type="file" accept="audio/mp3,audio/wav">';
                         html += '<div id="newRecordingNameSection" class="hide">';
                         html += '<label class="label-creation">' + languages[browserLang]["view_name_recording_string"] + ': </label>';
                         html += '<input id="newRecordingName" type="input">';
-                        html += '<button id="saveNewRecordingBtn">' + languages[browserLang]["view_add_string"] + '</button>';
+                        html += '<button id="saveNewRecordingBtn" class="addButtonsRecording saveSecElements"><i class="fa fa-check"></i></button>';
                         html += '</div>';
                         html += '</div>';
-                        html += '<hr>';
+                        
                         html += '<div class="rowSectionAnn">';
                         html += '<label class="label-creation">' + languages[browserLang]["view_name_recording_in_browser_string"] + ': </label>';
                         html += '<i id="checkRecordingBtn" title="' + languages[browserLang]["view_start_recording_string"] + '" class="pointer fa fa-circle red fa-2x vmiddle"></i>';
@@ -828,10 +832,10 @@ example.View = draw2d.Canvas.extend({
                         html += '<div id="newRecordingNameSection2" class="hide rowSectionAnn">';
                         html += '<label class="label-creation">' + languages[browserLang]["view_name_recording_string"] + ': </label>';
                         html += '<input id="newRecordingName2" type="input">';
-                        html += '<button id="saveNewRecordingBtn2">' + languages[browserLang]["view_add_string"] + '</button>';
+                        html += '<button id="saveNewRecordingBtn2" class="addButtonsRecording saveSecElements"><i class="fa fa-check"></i></button>';
                         html += '</div>';
+           
                         html += '</div>';
-
                         html += '</div>';
 
                         $("#modalCreation").html(html);
@@ -911,8 +915,15 @@ example.View = draw2d.Canvas.extend({
 
                         $('#addRecordingBtn').click(function (e) {
                             $('#addRecordingSection').toggle();
-                            $('.listRecordingSection').toggle();
-                            $($(".ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix button")[1]).button('disable');
+                            if ($('#addRecordingBtn i').hasClass("fa-plus")) {
+                                $('#addRecordingBtn i').removeClass("fa-plus").addClass("fa-times");
+                                $('.listRecordingSection').attr('disabled', 'disabled').addClass('disabled');
+                                $($(".ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix button")[1]).button('disable');
+                            } else {
+                                $('#addRecordingBtn i').addClass("fa-plus").removeClass("fa-times");
+                                $('.listRecordingSection').removeAttr('disabled').removeClass('disabled');
+                                $($(".ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix button")[1]).button('enable');
+                            }
                         });
 
                         $('#saveNewRecordingBtn2').click(function (e) {
@@ -938,7 +949,7 @@ example.View = draw2d.Canvas.extend({
                                 }).done(function (c) {
                                     $($(".ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix button")[1]).button('enable');
                                     $('#addRecordingSection').toggle();
-                                    $('.listRecordingSection').toggle();
+                                    $('#addRecordingBtn i').addClass("fa-plus").removeClass("fa-times");
                                     dialogNewAnn();
 
                                 }).fail(function (err) {
@@ -973,7 +984,7 @@ example.View = draw2d.Canvas.extend({
                                 }).done(function (c) {
                                     $($(".ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix button")[1]).button('enable');
                                     $('#addRecordingSection').toggle();
-                                    $('.listRecordingSection').toggle();
+                                    $('#addRecordingBtn i').addClass("fa-plus").removeClass("fa-times");
                                     dialogNewAnn();
 
                                 }).fail(function (err) {
@@ -1088,12 +1099,12 @@ example.View = draw2d.Canvas.extend({
 
                         html = '';
                         //html += '<div id="addCondTemp">';
-                        html += '<label id="' + elem.id + '-namelabel" class="label-creation">' + languages[browserLang]["view_timeconditionname_string"] + ': </label>';
-                        html += '<input autofocus value="' + values[0] + '" usable id="' + elem.id + '-name" class="input-creation"></input>';
-                        html += '<label id="' + elem.id + '-timegrouplabel" class="label-creation">' + languages[browserLang]["view_timegroup_string"] + ': </label>';
-                        html += '<select usable id="' + elem.id + '-timegroup" class="input-creation">' + htmlSelect + '</select>';
-                        html += '<button id="modifyTimeGroupButton" class="addButtons" title="' + languages[browserLang]["view_modifytimegrouptitle_string"] + '" class="listRecordingSection"><i class="fa fa-pencil"></i></button>';
-                        html += '<button id="addTimeGroupButton" class="addButtons" title="' + languages[browserLang]["view_addtimegrouptitle_string"] + '" class="listRecordingSection"><i class="fa fa-plus"></i></button>';
+                        html += '<label id="' + elem.id + '-namelabel" class="label-creation on-action-disabled">' + languages[browserLang]["view_timeconditionname_string"] + ': </label>';
+                        html += '<input autofocus value="' + values[0] + '" usable id="' + elem.id + '-name" class="input-creation on-action-disabled"></input>';
+                        html += '<label id="' + elem.id + '-timegrouplabel" class="label-creation on-action-disabled">' + languages[browserLang]["view_timegroup_string"] + ': </label>';
+                        html += '<select usable id="' + elem.id + '-timegroup" class="input-creation on-action-disabled">' + htmlSelect + '</select>';
+                        html += '<button id="modifyTimeGroupButton" class="addButtons on-action-disabled" title="' + languages[browserLang]["view_modifytimegrouptitle_string"] + '" class="listRecordingSection"><i class="fa fa-pencil"></i></button>';
+                        html += '<button id="addTimeGroupButton" class="addButtons on-action-disabled" title="' + languages[browserLang]["view_addtimegrouptitle_string"] + '" class="listRecordingSection"><i class="fa fa-plus"></i></button>';
                         //html += '</div>';
 
                         //time group creation
@@ -1180,10 +1191,7 @@ example.View = draw2d.Canvas.extend({
                         }
 
                         $("#cancelTempGroup").click(function () {
-                            $("#addTimeGroupButton").removeAttr('disabled').removeClass('disabled');
-                            $("#modifyTimeGroupButton").removeAttr('disabled').removeClass('disabled');
-                            $("#" + elem.id + "-timegroup").removeAttr('disabled').removeClass('disabled');
-                            $("#" + elem.id + "-name").removeAttr('disabled').removeClass('disabled');
+                            $(".on-action-disabled").removeAttr('disabled').removeClass('disabled');
                             $($(".ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix button")[1]).button('enable');
                             $("#" + elem.id + "-timegroupname").removeClass("error-input");
                             $(".error-message").text("");
@@ -1197,20 +1205,16 @@ example.View = draw2d.Canvas.extend({
                         });
 
                         $("#addTimeGroupButton").click(function () {
+                            $(".on-action-disabled").attr('disabled', 'disabled').addClass('disabled');
                             $(this).attr('disabled', 'disabled').addClass('disabled');
-                            $("#modifyTimeGroupButton").attr('disabled', 'disabled').addClass('disabled');
                             $("#addTimeGroups").show();
-                            $("#" + elem.id + "-timegroup").attr('disabled', 'disabled').addClass('disabled');
-                            $("#" + elem.id + "-name").attr('disabled', 'disabled').addClass('disabled');
                             $($(".ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix button")[1]).button('disable');
                             $("#" + elem.id + "-timegroupname").focus();
                         });
 
                         $("#modifyTimeGroupButton").click(function () {
+                            $(".on-action-disabled").attr('disabled', 'disabled').addClass('disabled');
                             $(this).attr('disabled', 'disabled').addClass('disabled');
-                            $("#addTimeGroupButton").attr('disabled', 'disabled').addClass('disabled');
-                            $("#" + elem.id + "-timegroup").attr('disabled', 'disabled').addClass('disabled');
-                            $("#" + elem.id + "-name").attr('disabled', 'disabled').addClass('disabled');
                             $($(".ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix button")[1]).button('disable');
                             $("#" + elem.id + "-titleStringModify").removeClass("hide");
                             $("#" + elem.id + "-titleString").addClass("hide");
