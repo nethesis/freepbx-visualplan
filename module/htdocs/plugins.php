@@ -52,67 +52,71 @@ if ($json) {
                 $select = FreePBX::Timeconditions()->getTimeGroup($jsonArray['id']);
                 $dbh = FreePBX::Database();
                 $sql = "SELECT * FROM timegroups_details WHERE timegroupid = ".$jsonArray['id'];
-                $final = $dbh->sql($sql, 'getRow', \PDO::FETCH_ASSOC);
+                $final = $dbh->sql($sql, 'getAll', \PDO::FETCH_ASSOC);
 
                 if ($final) {
-                    $explode = explode("|", $final["time"]);
 
-                    $times = explode("-", $explode[0]);
-                    $wdays = explode("-", $explode[1]);
-                    $mdays = explode("-", $explode[2]);
-                    $months = explode("-", $explode[3]);
-                    
-                    $times_start = explode(":", $times[0]);
+                    foreach ($final as $key => $value) {
 
-                    $final["hour_start"] = trim($times_start[0], " ");
-                    $spliths = str_split($final["hour_start"]); 
-                    if ($spliths[0] == "0") {
-                        $final["hour_start"] = $spliths[1];
-                    }
-                    
-                    $final["minute_start"] = trim($times_start[1], " ");
-                    $splitms = str_split($final["minute_start"]); 
-                    if ($splitms[0] == "0") {
-                        $final["minute_start"] = $splitms[1];
-                    }
+                        $explode = explode("|", $value["time"]);
 
-                    if ($times[1]) {
-                        $times_finish = explode(":", $times[1]);
-                        $final["hour_finish"] = trim($times_finish[0], " ");
-                        $final["minute_finish"] = trim($times_finish[1], " ");
-                    } else {
-                        $final["hour_finish"] = trim($times_start[0], " ");
-                        $final["minute_finish"] = trim($times_start[1], " ");
-                    }
+                        $times = explode("-", $explode[0]);
+                        $wdays = explode("-", $explode[1]);
+                        $mdays = explode("-", $explode[2]);
+                        $months = explode("-", $explode[3]);
+                        
+                        $times_start = explode(":", $times[0]);
 
-                    $splithf = str_split($final["hour_finish"]); 
-                    if ($splithf[0] == "0") {
-                        $final["hour_finish"] = $splithf[1];
-                    }
-                    $splitmf = str_split($final["minute_finish"]); 
-                    if ($splitmf[0] == "0") {
-                        $final["minute_finish"] = $splitmf[1];
-                    }
+                        $final[$key]["hour_start"] = trim($times_start[0], " ");
+                        $spliths = str_split($final[$key]["hour_start"]); 
+                        if ($spliths[0] == "0") {
+                            $final[$key]["hour_start"] = $spliths[1];
+                        }
+                        
+                        $final[$key]["minute_start"] = trim($times_start[1], " ");
+                        $splitms = str_split($final[$key]["minute_start"]); 
+                        if ($splitms[0] == "0") {
+                            $final[$key]["minute_start"] = $splitms[1];
+                        }
 
-                    $final["wday_start"] = trim($wdays[0], " ");
-                    if ($wdays[1]) {
-                        $final["wday_finish"] = trim($wdays[1], " ");
-                    } else {
-                        $final["wday_finish"] = trim($wdays[0], " ");
-                    }
+                        if ($times[1]) {
+                            $times_finish = explode(":", $times[1]);
+                            $final[$key]["hour_finish"] = trim($times_finish[0], " ");
+                            $final[$key]["minute_finish"] = trim($times_finish[1], " ");
+                        } else {
+                            $final[$key]["hour_finish"] = trim($times_start[0], " ");
+                            $final[$key]["minute_finish"] = trim($times_start[1], " ");
+                        }
 
-                    $final["mday_start"] = trim($mdays[0], " ");
-                    if ($wdays[1]) {
-                        $final["mday_finish"] = trim($mdays[1], " ");
-                    } else {
-                        $final["mday_finish"] = trim($mdays[0], " ");
-                    }
+                        $splithf = str_split($final[$key]["hour_finish"]); 
+                        if ($splithf[0] == "0") {
+                            $final[$key]["hour_finish"] = $splithf[1];
+                        }
+                        $splitmf = str_split($final[$key]["minute_finish"]); 
+                        if ($splitmf[0] == "0") {
+                            $final[$key]["minute_finish"] = $splitmf[1];
+                        }
 
-                    $final["month_start"] = trim($months[0], " ");
-                    if ($wdays[1]) {
-                        $final["month_finish"] = trim($months[1], " ");
-                    } else {
-                        $final["month_finish"] = trim($months[0], " ");
+                        $final[$key]["wday_start"] = trim($wdays[0], " ");
+                        if ($wdays[1]) {
+                            $final[$key]["wday_finish"] = trim($wdays[1], " ");
+                        } else {
+                            $final[$key]["wday_finish"] = trim($wdays[0], " ");
+                        }
+
+                        $final[$key]["mday_start"] = trim($mdays[0], " ");
+                        if ($wdays[1]) {
+                            $final[$key]["mday_finish"] = trim($mdays[1], " ");
+                        } else {
+                            $final[$key]["mday_finish"] = trim($mdays[0], " ");
+                        }
+
+                        $final[$key]["month_start"] = trim($months[0], " ");
+                        if ($wdays[1]) {
+                            $final[$key]["month_finish"] = trim($months[1], " ");
+                        } else {
+                            $final[$key]["month_finish"] = trim($months[0], " ");
+                        }
                     }
                 }
 
@@ -120,14 +124,13 @@ if ($json) {
 
             } else if ($rest == "set") {
 
-                $time = FreePBX::Timeconditions()->buildTime( $jsonArray['hour_start'], $jsonArray['minute_start'], $jsonArray['hour_finish'], $jsonArray['minute_finish'], $jsonArray['wday_start'], $jsonArray['wday_finish'], $jsonArray['mday_start'], $jsonArray['mday_finish'], $jsonArray['month_start'], $jsonArray['month_finish']);
-                $addTime = FreePBX::Timeconditions()->addTimeGroup($jsonArray['name'], array($jsonArray));
-                echo json_encode($addTime);
+                $addedTime = FreePBX::Timeconditions()->addTimeGroup($jsonArray["times"][0]['name'], $jsonArray["times"]);
+                echo json_encode($addedTime);
 
             } else if ($rest == "update") {
 
-                $updateName = FreePBX::Timeconditions()->editTimeGroup( $jsonArray['id'], $jsonArray['name'] );
-                $updateTime = FreePBX::Timeconditions()->editTimes( $jsonArray['id'], array($jsonArray) );
+                $updateName = FreePBX::Timeconditions()->editTimeGroup( $jsonArray['id'], $jsonArray["times"][0]['name'] );
+                $updateTime = FreePBX::Timeconditions()->editTimes( $jsonArray['id'], $jsonArray["times"] );
                 echo json_encode($updateName);
 
             }

@@ -974,3 +974,35 @@ hr {
 audio {
   max-width: 273px;
 }
+
+.no-margins {
+  margin: 0px !important;
+}
+
+.times-forms {
+  clear: both;
+}
+
+.divider {
+  height: 20px;
+}
+
+#modifyTimeGroupButton {
+  margin-left: 10px;
+}
+
+#addRecordingBtn {
+  margin-left: 10px;
+}
+
+#removeTimeGroupForm {
+  margin-left: 5px;
+}
+
+#timeconditions-title {
+  margin-top: 3px; 
+}
+
+#times-form-append .times-forms {
+  margin-top: 20px;
+}
