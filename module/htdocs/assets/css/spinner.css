@@ -12,6 +12,7 @@
   bottom: 0;
   right: 0;
 }
+
 .loading {
   display: none;
 }
@@ -40,6 +41,7 @@
   background-color: transparent;
   border: 0;
 }
+
 .loading:not(:required):after {
   color: #333;
   font-family: 'FontAwesome';
@@ -73,6 +75,7 @@
     transform: rotate(360deg);
   }
 }
+
 @-moz-keyframes spinner {
   0% {
     -webkit-transform: rotate(0deg);
@@ -89,6 +92,7 @@
     transform: rotate(360deg);
   }
 }
+
 @-o-keyframes spinner {
   0% {
     -webkit-transform: rotate(0deg);
@@ -105,6 +109,7 @@
     transform: rotate(360deg);
   }
 }
+
 @keyframes spinner {
   0% {
     -webkit-transform: rotate(0deg);
