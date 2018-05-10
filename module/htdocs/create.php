@@ -263,7 +263,7 @@ function nethvplan_switchCreate($wType, $value, $connectionArray)
 
             $exists = conferences_get($extension);
             if (empty($exists)) {
-                conferences_add($extension, $name);
+                conferences_add($extension, $name,'','','');
             } else {
                 conferences_del($extension);
                 conferences_add($extension, $name, $exists['userpin'], $exists['adminpin'], $exists['options'], $exists['joinmsg_id'], $exists['music'], $exists['users']);
