@@ -4,7 +4,6 @@
 * To view and modify this theme, visit http://jqueryui.com/themeroller/?ffDefault=Trebuchet%20MS%2CTahoma%2CVerdana%2CArial%2Csans-serif&fwDefault=bold&fsDefault=1.1em&cornerRadius=4px&bgColorHeader=f6a828&bgTextureHeader=gloss_wave&bgImgOpacityHeader=35&borderColorHeader=e78f08&fcHeader=ffffff&iconColorHeader=ffffff&bgColorContent=eeeeee&bgTextureContent=highlight_soft&bgImgOpacityContent=100&borderColorContent=dddddd&fcContent=333333&iconColorContent=222222&bgColorDefault=f6f6f6&bgTextureDefault=glass&bgImgOpacityDefault=100&borderColorDefault=cccccc&fcDefault=1c94c4&iconColorDefault=ef8c08&bgColorHover=fdf5ce&bgTextureHover=glass&bgImgOpacityHover=100&borderColorHover=fbcb09&fcHover=c77405&iconColorHover=ef8c08&bgColorActive=ffffff&bgTextureActive=glass&bgImgOpacityActive=65&borderColorActive=fbd850&fcActive=eb8f00&iconColorActive=ef8c08&bgColorHighlight=ffe45c&bgTextureHighlight=highlight_soft&bgImgOpacityHighlight=75&borderColorHighlight=fed22f&fcHighlight=363636&iconColorHighlight=228ef1&bgColorError=b81900&bgTextureError=diagonals_thick&bgImgOpacityError=18&borderColorError=cd0a0a&fcError=ffffff&iconColorError=ffd27a&bgColorOverlay=666666&bgTextureOverlay=diagonals_thick&bgImgOpacityOverlay=20&opacityOverlay=50&bgColorShadow=000000&bgTextureShadow=flat&bgImgOpacityShadow=10&opacityShadow=20&thicknessShadow=5px&offsetTopShadow=-5px&offsetLeftShadow=-5px&cornerRadiusShadow=5px
 * Copyright 2015 jQuery Foundation and other contributors; Licensed MIT */
 
-
 /* Layout helpers
 ----------------------------------*/
 
@@ -65,7 +64,6 @@
     z-index: 100;
 }
 
-
 /* Interaction Cues
 ----------------------------------*/
 
@@ -73,10 +71,8 @@
     cursor: default !important;
 }
 
-
 /* Icons
 ----------------------------------*/
-
 
 /* states and images */
 
@@ -87,10 +83,8 @@
     background-repeat: no-repeat;
 }
 
-
 /* Misc visuals
 ----------------------------------*/
-
 
 /* Overlays */
 
@@ -162,13 +156,11 @@
     text-decoration: none;
 }
 
-
 /* to make room for the icon, a width needs to be set here */
 
 .ui-button-icon-only {
     width: 2.2em;
 }
-
 
 /* button elements seem to need a little more width */
 
@@ -183,7 +175,6 @@ button.ui-button-icon-only {
 button.ui-button-icons-only {
     width: 3.7em;
 }
-
 
 /* button text element */
 
@@ -217,13 +208,11 @@ button.ui-button-icons-only {
     padding-right: 2.1em;
 }
 
-
 /* no icon support for input elements, provide padding by default */
 
 input.ui-button {
     padding: .4em 1em;
 }
-
 
 /* button icon element(s) */
 
@@ -254,7 +243,6 @@ input.ui-button {
     right: .5em;
 }
 
-
 /* button sets */
 
 .ui-buttonset {
@@ -266,9 +254,7 @@ input.ui-button {
     margin-right: -.3em;
 }
 
-
 /* workarounds */
-
 
 /* reset extra padding in Firefox, see h5bp.com/l */
 
@@ -393,7 +379,6 @@ button.ui-button::-moz-focus-inner {
     float: left;
 }
 
-
 /* with multiple calendars */
 
 .ui-datepicker.ui-datepicker-multi {
@@ -435,7 +420,6 @@ button.ui-button::-moz-focus-inner {
     width: 100%;
     font-size: 0;
 }
-
 
 /* RTL support */
 
@@ -597,7 +581,6 @@ button.ui-button::-moz-focus-inner {
     margin: -1px;
 }
 
-
 /* icon support */
 
 .ui-menu-icons {
@@ -608,7 +591,6 @@ button.ui-button::-moz-focus-inner {
     padding-left: 2em;
 }
 
-
 /* left-aligned */
 
 .ui-menu .ui-icon {
@@ -618,7 +600,6 @@ button.ui-button::-moz-focus-inner {
     left: .2em;
     margin: auto 0;
 }
-
 
 /* right-aligned */
 
@@ -822,7 +803,6 @@ button.ui-button::-moz-focus-inner {
     background-position: 0 0;
 }
 
-
 /* support: IE8 - See #6727 */
 
 .ui-slider.ui-state-disabled .ui-slider-handle,
@@ -914,7 +894,6 @@ button.ui-button::-moz-focus-inner {
     right: 0;
 }
 
-
 /* more specificity required here to override default borders */
 
 .ui-spinner a.ui-spinner-button {
@@ -922,7 +901,6 @@ button.ui-button::-moz-focus-inner {
     border-bottom: none;
     border-right: none;
 }
-
 
 /* vertically center icon */
 
@@ -940,7 +918,6 @@ button.ui-button::-moz-focus-inner {
 .ui-spinner-down {
     bottom: 0;
 }
-
 
 /* TR overrides */
 
@@ -1012,7 +989,6 @@ body .ui-tooltip {
     border-width: 2px;
 }
 
-
 /* Component containers
 ----------------------------------*/
 
@@ -1053,7 +1029,6 @@ body .ui-tooltip {
 .ui-widget-header a {
     color: #ffffff;
 }
-
 
 /* Interaction states
 ----------------------------------*/
@@ -1101,7 +1076,6 @@ body .ui-tooltip {
 .ui-state-active a:visited {
     text-decoration: none;
 }
-
 
 /* Interaction Cues
 ----------------------------------*/
@@ -1168,10 +1142,8 @@ body .ui-tooltip {
     /* support: IE8 - See #6059 */
 }
 
-
 /* Icons
 ----------------------------------*/
-
 
 /* states and images */
 
@@ -1205,7 +1177,6 @@ body .ui-tooltip {
 .ui-state-error-text .ui-icon {
     background-image: url("images/ui-icons_ffd27a_256x240.png");
 }
-
 
 /* positioning */
 
@@ -1757,7 +1728,6 @@ body .ui-tooltip {
     background-position: -80px -160px;
 }
 
-
 /* ui-icon-seek-first is deprecated, use ui-icon-seek-start instead */
 
 .ui-icon-seek-first {
@@ -1912,10 +1882,8 @@ body .ui-tooltip {
     background-position: -80px -224px;
 }
 
-
 /* Misc visuals
 ----------------------------------*/
-
 
 /* Corner radius */
 
@@ -1946,7 +1914,6 @@ body .ui-tooltip {
 .ui-corner-br {
     border-bottom-right-radius: 0px;
 }
-
 
 /* Overlays */
 
