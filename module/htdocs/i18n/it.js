@@ -187,13 +187,13 @@ languages.it = {
     "base_ext_meetme_string": "Conferenza",
     "base_alternative_string": "Destinazione Alternativa",
     "base_ivr_suggest_string": "Aggiungi un'opzione cliccando il tasto destro del mouse",
+    
     "view_upload_recording_string": "Upload registrazione",
     "view_name_recording_string": "Nome registrazione",
     "view_add_string": "Aggiungi",
     "view_name_recording_in_browser_string": "Registra da browser",
     "view_start_recording_string": "Inizia la registrazione",
     "view_stop_recording_string": "Ferma la registrazione",
-
     "view_timeconditionname_string": "Nome",
     "view_timegroupname_string": "Nome Gruppo",
     "view_timetostart_string": "Ora d'inizio",

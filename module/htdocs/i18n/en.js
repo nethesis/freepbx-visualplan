@@ -187,13 +187,13 @@ languages.en = {
     "base_ext_meetme_string": "Conference",
     "base_alternative_string": "Alternative Destination",
     "base_ivr_suggest_string": "Right-click to add option",
+    
     "view_upload_recording_string": "Upload recording",
     "view_name_recording_string": "Recording name",
     "view_add_string": "Add",
     "view_name_recording_in_browser_string": "Record in browser",
     "view_start_recording_string": "Start recording",
     "view_stop_recording_string": "Stop recording",
-
     "view_timeconditionname_string": "Name",
     "view_timegroupname_string": "Group Name",
     "view_timetostart_string": "Time to start",

@@ -19,7 +19,6 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
             fontColor: "#ffffff",
             fontSize: 14
         });
-
         this.add(this.classLabel);
     },
 
@@ -75,7 +74,8 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
             bgColor: bgColor,
             padding: padding,
             fontColor: "#4a4a4a",
-            resizeable: true
+            resizeable: true,
+            userData: { name: this.id.split("%")[0] }
         });
 
         // create port
@@ -710,6 +710,27 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
             $.each(memento.entities, $.proxy(function (i, e) {
                 var entity = this.addEntity(e.text, e.type);
                 entity.id = e.id;
+                entity.on('click', function (event) {
+                  if (event.userData.name === 'ext-queues' && !isNaN(e.id)) {
+                    window.open(location.origin + '/freepbx/admin/config.php?display=queues&view=form&extdisplay=' + e.id, '_blank');
+                  } else if (event.userData.name === 'from-did-direct' && !isNaN(e.id)) {
+                    window.open(location.origin + '/freepbx/admin/config.php?display=extensions&extdisplay=' + e.id, '_blank');
+                  } else if (event.userData.name === 'ext-group' && !isNaN(e.id)) {
+                    window.open(location.origin + '/freepbx/admin/config.php?display=ringgroups&view=form&extdisplay=GRP-' + e.id, '_blank');
+                  } else if (event.userData.name === 'ivr' && !isNaN(e.id)) {
+                    window.open(location.origin + '/freepbx/admin/config.php?display=ivr&action=edit&id=' + e.id, '_blank');
+                  } else if (event.userData.name === 'app-announcement' && !isNaN(e.id)) {
+                    window.open(location.origin + '/freepbx/admin/config.php?display=announcement&view=form&extdisplay=' + e.id, '_blank');
+                  } else if (event.userData.name === 'timeconditions' && !isNaN(e.id)) {
+                    window.open(location.origin + '/freepbx/admin/config.php?display=timeconditions&view=form&itemid=' + e.id, '_blank');
+                  } else if (event.userData.name === 'app-daynight' && !isNaN(e.id)) {
+                    window.open(location.origin + '/freepbx/admin/config.php?display=daynight&view=form&itemid=' + e.id + '&extdisplay=' + e.id, '_blank');
+                  } else if (event.userData.name === 'incoming' && !isNaN(e.id.split(' ')[0])) {
+                    window.open(location.origin + '/freepbx/admin/config.php?display=did&view=form&extdisplay=' + e.id, '_blank');
+                  } else if (event.userData.name === 'ext-meetme' && !isNaN(e.id.split(' ')[0])) {
+                    window.open(location.origin + '/freepbx/admin/config.php?display=conferences&view=form&extdisplay=' + e.id, '_blank');
+                  }
+                });
                 if (e.type == "output")
                     entity.getOutputPort(0).setName("output_" + e.id);
 
