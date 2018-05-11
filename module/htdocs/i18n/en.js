@@ -188,6 +188,9 @@ languages.en = {
     "base_alternative_string": "Alternative Destination",
     "base_ivr_suggest_string": "Right-click to add option",
     
+    "view_addtimetimegroup_string": "Add Time",
+    "view_savegrouptimegroup_string": "Save Group",
+    "view_removetimetimegroup_string": "Remove Time",
     "view_upload_recording_string": "Upload recording",
     "view_name_recording_string": "Recording name",
     "view_add_string": "Add",

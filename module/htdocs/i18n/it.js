@@ -188,6 +188,9 @@ languages.it = {
     "base_alternative_string": "Destinazione Alternativa",
     "base_ivr_suggest_string": "Aggiungi un'opzione cliccando il tasto destro del mouse",
     
+    "view_addtimetimegroup_string": "Aggiungi Tempo",
+    "view_savegrouptimegroup_string": "Salva Gruppo",
+    "view_removetimetimegroup_string": "Rimuovi Tempo",
     "view_upload_recording_string": "Upload registrazione",
     "view_name_recording_string": "Nome registrazione",
     "view_add_string": "Aggiungi",
