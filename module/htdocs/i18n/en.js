@@ -187,6 +187,7 @@ languages.en = {
     "base_ext_meetme_string": "Conference",
     "base_alternative_string": "Alternative Destination",
     "base_ivr_suggest_string": "Right-click to add option",
+    "base_details_string": "Advanced",
     
     "view_addtimetimegroup_string": "Add Time",
     "view_savegrouptimegroup_string": "Save Group",
