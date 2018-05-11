@@ -187,6 +187,7 @@ languages.it = {
     "base_ext_meetme_string": "Conferenza",
     "base_alternative_string": "Destinazione Alternativa",
     "base_ivr_suggest_string": "Aggiungi un'opzione cliccando il tasto destro del mouse",
+    "base_details_string": "Avanzate",
     
     "view_addtimetimegroup_string": "Aggiungi Tempo",
     "view_savegrouptimegroup_string": "Salva Gruppo",

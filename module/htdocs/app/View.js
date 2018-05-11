@@ -781,7 +781,7 @@ example.View = draw2d.Canvas.extend({
                 break;
 
             case "app-announcement":
-                function dialogNewAnn(annName) {
+                function dialogNewAnn(recName, annName) {
                     $.ajax({
                         url: "./visualize.php?readData=recordings",
                         context: document.body,
@@ -795,7 +795,7 @@ example.View = draw2d.Canvas.extend({
                         var selectedOption = "";
 
                         for (e in data) {
-                            if (data[e].name === values[1]) {
+                            if ((data[e].name === values[1]) || (recName == data[e].name)) {
                                 selectedOption = "selected";
                             } else {
                                 selectedOption = "";
@@ -940,6 +940,7 @@ example.View = draw2d.Canvas.extend({
                                     "&codec=wav&lang=en&temporary=1&command=convert&module=recordings"
                             }).done(function (c) {
 
+                                var recName = $('#newRecordingName2').val();
                                 $.ajax({
                                     url: "/freepbx/admin/ajax.php",
                                     type: "POST",
@@ -950,7 +951,7 @@ example.View = draw2d.Canvas.extend({
                                     $($(".ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix button")[1]).button('enable');
                                     $('#addRecordingSection').toggle();
                                     $('#addRecordingBtn i').addClass("fa-plus").removeClass("fa-times");
-                                    dialogNewAnn(annName);
+                                    dialogNewAnn(recName, annName);
 
                                 }).fail(function (err) {
                                     console.error(err);
@@ -975,6 +976,7 @@ example.View = draw2d.Canvas.extend({
                                     "&codec=wav&lang=en&temporary=1&command=convert&module=recordings"
                             }).done(function (c) {
 
+                                var recName = $('#newRecordingName').val();
                                 $.ajax({
                                     url: "/freepbx/admin/ajax.php",
                                     type: "POST",
@@ -986,7 +988,7 @@ example.View = draw2d.Canvas.extend({
                                     $('#addRecordingSection').toggle();
                                     $('#addRecordingBtn i').addClass("fa-plus").removeClass("fa-times");
                                     var annName = $("#" + elem.id + "-name").val();
-                                    dialogNewAnn(annName);
+                                    dialogNewAnn(recName, annName);
 
                                 }).fail(function (err) {
                                     console.error(err);

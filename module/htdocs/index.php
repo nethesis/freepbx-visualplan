@@ -83,6 +83,10 @@ if (!isset($_SESSION['AMP_user']) || !$_SESSION['AMP_user']->checkSection('visua
 			var browserLang = navigator.language || navigator.userLanguage;
 			browserLang = browserLang.split("-")[0];
 		}
+		if (browserLang != "en" && browserLang != "it") {
+			browserLang = "en";
+		}
+
 		var now = new Date();
 		var time = now.getTime() + 1000 * 86400;
 		now.setTime(time);
