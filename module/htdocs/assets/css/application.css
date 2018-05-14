@@ -981,6 +981,7 @@ audio {
   width: 175px;
 }
 
-#submitFileUpload2 {
+#submitFileUpload2,
+.addRecordingBtn {
   margin-left: 3px;
 }

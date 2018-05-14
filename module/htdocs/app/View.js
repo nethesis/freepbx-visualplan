@@ -720,333 +720,15 @@ example.View = draw2d.Canvas.extend({
                 break;
 
             case "ivr":
-                $.ajax({
-                    url: "./visualize.php?readData=recordings",
-                    context: document.body,
-                    beforeSend: function (xhr) {
-                        $('#loader').show();
-                    }
-                }).done(function (c) {
-                    $('#loader').hide();
-                    var data = JSON.parse(c);
-                    var htmlSelect = "";
-                    var selectedOption = "";
-                    for (e in data) {
-                        if (data[e].name === values[2]) {
-                            selectedOption = "selected";
-                        } else {
-                            selectedOption = "";
-                        }
-                        htmlSelect += '<option ' + selectedOption + ' value="' + data[e].name + ' ( ' + e + ' )">' + data[e].name + '</option>';
-                    }
-                    html += '<label class="label-creation">' + languages[browserLang]["view_name_string"] + ': </label>';
-                    html += '<input autofocus value="' + values[0] + '" usable id="' + elem.id + '-name" class="input-creation"></input>';
-                    html += '<label class="label-creation">' + languages[browserLang]["view_description_string"] + ': </label>';
-                    html += '<input usable value="' + values[1] + '" id="' + elem.id + '-description" class="input-creation"></input>';
-                    html += '<label class="label-creation">' + languages[browserLang]["view_recording_string"] + ': </label>';
-                    html += '<select usable id="' + elem.id + '-recording" class="input-creation">' + htmlSelect + '</select>';
-                    $("#modalCreation").html(html);
-                });
+                dialogNewIvr(elem.id);
                 break;
 
             case "cqr":
-                $.ajax({
-                    url: "./visualize.php?readData=recordings",
-                    context: document.body,
-                    beforeSend: function (xhr) {
-                        $('#loader').show();
-                    }
-                }).done(function (c) {
-                    $('#loader').hide();
-                    var data = JSON.parse(c);
-                    var htmlSelect = "";
-                    var selectedOption = "";
-                    for (e in data) {
-                        if (data[e].name === values[2]) {
-                            selectedOption = "selected";
-                        } else {
-                            selectedOption = "";
-                        }
-                        htmlSelect += '<option ' + selectedOption + ' value="' + data[e].name + ' ( ' + e + ' )">' + data[e].name + '</option>';
-                    }
-                    html += '<label class="label-creation">' + languages[browserLang]["view_name_string"] + ': </label>';
-                    html += '<input autofocus value="' + values[0] + '" usable id="' + elem.id + '-name" class="input-creation"></input>';
-                    html += '<label class="label-creation">' + languages[browserLang]["view_description_string"] + ': </label>';
-                    html += '<input usable value="' + values[1] + '" id="' + elem.id + '-description" class="input-creation"></input>';
-                    html += '<label class="label-creation">' + languages[browserLang]["view_recording_string"] + ': </label>';
-                    html += '<select usable id="' + elem.id + '-recording" class="input-creation">' + htmlSelect + '</select>';
-
-                    $("#modalCreation").html(html);
-                });
+                dialogNewCqr(elem.id);
                 break;
 
             case "app-announcement":
-                function dialogNewAnn() {
-                    $.ajax({
-                        url: "./visualize.php?readData=recordings",
-                        context: document.body,
-                        beforeSend: function (xhr) {
-                            $('#loader').show();
-                        }
-                    }).done(function (c) {
-                        $('#loader').hide();
-                        var data = JSON.parse(c);
-                        var htmlSelect = "";
-                        var selectedOption = "";
-
-                        for (e in data) {
-                            if (data[e].name === values[1]) {
-                                selectedOption = "selected";
-                            } else {
-                                selectedOption = "";
-                            }
-                            htmlSelect += '<option ' + selectedOption + ' value="' + data[e].name + ' ( ' + e + ' )">' + data[e].name + '</option>';
-                        }
-                        html = '';
-                        html += '<label class="label-creation listRecordingSection">' + languages[browserLang]["view_name_string"] + ': </label>';
-                        html += '<input autofocus value="' + values[0] + '" usable id="' + elem.id + '-name" class="input-creation listRecordingSection"></input><div></div>';
-                        html += '<label class="listRecordingSection label-creation">' + languages[browserLang]["view_recording_string"] + ': </label>';
-                        html += '<select usable id="' + elem.id + '-recording" class="listRecordingSection input-creation">' + htmlSelect + '</select>';
-                        html += '<button id="addRecordingBtn" class="addButtons"><i class="fa fa-plus"></i></button>';
-                        html += '<div id="addRecordingSection" class="hide">';
-                        html += '<hr class="hr-form"><br>';
-                        html += '<label id="' + elem.id + '-titleString" class="label-creation label-title"><b>' + languages[browserLang]["view_newrecording_string"] + ': </b></label>';
-                        html += '<div class="rowSectionAnn">';
-                        html += '<form enctype="multipart/form-data" id="form1" method="post">';
-                        html += '<label for="fileupload" class="label-creation">' + languages[browserLang]["view_upload_recording_string"] + ': </label>';
-                        html += '<input type="file" name="file1" accept=".mp3,.wav" required="required"/>';
-                        html += '<button title="Upload" name="submit" id="submitFileUpload" class="hide"><i class="fa fa-upload"></i></button>';
-                        html += '</form>';
-                        html += '<div id="newRecordingNameSection" class="hide">';
-                        html += '<label class="label-creation">' + languages[browserLang]["view_language_string"] + ': </label>';
-                        html += '<select id="newRecordingLangSelect">';
-                        html += '<option value="it" selected>Italian</option>';
-                        html += '<option value="en">English</option>';
-                        html += '</select>';
-                        html += '<label class="label-creation">' + languages[browserLang]["view_name_recording_string"] + ': </label>';
-                        html += '<input id="newRecordingName" type="input">';
-                        html += '<button id="saveNewRecordingBtn" class="addButtonsRecording saveSecElements"><i class="fa fa-check"></i></button>';
-                        html += '</div>';
-                        html += '</div>';
-                        html += '<div class="rowSectionAnn">';
-                        html += '<label class="label-creation">' + languages[browserLang]["view_name_recording_in_browser_string"] + ': </label>';
-                        html += '<i id="checkRecordingBtn" title="' + languages[browserLang]["view_start_recording_string"] + '" class="pointer fa fa-circle red fa-2x vmiddle"></i>';
-                        html += '<audio controls class="vmiddle"></audio>';
-                        html += '<div id="newRecordingFilenameSection" class="hide rowSectionAnn">';
-                        html += '<label class="label-creation">' + languages[browserLang]["view_filename_string"] + ': </label>';
-                        html += '<input type="text" id="recFilename">';
-                        html += '<button title="Upload" name="submit" id="submitFileUpload2"><i class="fa fa-upload"></i></button>';
-                        html += '</div>';
-                        html += '<div id="newRecordingNameSection2" class="hide rowSectionAnn">';
-                        html += '<label class="label-creation">' + languages[browserLang]["view_language_string"] + ': </label>';
-                        html += '<select id="newRecordingLangSelect2">';
-                        html += '<option value="it" selected>Italian</option>';
-                        html += '<option value="en">English</option>';
-                        html += '</select>';
-                        html += '<label class="label-creation">' + languages[browserLang]["view_name_recording_string"] + ': </label>';
-                        html += '<input id="newRecordingName2" type="input">';
-                        html += '<button id="saveNewRecordingBtn2" class="addButtonsRecording saveSecElements"><i class="fa fa-check"></i></button>';
-                        html += '</div>';
-                        html += '</div>';
-                        html += '</div>';
-
-                        $("#modalCreation").html(html);
-
-                        var tempFilename;
-                        var audioFileName;
-                        var recording = false;
-
-                        var onFail = function (e) {
-                            console.log('Rejected!', e);
-                        };
-
-                        var onSuccess = function (s) {
-                            $('#startRecordingBtn').addClass('blink');
-                            var context = new AudioContext();
-                            var mediaStreamSource = context.createMediaStreamSource(s);
-                            recorder = new Recorder(mediaStreamSource);
-                            recorder.record();
-                        }
-
-                        var recorder;
-                        var audio = document.querySelector('audio');
-
-                        $('#checkRecordingBtn').click(function (e) {
-                            if (!recording) {
-                                $('#checkRecordingBtn').removeClass('fa-circle').addClass('fa-square blink').attr('title', languages[browserLang]["view_stop_recording_string"]);
-                                startRecording();
-                            } else {
-                                $('#checkRecordingBtn').removeClass('fa-square blink').addClass('fa-circle').attr('title', languages[browserLang]["view_start_recording_string"]);
-                                stopRecording();
-                            }
-                            recording = !recording;
-                        });
-
-                        function startRecording() {
-                            if (navigator.getUserMedia) {
-                                $('#newRecordingNameSection2').hide();
-                                navigator.getUserMedia({
-                                    audio: true
-                                }, onSuccess, onFail);
-                            } else {
-                                console.log('navigator.getUserMedia not present');
-                            }
-                        }
-
-                        function stopRecording() {
-                            recorder.stop();
-                            $('#startRecordingBtn').removeClass('blink');
-                            $('#newRecordingFilenameSection').show();
-                            recorder.exportWAV(function (s) {
-                              audio.src = window.URL.createObjectURL(s);
-                            });
-                        }
-                        $('#submitFileUpload2').click(function (e) {
-                          if ($('#recFilename').val() === '') {
-                            $('#recFilename').focus();
-                            return;
-                          }
-                          recorder.exportWAV(function (s) {
-                            audio.src = window.URL.createObjectURL(s);
-                            var data = new FormData();
-                            var fname = $('#recFilename').val().replace(/[.]/g,'-');
-                            audioFileName = fname + '.wav';
-                            data.append("file1", s, audioFileName);
-                            $.ajax({
-                              url: "plugins.php",
-                              type: "POST",
-                              data: data,
-                              processData: false,
-                              contentType: false
-                            }).done(function (c) {
-                              tempFilename = c;
-                              $('#newRecordingFilenameSection').hide();
-                              $('#newRecordingNameSection2').show();
-                            }).fail(function (err) {
-                              console.error(err);
-                            });
-                          });
-                        });
-                        $('#startRecordingBtn').click(function (e) {
-                            startRecording();
-                        });
-                        $('#stopRecordingBtn').click(function (e) {
-                            stopRecording();
-                        });
-
-                        $('#addRecordingBtn').click(function (e) {
-                            $('#addRecordingSection').toggle();
-                            if ($('#addRecordingBtn i').hasClass("fa-plus")) {
-                                $('#addRecordingBtn i').removeClass("fa-plus").addClass("fa-times");
-                                $('.listRecordingSection').attr('disabled', 'disabled').addClass('disabled');
-                                $($(".ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix button")[1]).button('disable');
-                            } else {
-                                $('#addRecordingBtn i').addClass("fa-plus").removeClass("fa-times");
-                                $('.listRecordingSection').removeAttr('disabled').removeClass('disabled');
-                                $($(".ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix button")[1]).button('enable');
-                            }
-                        });
-
-                        $('#saveNewRecordingBtn2').click(function (e) {
-                            if ($('#newRecordingName2').val() === '') {
-                                $('#newRecordingName2').focus();
-                                return;
-                            }
-                            var filename = audioFileName.substring(0, audioFileName.lastIndexOf("."));
-                            $.ajax({
-                                url: "/freepbx/admin/ajax.php",
-                                type: "POST",
-                                contentType: "application/x-www-form-urlencoded; charset=UTF-8",
-                                data: "file=" + tempFilename + "&name=custom/" + filename +
-                                    "&codec=wav&lang=" + $('#newRecordingLangSelect2').val() +
-                                    "&temporary=1&command=convert&module=recordings"
-                            }).done(function (c) {
-
-                                $.ajax({
-                                    url: "/freepbx/admin/ajax.php",
-                                    type: "POST",
-                                    contentType: "application/x-www-form-urlencoded; charset=UTF-8",
-                                    data: "module=recordings&command=save&id=&playback%5B%5D=custom/" + filename + "&name=" +
-                                        $('#newRecordingName2').val() + "&description=&fcode=0&fcode_pass=&remove%5B%5D=" + tempFilename
-                                }).done(function (c) {
-                                    $($(".ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix button")[1]).button('enable');
-                                    $('#addRecordingSection').toggle();
-                                    $('#addRecordingBtn i').addClass("fa-plus").removeClass("fa-times");
-                                    dialogNewAnn();
-
-                                }).fail(function (err) {
-                                    console.error(err);
-                                });
-
-                            }).fail(function (err) {
-                                console.error(err);
-                            });
-                        });
-
-                        $('#saveNewRecordingBtn').click(function (e) {
-                            if ($('#newRecordingName').val() === '') {
-                                $('#newRecordingName').focus();
-                                return;
-                            }
-                            var filename = audioFileName.substring(0, audioFileName.lastIndexOf("."));
-                            var lang = $('#newRecordingLangSelect').val();
-                            $.ajax({
-                                url: "/freepbx/admin/ajax.php",
-                                type: "POST",
-                                contentType: "application/x-www-form-urlencoded; charset=UTF-8",
-                                data: "file=" + tempFilename + "&name=custom/" + filename +
-                                    "&codec=wav&lang=" + lang + "&temporary=1&command=convert&module=recordings"
-                            }).done(function (c) {
-
-                                $.ajax({
-                                    url: "/freepbx/admin/ajax.php",
-                                    type: "POST",
-                                    contentType: "application/x-www-form-urlencoded; charset=UTF-8",
-                                    data: "module=recordings&command=save&id=&playback%5B%5D=custom/" + filename + "&name=" +
-                                        $('#newRecordingName').val() + "&description=&fcode=0&fcode_pass=&remove%5B%5D=" + tempFilename
-                                }).done(function (c) {
-                                    $($(".ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix button")[1]).button('enable');
-                                    $('#addRecordingSection').toggle();
-                                    $('#addRecordingBtn i').addClass("fa-plus").removeClass("fa-times");
-                                    dialogNewAnn();
-
-                                }).fail(function (err) {
-                                    console.error(err);
-                                });
-
-                            }).fail(function (err) {
-                                console.error(err);
-                            });
-                        });
-
-                        $('input[name="file1"]').change(function (e) {
-                          audioFileName = e.target.files[0].name;
-                          $('#submitFileUpload').removeClass('hide');
-                        });
-
-                        $("form#form1").submit(function(e) {
-                          try{
-                            var formData = new FormData($(this)[0]);
-                            $.ajax({
-                              url: "plugins.php",
-                              type: "POST",
-                              data: new FormData( this ),
-                              processData: false,
-                              contentType: false
-                            }).done(function (c) {
-                              tempFilename = c;
-                              $('#newRecordingNameSection').show();
-                            }).fail(function (err) {
-                              console.error(err);
-                            });
-                            e.preventDefault();
-                          } catch(err) {
-                            console.log(err);
-                          }
-                        });
-                    });
-                }
-                dialogNewAnn();
+                dialogNewAnn(elem.id);
                 break;
 
             case "timeconditions":
@@ -1432,3 +1114,351 @@ example.View = draw2d.Canvas.extend({
         }
     }
 });
+
+function getHtmlRecordings (elemId) {
+  var html = '<button class="addRecordingBtn" class="addButtons"><i class="fa fa-plus"></i></button>';
+  html += '<div id="addRecordingSection" class="hide">';
+  html += '<hr class="hr-form"><br>';
+  html += '<label id="' + elemId + '-titleString" class="label-creation label-title"><b>' + languages[browserLang]["view_newrecording_string"] + ': </b></label>';
+  html += '<div class="rowSectionAnn">';
+  html += '<form enctype="multipart/form-data" id="form1" method="post">';
+  html += '<label for="fileupload" class="label-creation">' + languages[browserLang]["view_upload_recording_string"] + ': </label>';
+  html += '<input type="file" name="file1" accept=".mp3,.wav" required="required"/>';
+  html += '<button title="Upload" name="submit" id="submitFileUpload" class="hide"><i class="fa fa-upload"></i></button>';
+  html += '</form>';
+  html += '<div id="newRecordingNameSection" class="hide">';
+  html += '<label class="label-creation">' + languages[browserLang]["view_language_string"] + ': </label>';
+  html += '<select id="newRecordingLangSelect">';
+  html += '<option value="it" selected>Italian</option>';
+  html += '<option value="en">English</option>';
+  html += '</select>';
+  html += '<label class="label-creation">' + languages[browserLang]["view_name_recording_string"] + ': </label>';
+  html += '<input id="newRecordingName" type="input">';
+  html += '<button id="saveNewRecordingBtn" attr-elemid="' + elemId + '" class="addButtonsRecording saveSecElements"><i class="fa fa-check"></i></button>';
+  html += '</div>';
+  html += '</div>';
+  html += '<div class="rowSectionAnn">';
+  html += '<label class="label-creation">' + languages[browserLang]["view_name_recording_in_browser_string"] + ': </label>';
+  html += '<i id="checkRecordingBtn" title="' + languages[browserLang]["view_start_recording_string"] + '" class="pointer fa fa-circle red fa-2x vmiddle"></i>';
+  html += '<audio controls class="vmiddle"></audio>';
+  html += '<div id="newRecordingFilenameSection" class="hide rowSectionAnn">';
+  html += '<label class="label-creation">' + languages[browserLang]["view_filename_string"] + ': </label>';
+  html += '<input type="text" id="recFilename">';
+  html += '<button title="Upload" name="submit" id="submitFileUpload2"><i class="fa fa-upload"></i></button>';
+  html += '</div>';
+  html += '<div id="newRecordingNameSection2" class="hide rowSectionAnn">';
+  html += '<label class="label-creation">' + languages[browserLang]["view_language_string"] + ': </label>';
+  html += '<select id="newRecordingLangSelect2">';
+  html += '<option value="it" selected>Italian</option>';
+  html += '<option value="en">English</option>';
+  html += '</select>';
+  html += '<label class="label-creation">' + languages[browserLang]["view_name_recording_string"] + ': </label>';
+  html += '<input id="newRecordingName2" type="input">';
+  html += '<button id="saveNewRecordingBtn2" attr-elemid="' + elemId + '" class="addButtonsRecording saveSecElements"><i class="fa fa-check"></i></button>';
+  html += '</div>';
+  html += '</div>';
+  html += '</div>';
+  return html;
+}
+
+var recorder;
+var tempFilename;
+var audioFileName;
+var recording = false;
+
+
+var onFail = function (e) {
+  console.log('Rejected!', e);
+};
+
+var onSuccess = function (s) {
+  $('#startRecordingBtn').addClass('blink');
+  var context = new AudioContext();
+  var mediaStreamSource = context.createMediaStreamSource(s);
+  recorder = new Recorder(mediaStreamSource);
+  recorder.record();
+}
+
+function startRecording() {
+  if (navigator.getUserMedia) {
+      $('#newRecordingNameSection2').hide();
+      navigator.getUserMedia({
+          audio: true
+      }, onSuccess, onFail);
+  } else {
+      console.log('navigator.getUserMedia not present');
+  }
+}
+
+function stopRecording() {
+  recorder.stop();
+  $('#startRecordingBtn').removeClass('blink');
+  $('#newRecordingFilenameSection').show();
+  recorder.exportWAV(function (s) {
+    var audio = document.querySelector('audio');
+    audio.src = window.URL.createObjectURL(s);
+  });
+}
+
+function dialogNewAnn(elemId) {
+  $.ajax({
+      url: "./visualize.php?readData=recordings",
+      context: document.body,
+      beforeSend: function (xhr) {
+          $('#loader').show();
+      }
+  }).done(function (c) {
+      $('#loader').hide();
+      var data = JSON.parse(c);
+      var htmlSelect = "";
+      var selectedOption = "";
+
+      for (e in data) {
+          if (data[e].name === values[1]) {
+              selectedOption = "selected";
+          } else {
+              selectedOption = "";
+          }
+          htmlSelect += '<option ' + selectedOption + ' value="' + data[e].name + ' ( ' + e + ' )">' + data[e].name + '</option>';
+      }
+      var html = '<label class="label-creation listRecordingSection">' + languages[browserLang]["view_name_string"] + ': </label>';
+      html += '<input autofocus value="' + values[0] + '" usable id="' + elemId + '-name" class="input-creation listRecordingSection"></input><div></div>';
+      html += '<label class="listRecordingSection label-creation">' + languages[browserLang]["view_recording_string"] + ': </label>';
+      html += '<select usable id="' + elemId + '-recording" class="listRecordingSection input-creation">' + htmlSelect + '</select>';
+      html += getHtmlRecordings(elemId);
+      $("#modalCreation").html(html);
+      initRecordingListeners();
+  });
+}
+
+function dialogNewCqr(elemId) {
+  $.ajax({
+    url: "./visualize.php?readData=recordings",
+    context: document.body,
+    beforeSend: function (xhr) {
+        $('#loader').show();
+    }
+  }).done(function (c) {
+    $('#loader').hide();
+    var data = JSON.parse(c);
+    var htmlSelect = "";
+    var selectedOption = "";
+    for (e in data) {
+        if (data[e].name === values[2]) {
+            selectedOption = "selected";
+        } else {
+            selectedOption = "";
+        }
+        htmlSelect += '<option ' + selectedOption + ' value="' + data[e].name + ' ( ' + e + ' )">' + data[e].name + '</option>';
+    }
+    var html = '<label class="label-creation">' + languages[browserLang]["view_name_string"] + ': </label>';
+    html += '<input autofocus value="' + values[0] + '" usable id="' + elemId + '-name" class="input-creation"></input>';
+    html += '<label class="label-creation">' + languages[browserLang]["view_description_string"] + ': </label>';
+    html += '<input usable value="' + values[1] + '" id="' + elemId + '-description" class="input-creation"></input>';
+    html += '<label class="label-creation">' + languages[browserLang]["view_recording_string"] + ': </label>';
+    html += '<select usable id="' + elemId + '-recording" class="input-creation">' + htmlSelect + '</select>';
+    html += getHtmlRecordings(elemId);
+    $("#modalCreation").html(html);
+    initRecordingListeners();
+  });
+}
+
+function dialogNewIvr(elemId) {
+  $.ajax({
+    url: "./visualize.php?readData=recordings",
+    context: document.body,
+    beforeSend: function (xhr) {
+        $('#loader').show();
+    }
+  }).done(function (c) {
+    $('#loader').hide();
+    var data = JSON.parse(c);
+    var htmlSelect = "";
+    var selectedOption = "";
+    for (e in data) {
+        if (data[e].name === values[2]) {
+            selectedOption = "selected";
+        } else {
+            selectedOption = "";
+        }
+        htmlSelect += '<option ' + selectedOption + ' value="' + data[e].name + ' ( ' + e + ' )">' + data[e].name + '</option>';
+    }
+    var html = '<label class="label-creation">' + languages[browserLang]["view_name_string"] + ': </label>';
+    html += '<input autofocus value="' + values[0] + '" usable id="' + elemId + '-name" class="input-creation"></input>';
+    html += '<label class="label-creation">' + languages[browserLang]["view_description_string"] + ': </label>';
+    html += '<input usable value="' + values[1] + '" id="' + elemId + '-description" class="input-creation"></input>';
+    html += '<label class="label-creation">' + languages[browserLang]["view_recording_string"] + ': </label>';
+    html += '<select usable id="' + elemId + '-recording" class="input-creation">' + htmlSelect + '</select>';
+    html += getHtmlRecordings(elemId);
+    $("#modalCreation").html(html);
+    initRecordingListeners();
+  });
+}
+
+function refreshDialog (elemId) {
+  if (elemId === 'app-announcement') {
+    dialogNewAnn(elemId);
+  } else if (elemId === 'ivr') {
+    dialogNewIvr(elemId);
+  } else if (elemId === 'cqr') {
+    dialogNewCqr(elemId);
+  }
+}
+
+function initRecordingListeners() {
+
+  $('#checkRecordingBtn').click(function (e) {
+    if (!recording) {
+        $('#checkRecordingBtn').removeClass('fa-circle').addClass('fa-square blink').attr('title', languages[browserLang]["view_stop_recording_string"]);
+        startRecording();
+    } else {
+        $('#checkRecordingBtn').removeClass('fa-square blink').addClass('fa-circle').attr('title', languages[browserLang]["view_start_recording_string"]);
+        stopRecording();
+    }
+    recording = !recording;
+  });
+
+  $('#submitFileUpload2').click(function (e) {
+    if ($('#recFilename').val() === '') {
+      $('#recFilename').focus();
+      return;
+    }
+    recorder.exportWAV(function (s) {
+      var audio = document.querySelector('audio');
+      audio.src = window.URL.createObjectURL(s);
+      var data = new FormData();
+      var fname = $('#recFilename').val().replace(/[.]/g,'-');
+      audioFileName = fname + '.wav';
+      data.append("file1", s, audioFileName);
+      $.ajax({
+        url: "plugins.php",
+        type: "POST",
+        data: data,
+        processData: false,
+        contentType: false
+      }).done(function (c) {
+        tempFilename = c;
+        $('#newRecordingFilenameSection').hide();
+        $('#newRecordingNameSection2').show();
+      }).fail(function (err) {
+        console.error(err);
+      });
+    });
+  });
+
+  $('#startRecordingBtn').click(function (e) {
+      startRecording();
+  });
+
+  $('#stopRecordingBtn').click(function (e) {
+      stopRecording();
+  });
+
+  $('.addRecordingBtn').click(function (e) {
+      $('#addRecordingSection').toggle();
+      if ($('.addRecordingBtn i').hasClass("fa-plus")) {
+          $('.addRecordingBtn i').removeClass("fa-plus").addClass("fa-times");
+          $('.listRecordingSection').attr('disabled', 'disabled').addClass('disabled');
+          $($(".ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix button")[1]).button('disable');
+      } else {
+          $('.addRecordingBtn i').addClass("fa-plus").removeClass("fa-times");
+          $('.listRecordingSection').removeAttr('disabled').removeClass('disabled');
+          $($(".ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix button")[1]).button('enable');
+      }
+  });
+
+  $('#saveNewRecordingBtn2').click(function (e) {
+      if ($('#newRecordingName2').val() === '') {
+          $('#newRecordingName2').focus();
+          return;
+      }
+      var elemId = $(this).attr('attr-elemid');
+      var filename = audioFileName.substring(0, audioFileName.lastIndexOf("."));
+      $.ajax({
+          url: "/freepbx/admin/ajax.php",
+          type: "POST",
+          contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+          data: "file=" + tempFilename + "&name=custom/" + filename +
+              "&codec=wav&lang=" + $('#newRecordingLangSelect2').val() +
+              "&temporary=1&command=convert&module=recordings"
+      }).done(function (c) {
+          $.ajax({
+              url: "/freepbx/admin/ajax.php",
+              type: "POST",
+              contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+              data: "module=recordings&command=save&id=&playback%5B%5D=custom/" + filename + "&name=" +
+                  $('#newRecordingName2').val() + "&description=&fcode=0&fcode_pass=&remove%5B%5D=" + tempFilename
+          }).done(function (c) {
+              $($(".ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix button")[1]).button('enable');
+              $('#addRecordingSection').toggle();
+              $('.addRecordingBtn i').addClass("fa-plus").removeClass("fa-times");
+              refreshDialog(elemId)
+          }).fail(function (err) {
+              console.error(err);
+          });
+      }).fail(function (err) {
+          console.error(err);
+      });
+  });
+
+  $('#saveNewRecordingBtn').click(function (e) {
+      if ($('#newRecordingName').val() === '') {
+          $('#newRecordingName').focus();
+          return;
+      }
+      var filename = audioFileName.substring(0, audioFileName.lastIndexOf("."));
+      var lang = $('#newRecordingLangSelect').val();
+      var elemId = $(this).attr('attr-elemid');
+      $.ajax({
+          url: "/freepbx/admin/ajax.php",
+          type: "POST",
+          contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+          data: "file=" + tempFilename + "&name=custom/" + filename +
+              "&codec=wav&lang=" + lang + "&temporary=1&command=convert&module=recordings"
+      }).done(function (c) {
+          $.ajax({
+              url: "/freepbx/admin/ajax.php",
+              type: "POST",
+              contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+              data: "module=recordings&command=save&id=&playback%5B%5D=custom/" + filename + "&name=" +
+                  $('#newRecordingName').val() + "&description=&fcode=0&fcode_pass=&remove%5B%5D=" + tempFilename
+          }).done(function (c) {
+              $($(".ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix button")[1]).button('enable');
+              $('#addRecordingSection').toggle();
+              $('.addRecordingBtn i').addClass("fa-plus").removeClass("fa-times");
+              refreshDialog(elemId)
+          }).fail(function (err) {
+              console.error(err);
+          });
+      }).fail(function (err) {
+          console.error(err);
+      });
+  });
+
+  $('input[name="file1"]').change(function (e) {
+    audioFileName = e.target.files[0].name;
+    $('#submitFileUpload').removeClass('hide');
+  });
+
+  $("form#form1").submit(function(e) {
+    try{
+      var formData = new FormData($(this)[0]);
+      $.ajax({
+        url: "plugins.php",
+        type: "POST",
+        data: new FormData( this ),
+        processData: false,
+        contentType: false
+      }).done(function (c) {
+        tempFilename = c;
+        $('#newRecordingNameSection').show();
+      }).fail(function (err) {
+        console.error(err);
+      });
+      e.preventDefault();
+    } catch(err) {
+      console.log(err);
+    }
+  });
+}
+
