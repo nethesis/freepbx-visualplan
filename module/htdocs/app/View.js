@@ -1165,7 +1165,7 @@ example.View = draw2d.Canvas.extend({
 });
 
 function getHtmlRecordings (elemId) {
-  var html = '<button class="addRecordingBtn" class="addButtons"><i class="fa fa-plus"></i></button>';
+  var html = '<button class="addRecordingBtn addButtons"><i class="fa fa-plus"></i></button>';
   html += '<div id="addRecordingSection" class="hide">';
   html += '<hr class="hr-form"><br>';
   html += '<label id="' + elemId + '-titleString" class="label-creation label-title"><b>' + languages[browserLang]["view_newrecording_string"] + ': </b></label>';
