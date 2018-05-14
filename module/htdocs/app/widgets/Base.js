@@ -180,6 +180,7 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                     }
                     $.contextMenu({
                         selector: 'body',
+                        itemClickEvent: "click",
                         events: {
                             hide: function () {
                                 $.contextMenu('destroy');
@@ -271,6 +272,7 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                     }
                     $.contextMenu({
                         selector: 'body',
+                        itemClickEvent: "click",
                         events: {
                             hide: function () {
                                 $.contextMenu('destroy');
