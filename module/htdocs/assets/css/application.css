@@ -974,3 +974,13 @@ hr {
 audio {
   max-width: 273px;
 }
+
+#newRecordingLangSelect,
+#newRecordingLangSelect2,
+#recFilename {
+  width: 175px;
+}
+
+#submitFileUpload2 {
+  margin-left: 3px;
+}
