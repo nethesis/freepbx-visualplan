@@ -1017,3 +1017,8 @@ audio {
 .addRecordingBtn {
   margin-left: 3px;
 }
+
+.context-menu-list.context-menu-root li:hover {
+  background-color: #def2fe;
+  border: 1px solid #bedff2;
+}
