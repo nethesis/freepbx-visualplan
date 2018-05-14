@@ -1006,3 +1006,14 @@ audio {
 #times-form-append .times-forms {
   margin-top: 20px;
 }
+
+#newRecordingLangSelect,
+#newRecordingLangSelect2,
+#recFilename {
+  width: 175px;
+}
+
+#submitFileUpload2,
+.addRecordingBtn {
+  margin-left: 3px;
+}

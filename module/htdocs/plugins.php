@@ -143,10 +143,20 @@ if ($json) {
     }
     
 } else {
-    $name = pathinfo($_POST['name'], PATHINFO_FILENAME);
-    $ext = pathinfo($_POST['name'], PATHINFO_EXTENSION);
-    $filename = $name."-".time().".".$ext;
-    $filepath = "/var/spool/asterisk/tmp/".$name."-".time().".".$ext;
-    file_put_contents($filepath, base64_decode($_POST['content']));
-    echo $filename;
+    $timevar = time();
+    $path = "/var/spool/asterisk/tmp/";
+    $valid_formats1 = array("mp3", "wav");
+    if ($_SERVER['REQUEST_METHOD'] == "POST") {
+      $filename = $_FILES['file1']['name'];
+      $size = $_FILES['file1']['size'];
+      if(strlen($filename)) {
+        list($txt, $ext) = explode(".", $filename);
+        if(in_array($ext,$valid_formats1)) {
+          $actual_image_name = $timevar."-".$txt.".".$ext;
+          $tmp = $_FILES['file1']['tmp_name'];
+          move_uploaded_file($tmp, $path.$actual_image_name);
+        }
+      }
+    }
+    echo $timevar."-".$filename;
 }

@@ -233,5 +233,8 @@ languages.it = {
     "view_november_string": "Novembre",
     "view_december_string": "Dicembre",
     "view_monthsdaytart_string": "Inizio del mese",
-    "view_monthdayfinish_string": "Fine del mese"
+    "view_monthdayfinish_string": "Fine del mese",
+
+    "view_language_string": "Lingua",
+    "view_filename_string": "Nome file"
 };
