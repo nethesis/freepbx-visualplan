@@ -499,7 +499,7 @@ example.View = draw2d.Canvas.extend({
         var thisApp = this;
         var isDisabled = "";
         var strategyList = new Array('ringall', 'ringall-prim', 'hunt', 'hunt-prim', 'memoryhunt', 'memoryhunt-prim', 'firstavailable', 'firstnotonphone', 'random');
-        var strategyListQueues = new Array('ringall', 'leastrecent', 'fawestcalls', 'random', 'rrmemory', 'rrordered', 'linear', 'wrandom');
+        var strategyListQueues = new Array('ringall', 'leastrecent', 'fewestcalls', 'random', 'rrmemory', 'rrordered', 'linear', 'wrandom');
 
         values = ["", "", "", "", "", "", "", "", ""];
         if (mod) {
