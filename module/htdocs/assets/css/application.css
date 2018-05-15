@@ -889,6 +889,13 @@ footer a:hover {
   margin-bottom: 6px;
 }
 
+.hr-form-inside {
+  margin-left: 168px;
+  margin-top: 16px;
+  margin-bottom: 18px;
+  margin-right: 15px;
+}
+
 .red {
   color: red;
 }
@@ -963,16 +970,13 @@ hr {
 
 .addButtonsRecording {
   margin-left: 5px;
-  height: 22px;
-  width: 26px;
-  padding: 2px 10px 2px 6px;
   -webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, .1);
   box-shadow: 0 2px 3px rgba(0, 0, 0, .1);
   color: #ffffff;
 }
 
 audio {
-  max-width: 273px;
+  max-width: 258px;
 }
 
 .no-margins {
@@ -1010,12 +1014,17 @@ audio {
 #newRecordingLangSelect,
 #newRecordingLangSelect2,
 #recFilename {
-  width: 175px;
+  width: 176px;
 }
 
 #submitFileUpload2,
 .addRecordingBtn {
   margin-left: 5px;
+}
+
+#submitFileUpload2 {
+  margin-left: 0px !important;
+  margin-top: 8px;
 }
 
 .context-menu-list.context-menu-root li:hover {

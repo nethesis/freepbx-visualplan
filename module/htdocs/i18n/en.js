@@ -234,6 +234,8 @@ languages.en = {
     "view_december_string": "December",
     "view_monthsdaytart_string": "Month day start",
     "view_monthdayfinish_string": "Month day finish",
+    "view_startuploadingfile_string": "Start Uploading",
+    "view_uploadedfile_string": "File Uploaded",
 
     "view_language_string": "Language",
     "view_filename_string": "File name"

@@ -1202,38 +1202,39 @@ function getHtmlRecordings(elemId) {
     html += '<input type="file" name="file1" accept=".mp3,.wav" required="required"/>';
     html += '<div class="rowSectionAnn hide" id="rowUploadBtn">';
     html += '<label class="label-creation"></label>';
-    html += '<button title="Upload" name="submit" id="submitFileUpload" ><i class="fa fa-upload"></i></button>';
+    html += '<button title="Upload" name="submit" id="submitFileUpload">' + languages[browserLang]["view_startuploadingfile_string"] + '</button>';
     html += '</div>';
     html += '</form>';
     html += '<div id="newRecordingNameSection" class="hide">';
+    html += '<label class="label-creation">' + languages[browserLang]["view_name_recording_string"] + ': </label>';
+    html += '<input id="newRecordingName" type="input">';
     html += '<label class="label-creation">' + languages[browserLang]["view_language_string"] + ': </label>';
     html += '<select id="newRecordingLangSelect">';
     html += '<option value="it" selected>Italian</option>';
     html += '<option value="en">English</option>';
     html += '</select>';
-    html += '<label class="label-creation">' + languages[browserLang]["view_name_recording_string"] + ': </label>';
-    html += '<input id="newRecordingName" type="input">';
-    html += '<button id="saveNewRecordingBtn" attr-elemid="' + elemId + '" class="addButtonsRecording saveSecElements"><i class="fa fa-check"></i></button>';
+    html += '<button id="saveNewRecordingBtn" attr-elemid="' + elemId + '" class="addButtonsRecording saveSecElements addButtons" title="' + languages[browserLang]["view_savenewtimegroup_string"] + '"><i class="fa fa-check"></i></button>';
     html += '</div>';
     html += '</div>';
+    html += '<hr class="hr-form-inside">';
     html += '<div class="rowSectionAnn">';
     html += '<label class="label-creation">' + languages[browserLang]["view_name_recording_in_browser_string"] + ': </label>';
     html += '<i id="checkRecordingBtn" title="' + languages[browserLang]["view_start_recording_string"] + '" class="pointer fa fa-circle red fa-2x vmiddle"></i>';
     html += '<audio controls class="vmiddle"></audio>';
     html += '<div id="newRecordingFilenameSection" class="hide rowSectionAnn">';
     html += '<label class="label-creation"></label>';
-    html += '<button title="Upload" name="submit" id="submitFileUpload2"><i class="fa fa-upload"></i></button>';
+    html += '<button title="Upload" name="submit" id="submitFileUpload2">' + languages[browserLang]["view_startuploadingfile_string"] + '</button>';
     html += '<label class="label-rec-filename"></label>';
     html += '</div>';
     html += '<div id="newRecordingNameSection2" class="hide rowSectionAnn">';
+    html += '<label class="label-creation">' + languages[browserLang]["view_name_recording_string"] + ': </label>';
+    html += '<input id="newRecordingName2" type="input">';
     html += '<label class="label-creation">' + languages[browserLang]["view_language_string"] + ': </label>';
     html += '<select id="newRecordingLangSelect2">';
     html += '<option value="it" selected>Italian</option>';
     html += '<option value="en">English</option>';
     html += '</select>';
-    html += '<label class="label-creation">' + languages[browserLang]["view_name_recording_string"] + ': </label>';
-    html += '<input id="newRecordingName2" type="input">';
-    html += '<button id="saveNewRecordingBtn2" attr-elemid="' + elemId + '" class="addButtonsRecording saveSecElements"><i class="fa fa-check"></i></button>';
+    html += '<button id="saveNewRecordingBtn2" attr-elemid="' + elemId + '" class="addButtonsRecording saveSecElements addButtons" title="' + languages[browserLang]["view_savenewtimegroup_string"] + '"><i class="fa fa-check"></i></button>';
     html += '</div>';
     html += '</div>';
     html += '</div>';
@@ -1287,7 +1288,7 @@ function stopRecording() {
     });
 }
 
-function dialogNewAnn(elemId, nameValue) {
+function dialogNewAnn(elemId, nameValue, newRecName) {
     $.ajax({
         url: "./visualize.php?readData=recordings",
         context: document.body,
@@ -1301,7 +1302,7 @@ function dialogNewAnn(elemId, nameValue) {
         var selectedOption = "";
 
         for (e in data) {
-            if (data[e].name === values[1]) {
+            if (data[e].name === values[1] || data[e].name === newRecName) {
                 selectedOption = "selected";
             } else {
                 selectedOption = "";
@@ -1321,7 +1322,7 @@ function dialogNewAnn(elemId, nameValue) {
     });
 }
 
-function dialogNewCqr(elemId, nameValue, descriptionValue) {
+function dialogNewCqr(elemId, nameValue, descriptionValue, newRecName) {
     $.ajax({
         url: "./visualize.php?readData=recordings",
         context: document.body,
@@ -1334,19 +1335,19 @@ function dialogNewCqr(elemId, nameValue, descriptionValue) {
         var htmlSelect = "";
         var selectedOption = "";
         for (e in data) {
-            if (data[e].name === values[2]) {
+            if (data[e].name === values[2] || data[e].name === newRecName) {
                 selectedOption = "selected";
             } else {
                 selectedOption = "";
             }
             htmlSelect += '<option ' + selectedOption + ' value="' + data[e].name + ' ( ' + e + ' )">' + data[e].name + '</option>';
         }
-        var html = '<label class="label-creation">' + languages[browserLang]["view_name_string"] + ': </label>';
-        html += '<input autofocus value="' + values[0] + '" usable id="' + elemId + '-name" class="input-creation"></input>';
-        html += '<label class="label-creation">' + languages[browserLang]["view_description_string"] + ': </label>';
-        html += '<input usable value="' + values[1] + '" id="' + elemId + '-description" class="input-creation"></input>';
-        html += '<label class="label-creation">' + languages[browserLang]["view_recording_string"] + ': </label>';
-        html += '<select usable id="' + elemId + '-recording" class="input-creation">' + htmlSelect + '</select>';
+        var html = '<label class="label-creation listRecordingSection">' + languages[browserLang]["view_name_string"] + ': </label>';
+        html += '<input autofocus value="' + values[0] + '" usable id="' + elemId + '-name" class="input-creation listRecordingSection"></input>';
+        html += '<label class="label-creation listRecordingSection">' + languages[browserLang]["view_description_string"] + ': </label>';
+        html += '<input usable value="' + values[1] + '" id="' + elemId + '-description" class="input-creation listRecordingSection"></input>';
+        html += '<label class="label-creation listRecordingSection">' + languages[browserLang]["view_recording_string"] + ': </label>';
+        html += '<select usable id="' + elemId + '-recording" class="input-creation listRecordingSection">' + htmlSelect + '</select>';
         html += getHtmlRecordings(elemId);
         $("#modalCreation").html(html);
         if (nameValue) {
@@ -1359,7 +1360,7 @@ function dialogNewCqr(elemId, nameValue, descriptionValue) {
     });
 }
 
-function dialogNewIvr(elemId, nameValue, descriptionValue) {
+function dialogNewIvr(elemId, nameValue, descriptionValue, newRecName) {
     $.ajax({
         url: "./visualize.php?readData=recordings",
         context: document.body,
@@ -1372,19 +1373,19 @@ function dialogNewIvr(elemId, nameValue, descriptionValue) {
         var htmlSelect = "";
         var selectedOption = "";
         for (e in data) {
-            if (data[e].name === values[2]) {
+            if (data[e].name === values[2] || data[e].name === newRecName) {
                 selectedOption = "selected";
             } else {
                 selectedOption = "";
             }
             htmlSelect += '<option ' + selectedOption + ' value="' + data[e].name + ' ( ' + e + ' )">' + data[e].name + '</option>';
         }
-        var html = '<label class="label-creation">' + languages[browserLang]["view_name_string"] + ': </label>';
-        html += '<input autofocus value="' + values[0] + '" usable id="' + elemId + '-name" class="input-creation"></input>';
-        html += '<label class="label-creation">' + languages[browserLang]["view_description_string"] + ': </label>';
-        html += '<input usable value="' + values[1] + '" id="' + elemId + '-description" class="input-creation"></input>';
-        html += '<label class="label-creation">' + languages[browserLang]["view_recording_string"] + ': </label>';
-        html += '<select usable id="' + elemId + '-recording" class="input-creation">' + htmlSelect + '</select>';
+        var html = '<label class="label-creation listRecordingSection">' + languages[browserLang]["view_name_string"] + ': </label>';
+        html += '<input autofocus value="' + values[0] + '" usable id="' + elemId + '-name" class="input-creation listRecordingSection"></input>';
+        html += '<label class="label-creation listRecordingSection">' + languages[browserLang]["view_description_string"] + ': </label>';
+        html += '<input usable value="' + values[1] + '" id="' + elemId + '-description" class="input-creation listRecordingSection"></input>';
+        html += '<label class="label-creation listRecordingSection">' + languages[browserLang]["view_recording_string"] + ': </label>';
+        html += '<select usable id="' + elemId + '-recording" class="input-creation listRecordingSection">' + htmlSelect + '</select>';
         html += getHtmlRecordings(elemId);
         $("#modalCreation").html(html);
         if (nameValue) {
@@ -1397,18 +1398,18 @@ function dialogNewIvr(elemId, nameValue, descriptionValue) {
     });
 }
 
-function refreshDialog(elemId) {
+function refreshDialog(elemId, newRecName) {
     if (elemId === 'app-announcement') {
         var nameValue = $("#" + elemId + "-name").val();
-        dialogNewAnn(elemId, nameValue);
+        dialogNewAnn(elemId, nameValue, newRecName);
     } else if (elemId === 'ivr') {
         var nameValue = $("#" + elemId + "-name").val();
         var descriptionValue = $("#" + elemId + "-description").val();
-        dialogNewIvr(elemId, nameValue, descriptionValue);
+        dialogNewIvr(elemId, nameValue, descriptionValue, newRecName);
     } else if (elemId === 'cqr') {
         var nameValue = $("#" + elemId + "-name").val();
         var descriptionValue = $("#" + elemId + "-description").val();
-        dialogNewCqr(elemId, nameValue, descriptionValue);
+        dialogNewCqr(elemId, nameValue, descriptionValue, newRecName);
     }
 }
 
@@ -1441,8 +1442,10 @@ function initRecordingListeners() {
                 contentType: false
             }).done(function (c) {
                 tempFilename = c;
-                $('#newRecordingFilenameSection').hide();
+                $('#submitFileUpload2').attr('disabled', 'disabled').addClass('disabled');
+                $('#submitFileUpload2').text(languages[browserLang]["view_uploadedfile_string"]);
                 $('#newRecordingNameSection2').show();
+                $("#newRecordingName2").focus();
             }).fail(function (err) {
                 console.error(err);
             });
@@ -1459,6 +1462,13 @@ function initRecordingListeners() {
             $('.addRecordingBtn i').addClass("fa-plus").removeClass("fa-times");
             $('.listRecordingSection').removeAttr('disabled').removeClass('disabled');
             $($(".ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix button")[1]).button('enable');
+
+            $('#submitFileUpload, #submitFileUpload2').text(languages[browserLang]["view_startuploadingfile_string"]);
+            $('.label-rec-filename').text("");
+            $("form#form1 input[type='file'], form#form1 label, #submitFileUpload, #submitFileUpload2").removeAttr('disabled').removeClass('disabled');
+            $("#addRecordingSection input").val("");
+            $("#rowUploadBtn").addClass("hide");
+            $("#newRecordingNameSection, #newRecordingNameSection2, #newRecordingFilenameSection").hide();
         }
     });
 
@@ -1487,7 +1497,8 @@ function initRecordingListeners() {
                 $($(".ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix button")[1]).button('enable');
                 $('#addRecordingSection').toggle();
                 $('.addRecordingBtn i').addClass("fa-plus").removeClass("fa-times");
-                refreshDialog(elemId)
+                var newRecName = $("#newRecordingName2").val();
+                refreshDialog(elemId, newRecName)
             }).fail(function (err) {
                 console.error(err);
             });
@@ -1521,7 +1532,8 @@ function initRecordingListeners() {
                 $($(".ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix button")[1]).button('enable');
                 $('#addRecordingSection').toggle();
                 $('.addRecordingBtn i').addClass("fa-plus").removeClass("fa-times");
-                refreshDialog(elemId)
+                var newRecName = $("#newRecordingName").val();
+                refreshDialog(elemId, newRecName);
             }).fail(function (err) {
                 console.error(err);
             });
@@ -1546,7 +1558,11 @@ function initRecordingListeners() {
                 contentType: false
             }).done(function (c) {
                 tempFilename = c;
+                $('#submitFileUpload').attr('disabled', 'disabled').addClass('disabled');
+                $("form#form1 input[type='file'],form#form1 label").attr('disabled', 'disabled').addClass('disabled');
+                $('#submitFileUpload').text(languages[browserLang]["view_uploadedfile_string"]);
                 $('#newRecordingNameSection').show();
+                $("#newRecordingName").focus();
             }).fail(function (err) {
                 console.error(err);
             });
