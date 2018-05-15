@@ -1253,6 +1253,7 @@ var onFail = function (e) {
 
 var onSuccess = function (s) {
     $('#startRecordingBtn').addClass('blink');
+    window.streamReference = s;
     var context = new AudioContext();
     var mediaStreamSource = context.createMediaStreamSource(s);
     recorder = new Recorder(mediaStreamSource);
@@ -1273,6 +1274,10 @@ function startRecording() {
 function stopRecording() {
     recorder.stop();
     $('#startRecordingBtn').removeClass('blink');
+    window.streamReference.getAudioTracks().forEach(function(track) {
+        track.stop();
+    });
+    window.streamReference = null;
     $('#newRecordingFilenameSection').show();
     recordedFilename = new Date().getTime();
     $('.label-rec-filename').text(recordedFilename + '.wav');
