@@ -79,9 +79,137 @@ example.View = draw2d.Canvas.extend({
         return false;
     },
 
-    contextMenu: function () {
-        $('#container').on("contextmenu", function (emitter, event) {
+    createList: function(key, options, event) {
+        switch (key) {
+            case "add":
+                var data = {};
+                data.x = event.x;
+                data.y = event.y;
+                data.context = event.context;
+                data.dropped = event.dropped;
 
+                event.context.createDialog(data);
+                break;
+            case "select":
+                var containerData = null;
+                var htmlInj = "";
+                // get data
+                $.ajax({
+                    url: "./visualize.php?getAll=" + event.dropped[0].id,
+                    context: document.body,
+                    beforeSend: function (xhr) {
+                        $('#loader').show();
+                    }
+                }).done(function (c) {
+                    $('#loader').hide();
+                    containerData = JSON.parse(c);
+                    // populate dialog
+                    var dialog = $('<div id="elementList"></div>')
+                        .dialog({
+                            position: 'center',
+                            autoOpen: false,
+                            resizable: false,
+                            width: 500,
+                            modal: true,
+                            close: function (ev, ui) {
+                                $(this).dialog('destroy').remove();
+                            },
+                            title: $(event.dropped[0]).text() + " " + languages[browserLang]["view_selection_string"]
+                        });
+                    $(".ui-dialog-titlebar").css("background", event.dropped.css("backgroundColor"));
+
+                    // inject html
+                    dialog.html(event.context.switchDescription(containerData, event.dropped[0].id));
+
+                    // bind click on buttons
+                    $('.button-elem-list').bind('click', function (el) {
+                        var elemId = el.target.attributes.elemId.value;
+                        var getChildId = window.btoa(unescape(encodeURIComponent(containerData[elemId].id)));
+
+                        var childDestStr = "";
+                        for (ent in containerData[elemId].entities) {
+                            if (containerData[elemId].entities[ent].type === "output") {
+                                childDestStr += containerData[elemId].entities[ent].destination + "|";
+                            }
+                        }
+                        var getChildDest = window.btoa(unescape(encodeURIComponent(childDestStr)));
+
+                        $.ajax({
+                            url: "./visualize.php?getChild=" + getChildId + "&getChildDest=" + getChildDest,
+                            context: document.body,
+                            beforeSend: function (xhr) {
+                                $('#loader').show();
+                            }
+                        }).done(function (c) {
+                            dialog.dialog('destroy').remove();
+
+                            // dropped obj
+                            var obj1 = {};
+                            var num = containerData[elemId].id;
+                            obj1[num] = containerData[elemId];
+
+                            // childs
+                            var obj3 = JSON.parse(c);
+
+                            var jsonMarshal = $.extend({}, obj1, obj3);
+
+                            var g = new dagre.graphlib.Graph();
+                            g.setGraph({});
+                            g.setDefaultEdgeLabel(function () {
+                                return {};
+                            });
+                            g.graph().rankdir = "LR";
+
+                            for (var i in jsonMarshal) {
+                                if (jsonMarshal[i].type === "Base") {
+                                    g.setNode(jsonMarshal[i].id, {
+                                        width: 500,
+                                        height: 200
+                                    });
+                                }
+
+                                if (jsonMarshal[i].type === "MyConnection") {
+                                    g.setEdge(jsonMarshal[i].source.node, jsonMarshal[i].target.node);
+                                }
+                            };
+
+                            dagre.layout(g);
+
+                            g.nodes().forEach(function (v) {
+                                jsonMarshal[v].x = event.x + g.node(v).x;
+                                jsonMarshal[v].y = event.y + g.node(v).y;
+                            });
+
+                            var reader = new draw2d.io.json.Reader();
+                            reader.unmarshal(app.view, jsonMarshal);
+                            $('#loader').hide();
+
+                        });
+                    });
+
+                    // show dialog
+                    dialog.dialog("open");
+                    $('.ui-widget-overlay').bind('click', function () {
+                        dialog.dialog('destroy').remove();
+                    });
+                }).fail(function (err) {
+                    $('#loader').hide();
+                    $('#errorer').children().eq(0).html("&nbsp;&nbsp;" + languages[browserLang]["base_no_elements_string"]);
+                    $('#errorer').fadeIn("slow");
+                    setTimeout(function () {
+                        $('#errorer').fadeOut("slow");
+                    }, 5000);
+                })
+
+                break;
+            default:
+                break;
+        }
+    },
+
+    contextMenu: function () {
+        var thisApp = this;
+        $('#container').on("contextmenu", function (emitter, event) {
             switch (event.dropped.context.id) {
                 case "from-did-direct":
                     var contextMenuItems = {
@@ -113,131 +241,9 @@ example.View = draw2d.Canvas.extend({
                     }
                 },
                 callback: $.proxy(function (key, options) {
-                    switch (key) {
-                        case "add":
-                            var data = {};
-                            data.x = event.x;
-                            data.y = event.y;
-                            data.context = event.context;
-                            data.dropped = event.dropped;
+                    
+                    thisApp.createList(key, options, event);
 
-                            event.context.createDialog(data);
-                            break;
-                        case "select":
-                            var containerData = null;
-                            var htmlInj = "";
-                            // get data
-                            $.ajax({
-                                url: "./visualize.php?getAll=" + event.dropped[0].id,
-                                context: document.body,
-                                beforeSend: function (xhr) {
-                                    $('#loader').show();
-                                }
-                            }).done(function (c) {
-                                $('#loader').hide();
-                                containerData = JSON.parse(c);
-                                // populate dialog
-                                var dialog = $('<div id="elementList"></div>')
-                                    .dialog({
-                                        position: 'center',
-                                        autoOpen: false,
-                                        resizable: false,
-                                        width: 500,
-                                        modal: true,
-                                        close: function (ev, ui) {
-                                            $(this).dialog('destroy').remove();
-                                        },
-                                        title: $(event.dropped[0]).text() + " " + languages[browserLang]["view_selection_string"]
-                                    });
-                                $(".ui-dialog-titlebar").css("background", event.dropped.css("backgroundColor"));
-
-                                // inject html
-                                dialog.html(event.context.switchDescription(containerData, event.dropped[0].id));
-
-                                // bind click on buttons
-                                $('.button-elem-list').bind('click', function (el) {
-                                    var elemId = el.target.attributes.elemId.value;
-                                    var getChildId = window.btoa(unescape(encodeURIComponent(containerData[elemId].id)));
-
-                                    var childDestStr = "";
-                                    for (ent in containerData[elemId].entities) {
-                                        if (containerData[elemId].entities[ent].type === "output") {
-                                            childDestStr += containerData[elemId].entities[ent].destination + "|";
-                                        }
-                                    }
-                                    var getChildDest = window.btoa(unescape(encodeURIComponent(childDestStr)));
-
-                                    $.ajax({
-                                        url: "./visualize.php?getChild=" + getChildId + "&getChildDest=" + getChildDest,
-                                        context: document.body,
-                                        beforeSend: function (xhr) {
-                                            $('#loader').show();
-                                        }
-                                    }).done(function (c) {
-                                        dialog.dialog('destroy').remove();
-
-                                        // dropped obj
-                                        var obj1 = {};
-                                        var num = containerData[elemId].id;
-                                        obj1[num] = containerData[elemId];
-
-                                        // childs
-                                        var obj3 = JSON.parse(c);
-
-                                        var jsonMarshal = $.extend({}, obj1, obj3);
-
-                                        var g = new dagre.graphlib.Graph();
-                                        g.setGraph({});
-                                        g.setDefaultEdgeLabel(function () {
-                                            return {};
-                                        });
-                                        g.graph().rankdir = "LR";
-
-                                        for (var i in jsonMarshal) {
-                                            if (jsonMarshal[i].type === "Base") {
-                                                g.setNode(jsonMarshal[i].id, {
-                                                    width: 500,
-                                                    height: 200
-                                                });
-                                            }
-
-                                            if (jsonMarshal[i].type === "MyConnection") {
-                                                g.setEdge(jsonMarshal[i].source.node, jsonMarshal[i].target.node);
-                                            }
-                                        };
-
-                                        dagre.layout(g);
-
-                                        g.nodes().forEach(function (v) {
-                                            jsonMarshal[v].x = event.x + g.node(v).x;
-                                            jsonMarshal[v].y = event.y + g.node(v).y;
-                                        });
-
-                                        var reader = new draw2d.io.json.Reader();
-                                        reader.unmarshal(app.view, jsonMarshal);
-                                        $('#loader').hide();
-
-                                    });
-                                });
-
-                                // show dialog
-                                dialog.dialog("open");
-                                $('.ui-widget-overlay').bind('click', function () {
-                                    dialog.dialog('destroy').remove();
-                                });
-                            }).fail(function (err) {
-                                $('#loader').hide();
-                                $('#errorer').children().eq(0).html("&nbsp;&nbsp;" + languages[browserLang]["base_no_elements_string"]);
-                                $('#errorer').fadeIn("slow");
-                                setTimeout(function () {
-                                    $('#errorer').fadeOut("slow");
-                                }, 5000);
-                            })
-
-                            break;
-                        default:
-                            break;
-                    }
                 }, this),
                 position: function (opt, x, y) {
                     var scrollTopVal = app.view.getScrollArea().scrollTop();
@@ -916,7 +922,6 @@ example.View = draw2d.Canvas.extend({
                             $(".error-message").text("");
                             $(".error-message").css("margin-bottom", "0px");
                             var condName = $("#" + elem.id + "-name").val();
-                            console.log(name);
                             dialogNewTimeCond(json.times[0].name, condName);
                             $($(".ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix button")[1]).button('enable');
                         }
@@ -1145,7 +1150,7 @@ example.View = draw2d.Canvas.extend({
     },
 
     onDrop: function (droppedDomNode, x, y, shiftKey, ctrlKey) {
-        if (droppedDomNode[0].id !== "app-blackhole" && droppedDomNode[0].id !== "incoming") {
+        if (droppedDomNode[0].id !== "app-blackhole" && droppedDomNode[0].id !== "incoming" && droppedDomNode[0].id !== "from-did-direct") {
             // add context menu
             this.contextMenu();
 
@@ -1164,6 +1169,14 @@ example.View = draw2d.Canvas.extend({
                 data.dropped = droppedDomNode;
 
                 this.createDialog(data);
+            } else if (droppedDomNode[0].id == "from-did-direct") {
+                var data = {};
+                data.x = x;
+                data.y = y;
+                data.context = this;
+                data.dropped = droppedDomNode;
+
+                this.createList("select", "", data);
             } else {
                 var type = $(droppedDomNode[0]).data("shape");
                 var figure = eval("new " + type + "();");
