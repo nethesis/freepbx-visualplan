@@ -81,6 +81,27 @@ example.View = draw2d.Canvas.extend({
 
     contextMenu: function () {
         $('#container').on("contextmenu", function (emitter, event) {
+
+            switch (event.dropped.context.id) {
+                case "from-did-direct":
+                    var contextMenuItems = {
+                        "select": {
+                            name: languages[browserLang]["view_select_exis_string"]
+                        }
+                    }
+                    break;
+            
+                default:
+                    var contextMenuItems = {
+                        "add": {
+                            name: languages[browserLang]["view_add_new_string"]
+                        },
+                        "select": {
+                            name: languages[browserLang]["view_select_exis_string"]
+                        }
+                    }
+                    break;
+            }
             $.contextMenu({
                 selector: 'body',
                 trigger: 'none',
@@ -226,14 +247,7 @@ example.View = draw2d.Canvas.extend({
                         left: event.x / app.view.getZoom() + 95 - scrollLeftVal
                     });
                 },
-                items: {
-                    "add": {
-                        name: languages[browserLang]["view_add_new_string"]
-                    },
-                    "select": {
-                        name: languages[browserLang]["view_select_exis_string"]
-                    }
-                }
+                items: contextMenuItems
             });
         });
     },
