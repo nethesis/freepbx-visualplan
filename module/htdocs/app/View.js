@@ -1188,7 +1188,7 @@ function getHtmlRecordings (elemId) {
   html += '<label for="fileupload" class="label-creation">' + languages[browserLang]["view_upload_recording_string"] + ': </label>';
   html += '<input type="file" name="file1" accept=".mp3,.wav" required="required"/>';
   html += '<div class="rowSectionAnn hide" id="rowUploadBtn">';
-  html += '<label class="label-creation">' + languages[browserLang]["view_upload_recording_string"] + ': </label>';
+  html += '<label class="label-creation"></label>';
   html += '<button title="Upload" name="submit" id="submitFileUpload" ><i class="fa fa-upload"></i></button>';
   html += '</div>';
   html += '</form>';
@@ -1208,9 +1208,9 @@ function getHtmlRecordings (elemId) {
   html += '<i id="checkRecordingBtn" title="' + languages[browserLang]["view_start_recording_string"] + '" class="pointer fa fa-circle red fa-2x vmiddle"></i>';
   html += '<audio controls class="vmiddle"></audio>';
   html += '<div id="newRecordingFilenameSection" class="hide rowSectionAnn">';
-  html += '<label class="label-creation">' + languages[browserLang]["view_filename_string"] + ': </label>';
-  html += '<input type="text" id="recFilename">';
+  html += '<label class="label-creation"></label>';
   html += '<button title="Upload" name="submit" id="submitFileUpload2"><i class="fa fa-upload"></i></button>';
+  html += '<label class="label-rec-filename"></label>';
   html += '</div>';
   html += '<div id="newRecordingNameSection2" class="hide rowSectionAnn">';
   html += '<label class="label-creation">' + languages[browserLang]["view_language_string"] + ': </label>';
@@ -1230,6 +1230,7 @@ function getHtmlRecordings (elemId) {
 var recorder;
 var tempFilename;
 var audioFileName;
+var recordedFilename;
 var recording = false;
 
 
@@ -1260,6 +1261,8 @@ function stopRecording() {
   recorder.stop();
   $('#startRecordingBtn').removeClass('blink');
   $('#newRecordingFilenameSection').show();
+  recordedFilename = new Date().getTime();
+  $('.label-rec-filename').text(recordedFilename + '.wav');
   recorder.exportWAV(function (s) {
     var audio = document.querySelector('audio');
     audio.src = window.URL.createObjectURL(s);
@@ -1385,15 +1388,11 @@ function initRecordingListeners() {
   });
 
   $('#submitFileUpload2').click(function (e) {
-    if ($('#recFilename').val() === '') {
-      $('#recFilename').focus();
-      return;
-    }
     recorder.exportWAV(function (s) {
       var audio = document.querySelector('audio');
       audio.src = window.URL.createObjectURL(s);
       var data = new FormData();
-      var fname = $('#recFilename').val().replace(/[.]/g,'-');
+      var fname = recordedFilename;
       audioFileName = fname + '.wav';
       data.append("file1", s, audioFileName);
       $.ajax({
@@ -1410,14 +1409,6 @@ function initRecordingListeners() {
         console.error(err);
       });
     });
-  });
-
-  $('#startRecordingBtn').click(function (e) {
-      startRecording();
-  });
-
-  $('#stopRecordingBtn').click(function (e) {
-      stopRecording();
   });
 
   $('.addRecordingBtn').click(function (e) {
