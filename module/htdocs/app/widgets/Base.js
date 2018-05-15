@@ -105,64 +105,6 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
         var idType = table.id.split("%")[0];
 
         switch (idType) {
-            case "incoming":
-                label.on("contextmenu", function (emitter, event) {
-                    if (table.children.data.length > 2) {
-                        $.contextMenu({
-                            selector: 'body',
-                            events: {
-                                hide: function () {
-                                    $.contextMenu('destroy');
-                                }
-                            },
-                            callback: $.proxy(function (key, options) {
-                                switch (key) {
-                                    case "delete":
-                                        var cmd = new draw2d.command.CommandDelete(table.children.data[2].figure);
-                                        emitter.getCanvas().getCommandStack().execute(cmd);
-                                        break;
-                                    default:
-                                        break;
-                                }
-                            }, this),
-                            x: event.x + 50,
-                            y: event.y,
-                            items: {
-                                "delete": {
-                                    name: languages[browserLang]["base_delete_night_service_string"]
-                                }
-                            }
-                        });
-                    } else {
-                        $.contextMenu({
-                            selector: 'body',
-                            events: {
-                                hide: function () {
-                                    $.contextMenu('destroy');
-                                }
-                            },
-                            callback: $.proxy(function (key, options) {
-                                switch (key) {
-                                    case "action":
-                                        setTimeout(function () {
-                                            table.addEntity(languages[browserLang]["base_night_service_string"], "output", "false");
-                                        }, 10);
-                                        break;
-                                    default:
-                                        break;
-                                }
-                            }, this),
-                            x: event.x + 50,
-                            y: event.y,
-                            items: {
-                                "action": {
-                                    name: languages[browserLang]["base_add_night_service_string"]
-                                }
-                            }
-                        });
-                    }
-                });
-                break;
             case "ivr":
                 label.on("contextmenu", function (emitter, event) {
                     var items = {};
