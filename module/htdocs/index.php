@@ -30,6 +30,7 @@ if (!isset($_SESSION['AMP_user']) || !$_SESSION['AMP_user']->checkSection('visua
 	<script src="lib/shifty.js"></script>
 	<script src="lib/raphael.js"></script>
 	<script src="lib/jquery-1.10.2.min.js"></script>
+	<script src="lib/adapter-latest.js"></script>
 	<script src="lib/jquery.autoresize.js"></script>
 	<script src="lib/jquery-ui-1.8.23.custom.min.js"></script>
 	<script src="lib/jquery-touch_punch.js"></script>

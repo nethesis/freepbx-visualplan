@@ -1173,7 +1173,10 @@ function getHtmlRecordings (elemId) {
   html += '<form enctype="multipart/form-data" id="form1" method="post">';
   html += '<label for="fileupload" class="label-creation">' + languages[browserLang]["view_upload_recording_string"] + ': </label>';
   html += '<input type="file" name="file1" accept=".mp3,.wav" required="required"/>';
-  html += '<button title="Upload" name="submit" id="submitFileUpload" class="hide"><i class="fa fa-upload"></i></button>';
+  html += '<div class="rowSectionAnn hide" id="rowUploadBtn">';
+  html += '<label class="label-creation">' + languages[browserLang]["view_upload_recording_string"] + ': </label>';
+  html += '<button title="Upload" name="submit" id="submitFileUpload" ><i class="fa fa-upload"></i></button>';
+  html += '</div>';
   html += '</form>';
   html += '<div id="newRecordingNameSection" class="hide">';
   html += '<label class="label-creation">' + languages[browserLang]["view_language_string"] + ': </label>';
@@ -1486,7 +1489,7 @@ function initRecordingListeners() {
 
   $('input[name="file1"]').change(function (e) {
     audioFileName = e.target.files[0].name;
-    $('#submitFileUpload').removeClass('hide');
+    $('#rowUploadBtn').removeClass('hide');
   });
 
   $("form#form1").submit(function(e) {
