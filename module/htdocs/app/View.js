@@ -1282,7 +1282,7 @@ function stopRecording() {
     });
 }
 
-function dialogNewAnn(elemId) {
+function dialogNewAnn(elemId, nameValue) {
     $.ajax({
         url: "./visualize.php?readData=recordings",
         context: document.body,
@@ -1309,11 +1309,14 @@ function dialogNewAnn(elemId) {
         html += '<select usable id="' + elemId + '-recording" class="listRecordingSection input-creation">' + htmlSelect + '</select>';
         html += getHtmlRecordings(elemId);
         $("#modalCreation").html(html);
+        if (nameValue) {
+            $("#" + elemId + "-name").val(nameValue);
+        }
         initRecordingListeners();
     });
 }
 
-function dialogNewCqr(elemId) {
+function dialogNewCqr(elemId, nameValue, descriptionValue) {
     $.ajax({
         url: "./visualize.php?readData=recordings",
         context: document.body,
@@ -1341,11 +1344,17 @@ function dialogNewCqr(elemId) {
         html += '<select usable id="' + elemId + '-recording" class="input-creation">' + htmlSelect + '</select>';
         html += getHtmlRecordings(elemId);
         $("#modalCreation").html(html);
+        if (nameValue) {
+            $("#" + elemId + "-name").val(nameValue);
+        }
+        if (descriptionValue) {
+            $("#" + elemId + "-description").val(descriptionValue);
+        }
         initRecordingListeners();
     });
 }
 
-function dialogNewIvr(elemId) {
+function dialogNewIvr(elemId, nameValue, descriptionValue) {
     $.ajax({
         url: "./visualize.php?readData=recordings",
         context: document.body,
@@ -1373,17 +1382,28 @@ function dialogNewIvr(elemId) {
         html += '<select usable id="' + elemId + '-recording" class="input-creation">' + htmlSelect + '</select>';
         html += getHtmlRecordings(elemId);
         $("#modalCreation").html(html);
+        if (nameValue) {
+            $("#" + elemId + "-name").val(nameValue);
+        }
+        if (descriptionValue) {
+            $("#" + elemId + "-description").val(descriptionValue);
+        }
         initRecordingListeners();
     });
 }
 
 function refreshDialog(elemId) {
     if (elemId === 'app-announcement') {
-        dialogNewAnn(elemId);
+        var nameValue = $("#" + elemId + "-name").val();
+        dialogNewAnn(elemId, nameValue);
     } else if (elemId === 'ivr') {
-        dialogNewIvr(elemId);
+        var nameValue = $("#" + elemId + "-name").val();
+        var descriptionValue = $("#" + elemId + "-description").val();
+        dialogNewIvr(elemId, nameValue, descriptionValue);
     } else if (elemId === 'cqr') {
-        dialogNewCqr(elemId);
+        var nameValue = $("#" + elemId + "-name").val();
+        var descriptionValue = $("#" + elemId + "-description").val();
+        dialogNewCqr(elemId, nameValue, descriptionValue);
     }
 }
 
