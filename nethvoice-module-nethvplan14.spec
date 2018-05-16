@@ -1,5 +1,5 @@
 Name: nethvoice-module-nethvplan14
-Version: 14.0.3
+Version: 14.1.0
 Release: 1%{?dist}
 Summary: Visualplan for NethVoice14
 Group: Network
@@ -39,6 +39,17 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
+* Wed May 16 2018 Stefano Fancello <stefano.fancello@nethesis.it> - 14.1.0-1
+- Remove obsolete night service nethesis/dev#5399
+- Remove obsolete extensions creation nethesis/dev#5398
+- Ring groups: configure Ring Time and Ring Strategy. nethesis/dev#5392
+- Queues: configure Ring Strategy, Max Wait Time and Agent Timeout. nethesis/dev#5392
+- Time Conditions: create/modify Time Groups. nethesis/dev#5392
+- Announcement - IVR - CQR: allow to upload or record messages from browser. nethesis/dev#5392
+- Added link to FreePBX configuration page on objects. nethesis/dev#5392
+- Add username beside extension number in Call Groups and Queues. nethesis/dev#5392
+- Add user name beside the extension number in callgroup & queue
+
 * Mon Mar 19 2018 Stefano Fancello <stefano.fancello@nethesis.it> - 14.0.3-1
 - Version bump
 
