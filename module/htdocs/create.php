@@ -235,23 +235,14 @@ function nethvplan_switchCreate($wType, $value, $connectionArray)
 
             $exists = voicemail_mailbox_get($extension);
             if (empty($exists)) {
-                voicemail_mailbox_add($extension, array(
-                    "vm" => "enabled",
-                    "action" => "add",
-                    "hardware" => "generic",
-                    "tech" => "sip",
-                    "vmcontext" => "default",
-                    "extension" => $extension,
-                    "name" => $name,
-                    "vmx_option_0_system_default" => "checked",
-                    "attach" => "attach=yes",
-                    "saycid" => "saycid=yes",
-                    "envelope" => "envelope=yes",
-                    "delete" => "delete=no"
-                ));
-                $user = core_users_get($extension);
-                core_users_del($extension);
-                core_users_add($user);
+                $user = FreePBX::create()->Userman->getUserByDefaultExtension($extension);
+                $tech = 'pjsip';
+                $data = array();
+                $data['name'] = $name;
+                $data['vmpwd'] = rand(0, 9).rand(0, 9).rand(0, 9).rand(0, 9);
+                $data['email'] = $user['email'];
+                $data['vm'] = 'yes';
+                FreePBX::create()->Voicemail->processQuickCreate($tech, $extension, $data);
             }
         break;
 
