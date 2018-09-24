@@ -625,7 +625,7 @@ example.View = draw2d.Canvas.extend({
                                 "textId": "#textareaExtGroup"
                             }
                         }
-                    }, htmlSelect, /\d+/g);
+                    }, htmlSelect, /\d+(#|)/g);
                 });
                 break;
 
@@ -735,7 +735,7 @@ example.View = draw2d.Canvas.extend({
                                 "textId": "#textareaExtQueue2"
                             }
                         }
-                    }, htmlSelect, /(\d+,\d+)|(\d+)/g);
+                    }, htmlSelect, /\d+(,\d+|)/g);
                 });
                 break;
 
