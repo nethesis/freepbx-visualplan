@@ -325,8 +325,6 @@ function nethvplan_switchCreate($wType, $value, $connectionArray)
                 }
             }
 
-            file_put_contents('text.txt', print_r($value['entities'], true));
-
             $listDynamic = explode("\n", $value['entities'][4]['text']);
 
             $ringStrategy = explode("(", $value['entities'][5]['text']);
