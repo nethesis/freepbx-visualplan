@@ -375,11 +375,11 @@ example.Toolbar = Class.extend({
                 break;
             case "ext-group":
                 node.children.data[1].figure.setText(elems[1].value + ' ( ' + elems[0].value + ' )');
-                node.children.data[3].figure.setText(elems[2].value);
+                node.children.data[3].figure.setText(elems[2].value.match(/\d+(#|)/g).join("\n"));
                 break;
             case "ext-queues":
                 node.children.data[1].figure.setText(elems[1].value + ' ( ' + elems[0].value + ' )');
-                node.children.data[3].figure.setText(elems[2].value);
+                node.children.data[3].figure.setText(elems[2].value.match(/\d+(,\d+|)/g).join("\n"));
                 node.children.data[5].figure.setText(elems[3].value);
                 break;
             case "ivr":

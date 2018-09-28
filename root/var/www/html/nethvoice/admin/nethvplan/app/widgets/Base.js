@@ -51,12 +51,27 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
 
         if (type === "list") {
             if (txt && txt !== "") {
-                var membersCheck = txt.match(/-?\d+/g);
+
+                if (txt.includes('from-queue')) {
+                    txt = txt.replace(/Local\//g, "\n").replace(/@from-queue\/n,0/g, "");
+                }
+                var membersCheck = txt.match(/-?\d+(,\d+|#|)/g);
                 var members = "";
                 if (membersCheck) {
-                    members = txt.replace(/-/g, " ").match(/-?\d+/g).filter(Number);
+                    switch (optionalIndex) {
+                        case 'ext-group':
+                            members = txt.replace(/-/g, " ").match(/\d+(#|)/g);
+                            break;
+                        case 'ext-queues':
+                            members = txt.replace(/-/g, " ").match(/\d+(,\d+|)/g);
+                            break;
+                        default:
+                            members = txt.replace(/-/g, " ").match(/-?\d+(,\d+|#|)/g);
+                            break;
+                    }
                     txt = members.join("\n");
                 }
+
                 if (txt.length == 0) {
                     txt = languages[browserLang]["base_no_elements_string"];
                 }
@@ -520,7 +535,7 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                 }];
                 break;
         }
-        this.setPersistentAttributes(templateObj);
+        this.setPersistentAttributes(templateObj, type);
     },
 
     removeEntity: function(index) {
@@ -555,14 +570,14 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
         return memento;
     },
 
-    setPersistentAttributes: function(memento) {
+    setPersistentAttributes: function(memento, type) {
         this._super(memento);
 
         this.setName(memento.name);
 
         if (typeof memento.entities !== "undefined") {
             $.each(memento.entities, $.proxy(function(i, e) {
-                var entity = this.addEntity(e.text, e.type);
+                var entity = this.addEntity(e.text, e.type, type);
                 entity.id = e.id;
                 if (e.type == "output")
                     entity.getOutputPort(0).setName("output_" + e.id);
