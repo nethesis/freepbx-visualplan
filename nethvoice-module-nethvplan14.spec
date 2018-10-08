@@ -1,5 +1,5 @@
 Name: nethvoice-module-nethvplan14
-Version: 14.1.0
+Version: 14.1.1
 Release: 1%{?dist}
 Summary: Visualplan for NethVoice14
 Group: Network
@@ -39,6 +39,9 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
+* Mon Oct 08 2018 Stefano Fancello <stefano.fancello@nethesis.it> - 14.1.1-1
+- Fix filter group and queue list on save nethesis/dev#5469
+
 * Wed May 16 2018 Stefano Fancello <stefano.fancello@nethesis.it> - 14.1.0-1
 - Remove obsolete night service nethesis/dev#5399
 - Remove obsolete extensions creation nethesis/dev#5398
