@@ -1,5 +1,5 @@
 Name:		nethvoice-module-nethvplan11
-Version: 1.1.3
+Version: 1.1.4
 Release: 1%{?dist}
 Summary:	A module to visualize and edit FreePBX dialplan
 Group:		Networking/Daemons
@@ -41,6 +41,9 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_nseventsdir}/nethvoice-module-nethvplan11-update
 
 %changelog
+* Mon Oct 08 2018 Stefano Fancello <stefano.fancello@nethesis.it> - 1.1.4-1
+- Add filter group and queue list on save. nethesis/dev#5469
+
 * Mon Mar 12 2018 Stefano Fancello <stefano.fancello@nethesis.it> - 1.1.3-1
 - change name nethvoice-module-nethvplan -> nethvoice-module-nethvplan11 and make sure to not update NethVoice14
 
