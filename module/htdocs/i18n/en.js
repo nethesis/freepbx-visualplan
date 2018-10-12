@@ -236,7 +236,12 @@ languages.en = {
     "view_monthdayfinish_string": "Month day finish",
     "view_startuploadingfile_string": "Start Uploading",
     "view_uploadedfile_string": "File Uploaded",
-
     "view_language_string": "Language",
-    "view_filename_string": "File name"
+    "view_filename_string": "File name",
+    "view_tts_string": "Record TTS",
+    "view_tts_button_create_audio": "Create audio file",
+    "view_tts_voice": "Voice",
+    "view_text_tts_string": "Text",
+    "view_description_recording_string": "Description",
+    "view_language_record_tts": "Record TTS"
 };

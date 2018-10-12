@@ -238,5 +238,11 @@ languages.it = {
     "view_uploadedfile_string": "File Caricato",
 
     "view_language_string": "Lingua",
-    "view_filename_string": "Nome file"
+    "view_filename_string": "Nome file",
+    "view_tts_string": "Registra TTS",
+    "view_tts_button_create_audio": "Crea file audio",
+    "view_tts_voice": "Voce",
+    "view_text_tts_string": "Testo",
+    "view_description_recording_string": "Descrizione",
+    "view_language_record_tts": "Registra TTS"
 };

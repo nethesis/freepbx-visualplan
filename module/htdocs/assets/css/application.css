@@ -1013,6 +1013,8 @@ audio {
 
 #newRecordingLangSelect,
 #newRecordingLangSelect2,
+#newRecordingLangSelect3,
+#newRecordingLangSelect4,
 #recFilename {
   width: 176px;
 }
@@ -1034,4 +1036,20 @@ audio {
 
 .label-rec-filename {
   margin-left: 10px;
+}
+
+.input-width {
+  width: 176px;
+}
+
+#sendTextTtsButton {
+  vertical-align: top;
+}
+
+#audioPlayer {
+  display: none !important;
+}
+
+.vertical-align-top {
+  vertical-align: top;
 }

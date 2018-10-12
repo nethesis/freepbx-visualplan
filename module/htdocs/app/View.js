@@ -1191,7 +1191,7 @@ example.View = draw2d.Canvas.extend({
     }
 });
 
-function getHtmlRecordings(elemId) {
+function getHtmlRecordings(elemId, voices) {
     var html = '<button class="addRecordingBtn addButtons"><i class="fa fa-plus"></i></button>';
     html += '<div id="addRecordingSection" class="hide">';
     html += '<hr class="hr-form"><br>';
@@ -1236,8 +1236,38 @@ function getHtmlRecordings(elemId) {
     html += '</select>';
     html += '<button id="saveNewRecordingBtn2" attr-elemid="' + elemId + '" class="addButtonsRecording saveSecElements addButtons" title="' + languages[browserLang]["view_savenewtimegroup_string"] + '"><i class="fa fa-check"></i></button>';
     html += '</div>';
+    html += '<div class="rowSectionAnn">';
+    html += '<hr class="hr-form-inside">';
+    html += '<label class="label-creation"></label>';
+
+    html += '<b>' + languages[browserLang]["view_language_record_tts"] + '</b></br></br>';
+    html += '<label class="label-creation">' + languages[browserLang]["view_language_string"] + ': </label>';
+    html += '<select id="newRecordingLangSelect3">';
+    html += '<option value="it" selected>Italian</option>';
+    html += '<option value="en">English</option>';
+    html += '</select>';
+    html += '<label class="label-creation">' + languages[browserLang]["view_tts_voice"] + ': </label>';
+    html += '<select id="newRecordingLangSelect4">';
+    voices = JSON.parse(voices);
+    for (var v in voices) {
+        html += '<option value="' + voices[v][1] + '">' + voices[v][1] + '</option>';
+    }
+    html += '</select>';
+    html += '</div>';
+    html += '<label class="label-creation">' + languages[browserLang]["view_text_tts_string"] + ': </label>';
+    html += '<textarea id="newRecordTTStext" class="input-width"></textarea>';
+    html += '<button id="sendTextTtsButton" title="' + languages[browserLang]["view_tts_button_create_audio"] + '" class="addButtons"><i class="fa fa-volume-up"></i></button>';
+    html += '<div id="newRecordingNameSection3" class="hide rowSectionAnn">';
+    html += '<label class="label-creation">' + languages[browserLang]["view_name_recording_string"] + ': </label>';
+    html += '<input id="newRecordingName3" type="input">';
+    html += '<label class="label-creation">' + languages[browserLang]["view_description_recording_string"] + ': </label>';
+    html += '<textarea id="newRecordingDescription3" class="input-width"></textarea>';
+    html += '<button id="saveNewRecordingBtn3" attr-elemid="' + elemId + '" class="addButtonsRecording saveSecElements addButtons vertical-align-top" title="' + languages[browserLang]["view_savenewtimegroup_string"] + '"><i class="fa fa-check"></i></button>';
+    html += '<div id="tokenDiv" class="hide"></div>'
     html += '</div>';
     html += '</div>';
+    html += '</div>';
+
     return html;
 }
 
@@ -1246,7 +1276,6 @@ var tempFilename;
 var audioFileName;
 var recordedFilename;
 var recording = false;
-
 
 var onFail = function (e) {
     console.log('Rejected!', e);
@@ -1296,7 +1325,6 @@ function dialogNewAnn(elemId, nameValue, newRecName) {
             $('#loader').show();
         }
     }).done(function (c) {
-        $('#loader').hide();
         var data = JSON.parse(c);
         var htmlSelect = "";
         var selectedOption = "";
@@ -1313,12 +1341,21 @@ function dialogNewAnn(elemId, nameValue, newRecName) {
         html += '<input autofocus value="' + values[0] + '" usable id="' + elemId + '-name" class="input-creation listRecordingSection"></input><div></div>';
         html += '<label class="listRecordingSection label-creation">' + languages[browserLang]["view_recording_string"] + ': </label>';
         html += '<select usable id="' + elemId + '-recording" class="listRecordingSection input-creation">' + htmlSelect + '</select>';
-        html += getHtmlRecordings(elemId);
-        $("#modalCreation").html(html);
-        if (nameValue) {
-            $("#" + elemId + "-name").val(nameValue);
-        }
-        initRecordingListeners();
+     
+        $.ajax({
+            url: "./plugins.php?getType=tools&rest=getvoices&lang=it",
+            context: document.body
+        }).done(function(res) {
+            $('#loader').hide();
+            html += getHtmlRecordings(elemId, res);
+
+            $("#modalCreation").html(html);
+            if (nameValue) {
+                $("#" + elemId + "-name").val(nameValue);
+            }
+
+            initRecordingListeners();
+        });
     });
 }
 
@@ -1330,7 +1367,6 @@ function dialogNewCqr(elemId, nameValue, descriptionValue, newRecName) {
             $('#loader').show();
         }
     }).done(function (c) {
-        $('#loader').hide();
         var data = JSON.parse(c);
         var htmlSelect = "";
         var selectedOption = "";
@@ -1348,15 +1384,24 @@ function dialogNewCqr(elemId, nameValue, descriptionValue, newRecName) {
         html += '<input usable value="' + values[1] + '" id="' + elemId + '-description" class="input-creation listRecordingSection"></input>';
         html += '<label class="label-creation listRecordingSection">' + languages[browserLang]["view_recording_string"] + ': </label>';
         html += '<select usable id="' + elemId + '-recording" class="input-creation listRecordingSection">' + htmlSelect + '</select>';
-        html += getHtmlRecordings(elemId);
-        $("#modalCreation").html(html);
-        if (nameValue) {
-            $("#" + elemId + "-name").val(nameValue);
-        }
-        if (descriptionValue) {
-            $("#" + elemId + "-description").val(descriptionValue);
-        }
-        initRecordingListeners();
+
+        $.ajax({
+            url: "./plugins.php?getType=tools&rest=getvoices&lang=it",
+            context: document.body
+        }).done(function(res) {
+            $('#loader').hide();
+            html += getHtmlRecordings(elemId, res);
+            
+            $("#modalCreation").html(html);
+            if (nameValue) {
+                $("#" + elemId + "-name").val(nameValue);
+            }
+            if (descriptionValue) {
+                $("#" + elemId + "-description").val(descriptionValue);
+            }
+
+            initRecordingListeners();
+        });
     });
 }
 
@@ -1368,7 +1413,6 @@ function dialogNewIvr(elemId, nameValue, descriptionValue, newRecName) {
             $('#loader').show();
         }
     }).done(function (c) {
-        $('#loader').hide();
         var data = JSON.parse(c);
         var htmlSelect = "";
         var selectedOption = "";
@@ -1386,15 +1430,25 @@ function dialogNewIvr(elemId, nameValue, descriptionValue, newRecName) {
         html += '<input usable value="' + values[1] + '" id="' + elemId + '-description" class="input-creation listRecordingSection"></input>';
         html += '<label class="label-creation listRecordingSection">' + languages[browserLang]["view_recording_string"] + ': </label>';
         html += '<select usable id="' + elemId + '-recording" class="input-creation listRecordingSection">' + htmlSelect + '</select>';
-        html += getHtmlRecordings(elemId);
-        $("#modalCreation").html(html);
-        if (nameValue) {
-            $("#" + elemId + "-name").val(nameValue);
-        }
-        if (descriptionValue) {
-            $("#" + elemId + "-description").val(descriptionValue);
-        }
-        initRecordingListeners();
+        
+        $.ajax({
+            url: "./plugins.php?getType=tools&rest=getvoices&lang=it",
+            context: document.body
+        }).done(function(res) {
+
+            $('#loader').hide();
+            $( this ).addClass( "done" );
+            html += getHtmlRecordings(elemId, res);
+
+            $("#modalCreation").html(html);
+            if (nameValue) {
+                $("#" + elemId + "-name").val(nameValue);
+            }
+            if (descriptionValue) {
+                $("#" + elemId + "-description").val(descriptionValue);
+            }
+            initRecordingListeners();
+        });
     });
 }
 
@@ -1467,9 +1521,30 @@ function initRecordingListeners() {
             $('.label-rec-filename').text("");
             $("form#form1 input[type='file'], form#form1 label, #submitFileUpload, #submitFileUpload2").removeAttr('disabled').removeClass('disabled');
             $("#addRecordingSection input").val("");
+            $("#newRecordTTStext").val("");
+            $("#newRecordingDescription3").val("");
             $("#rowUploadBtn").addClass("hide");
             $("#newRecordingNameSection, #newRecordingNameSection2, #newRecordingFilenameSection").hide();
         }
+    });
+
+    $("#saveNewRecordingBtn3").click(function () {
+        var lang = $("#newRecordingLangSelect3").val();
+        var name = $("#newRecordingName3").val();
+        var desc = $("#newRecordingDescription3").val();
+        var token = $("#tokenDiv").attr("content");
+        var elemId = $(this).attr('attr-elemid');
+        var newRecName = $("#newRecordingName3").val();
+
+        $.ajax({
+            url: "./plugins.php",
+            type: "post",
+            data: {"getType": "tools", "rest": "savetts", "lang": lang, "name": name, "desc": desc, "token": token}
+        }).done(function(res) {
+            refreshDialog(elemId, newRecName);
+            $($(".ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix button")[1]).button('enable');
+            $('#addRecordingSection').toggle();
+        });
     });
 
     $('#saveNewRecordingBtn2').click(function (e) {
@@ -1571,4 +1646,48 @@ function initRecordingListeners() {
             console.log(err);
         }
     });
+
+    $("#sendTextTtsButton").click(function () {
+        if ($("#newRecordTTStext").val() !== "") {
+            var lang = $("#newRecordingLangSelect3").val();
+            var voice = $("#newRecordingLangSelect4").val();
+            var text = $("#newRecordTTStext").val();
+            $.ajax({
+                url: "./plugins.php",
+                type: "post",
+                data: {"getType": "tools", "rest": "ttstext", "lang": lang, "voice": voice, "text": text}
+            }).done(function(res) {
+                $("#tokenDiv").attr("content", res.slice(1, -1));
+                $.ajax({
+                    url: "./plugins.php?getType=tools&rest=getaudio&token=" + res.slice(1, -1),
+                    context: document.body
+                }).done(function(res) {
+                    var snd = new Audio("data:audio/mpeg;base64," + res);
+                    snd.play();
+                    $("#sendTextTtsButton").prop("disabled",true).addClass("disabled");
+                    $("#newRecordingNameSection3").removeClass("hide");
+
+                });
+            });
+        }
+    });
+
+    $("#newRecordingLangSelect3").on("change", function(e) {
+        $.ajax({
+            url: "./plugins.php?getType=tools&rest=getvoices&lang=" + e.target.value,
+            context: document.body
+        }).done(function(res) {
+            res = JSON.parse(res);
+            var html = "";
+            for (var l in res) {
+                html += "<option value='" + res[l][1] + "'>" + res[l][1] +  "</option>";
+            }
+            $("#newRecordingLangSelect4").html(html);
+        });
+    });
+
+    $('#newRecordTTStext').bind('input propertychange', function() {
+        $("#sendTextTtsButton").prop("disabled", false).removeClass("disabled");
+    });
+
 }
