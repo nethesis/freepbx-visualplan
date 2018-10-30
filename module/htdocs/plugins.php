@@ -34,129 +34,165 @@ if ($handle = opendir(__DIR__. '/../..')) {
     closedir($handle);
 }
 
-if ($_POST['jsonData']) {
-    $json = $_POST['jsonData'];
-}
+$reqGet = $_GET['getType'];
+$reqPost = $_POST['getType'];
 
-if ($json) {
-    $json = base64_decode($json);
-    $jsonArray = json_decode($json, true);
-    $type = $jsonArray['type'];
-    $rest = $jsonArray['rest'];
 
-    switch ($type) {
-        case 'timegroup':
+if ($reqGet && ($reqGet === "tools")) {
+    switch ($_GET['rest']) {
+        case 'getvoices':
+            $res = googletts_getAvailableVoices($_GET['lang']);
+            echo json_encode($res);
+            break;
 
-            if ($rest == "get") {
-
-                $select = FreePBX::Timeconditions()->getTimeGroup($jsonArray['id']);
-                $dbh = FreePBX::Database();
-                $sql = "SELECT * FROM timegroups_details WHERE timegroupid = ".$jsonArray['id'];
-                $final = $dbh->sql($sql, 'getAll', \PDO::FETCH_ASSOC);
-
-                if ($final) {
-
-                    foreach ($final as $key => $value) {
-
-                        $explode = explode("|", $value["time"]);
-
-                        $times = explode("-", $explode[0]);
-                        $wdays = explode("-", $explode[1]);
-                        $mdays = explode("-", $explode[2]);
-                        $months = explode("-", $explode[3]);
-                        
-                        $times_start = explode(":", $times[0]);
-
-                        $final[$key]["hour_start"] = trim($times_start[0], " ");
-                        $spliths = str_split($final[$key]["hour_start"]); 
-                        if ($spliths[0] == "0") {
-                            $final[$key]["hour_start"] = $spliths[1];
-                        }
-                        
-                        $final[$key]["minute_start"] = trim($times_start[1], " ");
-                        $splitms = str_split($final[$key]["minute_start"]); 
-                        if ($splitms[0] == "0") {
-                            $final[$key]["minute_start"] = $splitms[1];
-                        }
-
-                        if ($times[1]) {
-                            $times_finish = explode(":", $times[1]);
-                            $final[$key]["hour_finish"] = trim($times_finish[0], " ");
-                            $final[$key]["minute_finish"] = trim($times_finish[1], " ");
-                        } else {
-                            $final[$key]["hour_finish"] = trim($times_start[0], " ");
-                            $final[$key]["minute_finish"] = trim($times_start[1], " ");
-                        }
-
-                        $splithf = str_split($final[$key]["hour_finish"]); 
-                        if ($splithf[0] == "0") {
-                            $final[$key]["hour_finish"] = $splithf[1];
-                        }
-                        $splitmf = str_split($final[$key]["minute_finish"]); 
-                        if ($splitmf[0] == "0") {
-                            $final[$key]["minute_finish"] = $splitmf[1];
-                        }
-
-                        $final[$key]["wday_start"] = trim($wdays[0], " ");
-                        if ($wdays[1]) {
-                            $final[$key]["wday_finish"] = trim($wdays[1], " ");
-                        } else {
-                            $final[$key]["wday_finish"] = trim($wdays[0], " ");
-                        }
-
-                        $final[$key]["mday_start"] = trim($mdays[0], " ");
-                        if ($wdays[1]) {
-                            $final[$key]["mday_finish"] = trim($mdays[1], " ");
-                        } else {
-                            $final[$key]["mday_finish"] = trim($mdays[0], " ");
-                        }
-
-                        $final[$key]["month_start"] = trim($months[0], " ");
-                        if ($wdays[1]) {
-                            $final[$key]["month_finish"] = trim($months[1], " ");
-                        } else {
-                            $final[$key]["month_finish"] = trim($months[0], " ");
-                        }
-                    }
-                }
-
-                echo json_encode($final);
-
-            } else if ($rest == "set") {
-
-                $addedTime = FreePBX::Timeconditions()->addTimeGroup($jsonArray["times"][0]['name'], $jsonArray["times"]);
-                echo json_encode($addedTime);
-
-            } else if ($rest == "update") {
-
-                $updateName = FreePBX::Timeconditions()->editTimeGroup( $jsonArray['id'], $jsonArray["times"][0]['name'] );
-                $updateTime = FreePBX::Timeconditions()->editTimes( $jsonArray['id'], $jsonArray["times"] );
-                echo json_encode($updateName);
-
-            }
-
+        case 'getaudio':
+            $res = googletts_get_unsaved_audio($_GET['token']);
+            echo $res;
             break;
         
         default:
-            # code...
             break;
+    }    
+} else if ($reqPost && ($reqPost === "tools")) {
+    switch ($_POST['rest']) {
+        case 'ttstext':
+            $res = googletts_tts($_POST['text'], $_POST['lang'], $_POST['voice']);
+            echo json_encode($res);
+            break;
+
+        case 'savetts':
+            $res = googletts_save_recording($_POST['token'], $_POST['lang'], $_POST['name'], $_POST['desc']);
+            echo $res;
+            break;
+        
+        default:
+            break;
+    }    
+} else {
+
+    if ($_POST['jsonData']) {
+        $json = $_POST['jsonData'];
     }
     
-} else {
-    $timevar = time();
-    $path = "/var/spool/asterisk/tmp/";
-    $valid_formats1 = array("mp3", "wav");
-    if ($_SERVER['REQUEST_METHOD'] == "POST") {
-      $filename = $_FILES['file1']['name'];
-      $size = $_FILES['file1']['size'];
-      if(strlen($filename)) {
-        list($txt, $ext) = explode(".", $filename);
-        if(in_array($ext,$valid_formats1)) {
-          $actual_image_name = $timevar."-".$txt.".".$ext;
-          $tmp = $_FILES['file1']['tmp_name'];
-          move_uploaded_file($tmp, $path.$actual_image_name);
+    if ($json) {
+        $json = base64_decode($json);
+        $jsonArray = json_decode($json, true);
+        $type = $jsonArray['type'];
+        $rest = $jsonArray['rest'];
+    
+        switch ($type) {
+            case 'timegroup':
+    
+                if ($rest == "get") {
+    
+                    $select = FreePBX::Timeconditions()->getTimeGroup($jsonArray['id']);
+                    $dbh = FreePBX::Database();
+                    $sql = "SELECT * FROM timegroups_details WHERE timegroupid = ".$jsonArray['id'];
+                    $final = $dbh->sql($sql, 'getAll', \PDO::FETCH_ASSOC);
+    
+                    if ($final) {
+    
+                        foreach ($final as $key => $value) {
+    
+                            $explode = explode("|", $value["time"]);
+    
+                            $times = explode("-", $explode[0]);
+                            $wdays = explode("-", $explode[1]);
+                            $mdays = explode("-", $explode[2]);
+                            $months = explode("-", $explode[3]);
+                            
+                            $times_start = explode(":", $times[0]);
+    
+                            $final[$key]["hour_start"] = trim($times_start[0], " ");
+                            $spliths = str_split($final[$key]["hour_start"]); 
+                            if ($spliths[0] == "0") {
+                                $final[$key]["hour_start"] = $spliths[1];
+                            }
+                            
+                            $final[$key]["minute_start"] = trim($times_start[1], " ");
+                            $splitms = str_split($final[$key]["minute_start"]); 
+                            if ($splitms[0] == "0") {
+                                $final[$key]["minute_start"] = $splitms[1];
+                            }
+    
+                            if ($times[1]) {
+                                $times_finish = explode(":", $times[1]);
+                                $final[$key]["hour_finish"] = trim($times_finish[0], " ");
+                                $final[$key]["minute_finish"] = trim($times_finish[1], " ");
+                            } else {
+                                $final[$key]["hour_finish"] = trim($times_start[0], " ");
+                                $final[$key]["minute_finish"] = trim($times_start[1], " ");
+                            }
+    
+                            $splithf = str_split($final[$key]["hour_finish"]); 
+                            if ($splithf[0] == "0") {
+                                $final[$key]["hour_finish"] = $splithf[1];
+                            }
+                            $splitmf = str_split($final[$key]["minute_finish"]); 
+                            if ($splitmf[0] == "0") {
+                                $final[$key]["minute_finish"] = $splitmf[1];
+                            }
+    
+                            $final[$key]["wday_start"] = trim($wdays[0], " ");
+                            if ($wdays[1]) {
+                                $final[$key]["wday_finish"] = trim($wdays[1], " ");
+                            } else {
+                                $final[$key]["wday_finish"] = trim($wdays[0], " ");
+                            }
+    
+                            $final[$key]["mday_start"] = trim($mdays[0], " ");
+                            if ($wdays[1]) {
+                                $final[$key]["mday_finish"] = trim($mdays[1], " ");
+                            } else {
+                                $final[$key]["mday_finish"] = trim($mdays[0], " ");
+                            }
+    
+                            $final[$key]["month_start"] = trim($months[0], " ");
+                            if ($wdays[1]) {
+                                $final[$key]["month_finish"] = trim($months[1], " ");
+                            } else {
+                                $final[$key]["month_finish"] = trim($months[0], " ");
+                            }
+                        }
+                    }
+    
+                    echo json_encode($final);
+    
+                } else if ($rest == "set") {
+    
+                    $addedTime = FreePBX::Timeconditions()->addTimeGroup($jsonArray["times"][0]['name'], $jsonArray["times"]);
+                    echo json_encode($addedTime);
+    
+                } else if ($rest == "update") {
+    
+                    $updateName = FreePBX::Timeconditions()->editTimeGroup( $jsonArray['id'], $jsonArray["times"][0]['name'] );
+                    $updateTime = FreePBX::Timeconditions()->editTimes( $jsonArray['id'], $jsonArray["times"] );
+                    echo json_encode($updateName);
+    
+                }
+    
+                break;
+            
+            default:
+                break;
         }
-      }
+        
+    } else {
+        $timevar = time();
+        $path = "/var/spool/asterisk/tmp/";
+        $valid_formats1 = array("mp3", "wav");
+        if ($_SERVER['REQUEST_METHOD'] == "POST") {
+          $filename = $_FILES['file1']['name'];
+          $size = $_FILES['file1']['size'];
+          if(strlen($filename)) {
+            list($txt, $ext) = explode(".", $filename);
+            if(in_array($ext,$valid_formats1)) {
+              $actual_image_name = $timevar."-".$txt.".".$ext;
+              $tmp = $_FILES['file1']['tmp_name'];
+              move_uploaded_file($tmp, $path.$actual_image_name);
+            }
+          }
+        }
+        echo $timevar."-".$filename;
     }
-    echo $timevar."-".$filename;
-}
+} 
