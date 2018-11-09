@@ -1239,8 +1239,13 @@ function getHtmlRecordings(elemId, voices) {
     html += '<div class="rowSectionAnn">';
     html += '<hr class="hr-form-inside">';
     html += '<label class="label-creation"></label>';
-
     html += '<b>' + languages[browserLang]["view_language_record_tts"] + '</b></br></br>';
+    html += '<div id="ttsKeyContainer">';
+    html += '<label id="labelApiKey" class="label-creation">' + languages[browserLang]["view_name_googlekey_label"] + ': </label>';
+    html += '<input id="googleApiKey" type="input">';
+    html += '<button id="setKeyTtsButton" title="' + languages[browserLang]["view_tts_button_set_key"] + '" class="addButtons"><i class="fa fa-key"></i></button>';
+    html += '</div>';
+    html += '<div id="ttsFormContainer">';
     html += '<label class="label-creation">' + languages[browserLang]["view_language_string"] + ': </label>';
     html += '<select id="newRecordingLangSelect3">';
     html += '<option value="it" selected>Italian</option>';
@@ -1253,7 +1258,6 @@ function getHtmlRecordings(elemId, voices) {
         html += '<option value="' + voices[v][1] + '">' + voices[v][1] + '</option>';
     }
     html += '</select>';
-    html += '</div>';
     html += '<label class="label-creation">' + languages[browserLang]["view_text_tts_string"] + ': </label>';
     html += '<textarea id="newRecordTTStext" class="input-width"></textarea>';
     html += '<button id="sendTextTtsButton" title="' + languages[browserLang]["view_tts_button_create_audio"] + '" class="addButtons"><i class="fa fa-volume-up"></i></button>';
@@ -1264,6 +1268,7 @@ function getHtmlRecordings(elemId, voices) {
     html += '<textarea id="newRecordingDescription3" class="input-width"></textarea>';
     html += '<button id="saveNewRecordingBtn3" attr-elemid="' + elemId + '" class="addButtonsRecording saveSecElements addButtons vertical-align-top" title="' + languages[browserLang]["view_savenewtimegroup_string"] + '"><i class="fa fa-check"></i></button>';
     html += '<div id="tokenDiv" class="hide"></div>'
+    html += '</div>';
     html += '</div>';
     html += '</div>';
     html += '</div>';
@@ -1469,6 +1474,32 @@ function refreshDialog(elemId, newRecName) {
 
 function initRecordingListeners() {
 
+    $.ajax({
+        url: "./plugins.php?getType=tools&rest=getkey",
+        context: document.body
+    }).done(function(res) {
+        res = JSON.parse(res);
+        if (res["API_KEY"]) {
+            $("#ttsKeyContainer").hide();
+        } else {
+            $("#ttsFormContainer").hide();
+        }
+    });
+
+    $("#setKeyTtsButton").click(function () {
+        var key = $("#googleApiKey").val();
+        if (key != "") {
+            $.ajax({
+                url: "./plugins.php",
+                type: "post",
+                data: {"getType": "tools", "rest": "savekey", "key": key}
+            }).done(function(res) {
+                $("#ttsKeyContainer").hide();
+                $("#ttsFormContainer").show();
+            });
+        }
+    });
+
     $('#checkRecordingBtn').click(function (e) {
         if (!recording) {
             $('#checkRecordingBtn').removeClass('fa-circle').addClass('fa-square blink').attr('title', languages[browserLang]["view_stop_recording_string"]);
@@ -1657,11 +1688,13 @@ function initRecordingListeners() {
                 type: "post",
                 data: {"getType": "tools", "rest": "ttstext", "lang": lang, "voice": voice, "text": text}
             }).done(function(res) {
+
                 $("#tokenDiv").attr("content", res.slice(1, -1));
                 $.ajax({
                     url: "./plugins.php?getType=tools&rest=getaudio&token=" + res.slice(1, -1),
                     context: document.body
                 }).done(function(res) {
+
                     var snd = new Audio("data:audio/mpeg;base64," + res);
                     snd.play();
                     $("#sendTextTtsButton").prop("disabled",true).addClass("disabled");

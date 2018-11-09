@@ -243,5 +243,7 @@ languages.en = {
     "view_tts_voice": "Voice",
     "view_text_tts_string": "Text",
     "view_description_recording_string": "Description",
-    "view_language_record_tts": "Record TTS"
+    "view_language_record_tts": "Record TTS",
+    "view_name_googlekey_label" : "Google API Key",
+    "view_tts_button_set_key": "Set key"
 };
