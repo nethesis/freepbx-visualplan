@@ -50,6 +50,9 @@ if ($reqGet && ($reqGet === "tools")) {
             echo $res;
             break;
         
+        case 'getkey':
+            $res = googletts_get_options();
+            echo json_encode($res);
         default:
             break;
     }    
@@ -64,7 +67,10 @@ if ($reqGet && ($reqGet === "tools")) {
             $res = googletts_save_recording($_POST['token'], $_POST['lang'], $_POST['name'], $_POST['desc']);
             echo $res;
             break;
-        
+
+        case 'savekey':
+            $res = googletts_set_option("API_KEY", $_POST['key']);
+            echo $res;
         default:
             break;
     }    

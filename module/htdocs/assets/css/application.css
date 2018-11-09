@@ -1053,3 +1053,7 @@ audio {
 .vertical-align-top {
   vertical-align: top;
 }
+
+#setKeyTtsButton {
+  height: 22px;
+}

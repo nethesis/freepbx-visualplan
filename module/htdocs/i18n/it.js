@@ -244,5 +244,7 @@ languages.it = {
     "view_tts_voice": "Voce",
     "view_text_tts_string": "Testo",
     "view_description_recording_string": "Descrizione",
-    "view_language_record_tts": "Registra TTS"
+    "view_language_record_tts": "Registra TTS",
+    "view_name_googlekey_label" : "API Key Google",
+    "view_tts_button_set_key": "Imposta chiave"
 };
