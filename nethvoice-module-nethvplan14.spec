@@ -1,5 +1,5 @@
 Name: nethvoice-module-nethvplan14
-Version: 14.1.1
+Version: 14.1.2
 Release: 1%{?dist}
 Summary: Visualplan for NethVoice14
 Group: Network
@@ -39,6 +39,9 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
+* Mon Nov 12 2018 Stefano Fancello <stefano.fancello@nethesis.it> - 14.1.2-1
+- Add tts to create audio nethesis/dev#5491
+
 * Mon Oct 08 2018 Stefano Fancello <stefano.fancello@nethesis.it> - 14.1.1-1
 - Fix filter group and queue list on save nethesis/dev#5469
 
