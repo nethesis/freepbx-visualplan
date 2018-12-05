@@ -852,7 +852,7 @@ footer a:hover {
 
 .input-creation {
   display: inline-block;
-  min-width: 180px;
+  width: 180px;
   margin-bottom: 14px;
 }
 
@@ -1056,4 +1056,12 @@ audio {
 
 #setKeyTtsButton {
   height: 22px;
+}
+
+.bottom-small {
+  margin-bottom: 17px;
+}
+
+.error-border {
+  border: 1px solid rgb(255, 97, 97);
 }

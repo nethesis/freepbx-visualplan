@@ -1240,6 +1240,8 @@ function getHtmlRecordings(elemId, voices) {
     html += '<hr class="hr-form-inside">';
     html += '<label class="label-creation"></label>';
     html += '<b>' + languages[browserLang]["view_language_record_tts"] + '</b></br></br>';
+    html += '<p id="errorMsgApy" class="error-message bottom-small hide">' + languages[browserLang]["view_tts_error_1"] + '.</p>';
+    html += '<p id="errorMsgListen" class="error-message bottom-small hide">' + languages[browserLang]["view_tts_error_2"] + '.</p>';
     html += '<div id="ttsKeyContainer">';
     html += '<label id="labelApiKey" class="label-creation">' + languages[browserLang]["view_name_googlekey_label"] + ': </label>';
     html += '<input id="googleApiKey" type="input">';
@@ -1473,7 +1475,6 @@ function refreshDialog(elemId, newRecName) {
 }
 
 function initRecordingListeners() {
-
     $.ajax({
         url: "./plugins.php?getType=tools&rest=getkey",
         context: document.body
@@ -1494,6 +1495,9 @@ function initRecordingListeners() {
                 type: "post",
                 data: {"getType": "tools", "rest": "savekey", "key": key}
             }).done(function(res) {
+                apiKey = key;
+                $("#errorMsgApy").hide();
+                $("#newRecordTTStext").removeClass("error-border");
                 $("#ttsKeyContainer").hide();
                 $("#ttsFormContainer").show();
             });
@@ -1688,18 +1692,31 @@ function initRecordingListeners() {
                 type: "post",
                 data: {"getType": "tools", "rest": "ttstext", "lang": lang, "voice": voice, "text": text}
             }).done(function(res) {
-
+                $("#errorMsgApy").hide();
+                $("#newRecordTTStext").removeClass("error-border");
                 $("#tokenDiv").attr("content", res.slice(1, -1));
                 $.ajax({
                     url: "./plugins.php?getType=tools&rest=getaudio&token=" + res.slice(1, -1),
                     context: document.body
                 }).done(function(res) {
-
+                    $("#errorMsgListen").hide();
                     var snd = new Audio("data:audio/mpeg;base64," + res);
                     snd.play();
                     $("#sendTextTtsButton").prop("disabled",true).addClass("disabled");
                     $("#newRecordingNameSection3").removeClass("hide");
-
+                }).fail(function(err) {
+                    $("#errorMsgListen").show();
+                });
+            }).fail(function(err) {
+                $("#errorMsgApy").show();
+                $("#newRecordTTStext").addClass("error-border");
+                $("#ttsKeyContainer").show();
+                $.ajax({
+                    url: "./plugins.php?getType=tools&rest=getkey",
+                    context: document.body
+                }).done(function(res) {
+                    res = JSON.parse(res);
+                    $("#googleApiKey").val(res["API_KEY"]);
                 });
             });
         }
