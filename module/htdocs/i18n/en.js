@@ -245,5 +245,7 @@ languages.en = {
     "view_description_recording_string": "Description",
     "view_language_record_tts": "Record TTS",
     "view_name_googlekey_label" : "Google API Key",
-    "view_tts_button_set_key": "Set key"
+    "view_tts_button_set_key": "Set key",
+    "view_tts_error_1": "Error creating audio file, check the api key and the internet connection",
+    "view_tts_error_2": "Error listening the audio"
 };

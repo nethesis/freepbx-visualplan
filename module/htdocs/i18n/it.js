@@ -236,7 +236,6 @@ languages.it = {
     "view_monthdayfinish_string": "Fine del mese",
     "view_startuploadingfile_string": "Inizia Caricamento",
     "view_uploadedfile_string": "File Caricato",
-
     "view_language_string": "Lingua",
     "view_filename_string": "Nome file",
     "view_tts_string": "Registra TTS",
@@ -246,5 +245,7 @@ languages.it = {
     "view_description_recording_string": "Descrizione",
     "view_language_record_tts": "Registra TTS",
     "view_name_googlekey_label" : "API Key Google",
-    "view_tts_button_set_key": "Imposta chiave"
+    "view_tts_button_set_key": "Imposta chiave",
+    "view_tts_error_1": "Errore durante la creazione del file audio, controllare la chiave API e la connessione a internet",
+    "view_tts_error_2": "Errore durante l'ascolto dell'audio"
 };
