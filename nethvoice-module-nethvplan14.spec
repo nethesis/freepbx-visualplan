@@ -1,5 +1,5 @@
 Name: nethvoice-module-nethvplan14
-Version: 14.1.2
+Version: 14.1.4
 Release: 1%{?dist}
 Summary: Visualplan for NethVoice14
 Group: Network
@@ -39,6 +39,9 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
+* Mon Jan 07 2019 Stefano Fancello <stefano.fancello@nethesis.it> - 14.1.4-1
+- Add tts fail if api returns 200 but false nethesis/dev#5529
+
 * Mon Nov 12 2018 Stefano Fancello <stefano.fancello@nethesis.it> - 14.1.2-1
 - Add tts to create audio nethesis/dev#5491
 
