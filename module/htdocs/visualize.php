@@ -1,10 +1,18 @@
 <?php
 
+/**
+ * This script is used to:
+ * - extract asterisk elements informations using the freepbx functions and
+ * - return the object used by draw2D library
+ * - render the figures in the visualplan
+ */
+
+// INCLUDE FREEPBX FUNCTIONS
 if (!@include_once(getenv('FREEPBX_CONF') ? getenv('FREEPBX_CONF') : '/etc/freepbx.conf')) {
     include_once('/etc/asterisk/freepbx.conf');
 }
 
-/*check auth*/
+// check auth
 session_start();
 if (!isset($_SESSION['AMP_user']) || !$_SESSION['AMP_user']->checkSection('visualplan')) {
     exit(1);
@@ -13,7 +21,7 @@ if (!isset($_SESSION['AMP_user']) || !$_SESSION['AMP_user']->checkSection('visua
 // bypass freepbx authentication
 define('FREEPBX_IS_AUTH', 1);
 
-// Include all installed modules class
+// include all installed modules class
 if ($handle = opendir(__DIR__. '/../..')) {
     while (false !== ($entry = readdir($handle))) {
         if ($entry != "." && $entry != "..") {
@@ -46,48 +54,19 @@ $langParts = explode("=", $languages);
 $language = trim($langParts[1]);
 $langArray = json_decode($language, true);
 
+/**
+ *  GET ELEMENTS ALL DATA AND CREATE DATA OBJECT 
+ */
 
-// night service - night,810,1
-if (function_exists("nethnight_list")) {
-    $get_data = nethnight_list();
-    $night_is_installed = true;
-    foreach ($get_data as $key => $row) {
-        $data['night'][$row['night_id']] = array(
-            "name" => $row['displayname'],
-            "id" => $row['night_id'],
-            "dest" => $row['didaction'],
-            "timebegin" => $row['tsbegin'],
-            "timeend" => $row['tsend'],
-            "enabled" => $row['enabled']
-        );
-    }
-} else {
-    $night_is_installed = false;
-}
-
-// incoming data
+// incoming data (inbound routes)
 $get_data = FreePBX::Core()->getAllDIDs('extension');
 foreach ($get_data as $key => $row) {
     if ($row['cidnum'] != "") {
         $data['incoming'][$row['extension']." / ".$row['cidnum']]['destination'] = $row['destination'];
         $data['incoming'][$row['extension']." / ".$row['cidnum']]['description'] = $row['description'];
-
-        if ($night_is_installed) {
-            $night_service = nethnight_get_fromdid($row['extension']."/".$row['cidnum']);
-            if ($night_service) {
-                $data['incoming'][$row['extension']." / ".$row['cidnum']]['night'] = $data['night'][$night_service['night_id']];
-            }
-        }
     } else {
         $data['incoming'][$row['extension']." / "]['destination'] = $row['destination'];
         $data['incoming'][$row['extension']." / "]['description'] = $row['description'];
-
-        if ($night_is_installed) {
-            $night_service = nethnight_get_fromdid($row['extension']."/");
-            if ($night_service) {
-                $data['incoming'][$row['extension']." / "]['night'] = $data['night'][$night_service['night_id']];
-            }
-        }
     }
 }
 
@@ -118,11 +97,15 @@ $get_data = FreePBX::Ivr()->getDetails();
 foreach ($get_data as $key => $row) {
     $data['ivr'][$row['id']]["name"] = $row['name'];
     $data['ivr'][$row['id']]["id"] = $row['id'];
+    $data['ivr'][$row['id']]["userData"] = array(
+        "id" => $row['id'],
+        "description" => $row['description'],
+        "announcement" => $row['announcement']
+    );
     $data['ivr'][$row['id']]["description"] = $row['description'];
     $data['ivr'][$row['id']]["announcement"] = $row['announcement'];
     $data['ivr'][$row['id']]["invalid_destination"] = $row['invalid_destination'];
     $data['ivr'][$row['id']]["timeout_destination"] = $row['timeout_destination'];
-
     $selection_data = ivr_get_entries($row['id']);
     foreach ($selection_data as $key => $value) {
         $data['ivr'][$row['id']]['selections'][$value['selection']] = array(
@@ -137,6 +120,11 @@ $get_cqr = nethcqr_get_details();
 foreach ($get_cqr as $row) {
     $data['cqr'][$row['id_cqr']]["id"] = $row['id_cqr'];
     $data['cqr'][$row['id_cqr']]["name"] = $row['name'];
+    $data['cqr'][$row['id_cqr']]["userData"] = array(
+        "id" => $row['id_cqr'],
+        "description" => $row['description'],
+        "announcement" => $row['announcement']
+    );
     $data['cqr'][$row['id_cqr']]["description"] = $row['description'];
     $data['cqr'][$row['id_cqr']]["announcement"] = $row['announcement'];
     $data['cqr'][$row['id_cqr']]["default_destination"] = $row['default_destination'];
@@ -150,10 +138,14 @@ foreach ($get_cqr as $row) {
     }
 }
 
+// time conditions
 $get_data = FreePBX::Timeconditions()->listTimeconditions(false);
 foreach ($get_data as $key => $row) {
     $data['timeconditions'][$row['timeconditions_id']] = array(
         "displayname" => $row['displayname'],
+        "userData" => array(
+            "id" => $row['timeconditions_id']
+        ),
         "time" => $row['time'],
         "truegoto" => $row['truegoto'],
         "falsegoto" => $row['falsegoto']
@@ -172,6 +164,9 @@ $get_data = FreePBX::Announcement()->getAnnouncements();
 foreach ($get_data as $key => $row) {
     $rec_details = recordings_get($row['recording_id']);
     $data['app-announcement'][$row['announcement_id']] = array(
+        "userData" => array(
+            "id" => $row['announcement_id']
+        ),
         "description" => $row['description'],
         "id" => $row['announcement_id'],
         "postdest" => $row['post_dest'],
@@ -240,7 +235,8 @@ foreach ($get_data as $key => $row) {
 }
 $data['codeavailable'] = daynight_get_avail();
 
-$widgets = array();
+// INITIALIZE DRAW2D OBJECT COMPONENTS
+$widgets = array(); // 
 $connections = array();
 $destArray = array();
 
@@ -251,7 +247,7 @@ $widgetTemplate = array(
     "userData"=> array(),
     "bgColor"=> "#95a5a6",
     "radius"=> "20"
- );
+);
 $connectionTemplate = array(
     "type"=> "MyConnection",
     "userData"=> array(),
@@ -270,6 +266,7 @@ $connectionTemplate = array(
     )
  );
 
+// START HANDLING REQUESTS
 foreach ($_GET as $key => $value) {
     switch ($key) {
 
@@ -356,31 +353,6 @@ foreach ($_GET as $key => $value) {
                 // start exploring of connections
                 nethvplan_explore($data, $destination, $destArray);
 
-                if ($data['incoming'][$id]['night']) {
-                    // get destination field and id
-                    $res = nethvplan_getDestination("night,8".$data['incoming'][$id]['night']['id']."0,1");
-                    $dest = $res[0];
-                    $idDest = $res[1];
-
-                    $connection = $connectionTemplate;
-                    $connection['id'] = "incoming%".$id."="."night,8".$data['incoming'][$id]['night']['id']."0,1";
-                    $connection['source'] = array(
-                        "node"=> "incoming%".$id,
-                        "port"=> "output_night_service%".$id
-                    );
-                    $connection['target'] = array(
-                        "node"=> $dest."%".$idDest,
-                        "port"=> "input_".$dest."%".$idDest,
-                        "decoration"=> "draw2d.decoration.connection.ArrowDecorator"
-                    );
-
-                    // add connection
-                    array_push($connections, $connection);
-
-                    // start exploring of connections
-                    nethvplan_explore($data, "night,8".$data['incoming'][$id]['night']['id']."0,1", $destArray);
-                }
-
                 $widget = nethvplan_bindData($data, "incoming", $id);
                 // add widget
                 array_push($widgets, $widget);
@@ -395,6 +367,10 @@ foreach ($_GET as $key => $value) {
                 }
             }
             $merged = $result;
+
+            // echo("CIAO");
+            // print_r($merged);
+
             print_r(/*nethvplan_json_pretty(*/json_encode($merged, true));
         break;
     }
@@ -465,16 +441,26 @@ function nethvplan_timeZoneOffset()
     return $offset;
 }
 
-// create widget from destination name
+/**
+ * @method
+ * 
+ * Creates draw2D objects for figures creation.
+ * 
+ * @param {Object} $data - All asterisk elements data.
+ * @param {string} $dest - The element destination/name.
+ * @param {string} $id - The element id .
+ **/
 function nethvplan_bindData($data, $dest, $id)
 {
     global $langArray;
     global $widgetTemplate;
     $widget = $widgetTemplate;
+    if (!empty($data[$dest][$id]['userData'])) {
+        $widget['userData'] = $data[$dest][$id]['userData'];        
+    }
 
     switch ($dest) {
         case "incoming":
-            $widget = $widgetTemplate;
             $widget['type'] = "Base";
             $widget['id'] = "incoming%".$id;
             $widget['radius'] = "20";
@@ -495,13 +481,6 @@ function nethvplan_bindData($data, $dest, $id)
               "destination"=> "",
               "cssClass"=> "link"
             );
-            if ($data['incoming'][$id]['night']) {
-                $widget['entities'][] = array(
-                    "text"=> $langArray["base_night_service_string"],
-                    "id"=> "night_service%".$id,
-                    "type"=> "output"
-                );
-            }
         break;
         
         case "from-did-direct":
@@ -527,7 +506,6 @@ function nethvplan_bindData($data, $dest, $id)
         break;
         
         case "ext-meetme":
-            $widget = $widgetTemplate;
             $widget['type'] = "Base";
             $widget['radius'] = "20";
             $widget['bgColor'] = "#65c6bb";
@@ -550,7 +528,6 @@ function nethvplan_bindData($data, $dest, $id)
         break;
         
         case "app-blackhole":
-            $widget = $widgetTemplate;
             $widget['type'] = "Base";
             $widget['radius'] = "20";
             $widget['bgColor'] = "#cf000f";
@@ -568,7 +545,6 @@ function nethvplan_bindData($data, $dest, $id)
         case "ext-local":
             $idUsers = substr($id, 3);
 
-            $widget = $widgetTemplate;
             $widget['type'] = "Base";
             $widget['radius'] = "20";
             $widget['bgColor'] = "#16a085";
@@ -593,50 +569,7 @@ function nethvplan_bindData($data, $dest, $id)
             );
         break;
         
-        case "night":
-            $widget = $widgetTemplate;
-            $widget['type'] = "Base";
-            $widget['radius'] = "0";
-            $widget['bgColor'] = "#34495e";
-            $widget['id'] = $dest."%".$id;
-            $widget['x'] = $xPos;
-            $widget['y'] = $yPos;
-            $widget['name'] = $langArray["base_night_service_string"];
-            $widget['entities'][] = array(
-                "text"=> $data[$dest][$id]['name'] ." - ".$id,
-                "id"=> $dest."%".$id,
-                "type"=> "input"
-            );
-
-            $offsetTime = nethvplan_timeZoneOffset();
-
-            $tb = $data[$dest][$id]['timebegin'] + $offsetTime;
-            $te = $data[$dest][$id]['timeend'] + $offsetTime;
-
-            $content = date('d/m/Y', $tb)." - ".date('d/m/Y', $te);
-            if ($data[$dest][$id]['enabled'] == "1") {
-                $content = $langArray["base_active_string"];
-            }
-
-            if ($data[$dest][$id]['enabled'] == "0") {
-                $content = $langArray["base_not_active_string"];
-            }
-
-            $widget['entities'][] = array(
-                "text"=> $content,
-                "id"=> $dest."%".$id,
-                "type"=> "text"
-            );
-            $widget['entities'][] = array(
-                "text"=> $langArray["base_destination_string"],
-                "id"=> "nightdest-".$dest."%".$id,
-                "type"=> "output",
-                "destination"=> $data[$dest][$id]['dest']
-            );
-        break;
-        
         case "app-announcement":
-            $widget = $widgetTemplate;
             $widget['type'] = "Base";
             $widget['radius'] = "0";
             $widget['bgColor'] = "#f4b350";
@@ -670,7 +603,6 @@ function nethvplan_bindData($data, $dest, $id)
         break;
         
         case "app-daynight":
-            $widget = $widgetTemplate;
             $widget['type'] = "Base";
             $widget['radius'] = "0";
             $widget['bgColor'] = "#2c3e50";
@@ -705,7 +637,6 @@ function nethvplan_bindData($data, $dest, $id)
         break;
         
         case "timeconditions":
-            $widget = $widgetTemplate;
             $widget['type'] = "Base";
             $widget['radius'] = "0";
             $widget['bgColor'] = "#D35400";
@@ -745,7 +676,6 @@ function nethvplan_bindData($data, $dest, $id)
         break;
         
         case "ivr":
-            $widget = $widgetTemplate;
             $widget['type'] = "Base";
             $widget['radius'] = "0";
             $widget['bgColor'] = "#7f8c8d";
@@ -754,12 +684,12 @@ function nethvplan_bindData($data, $dest, $id)
             $widget['y'] = $yPos;
             $widget['name'] = $langArray["base_ivr_string"];
             $widget['entities'][] = array(
-                "text"=> $data[$dest][$id]['name']." ( ".$data[$dest][$id]['description']." ) - ".$data[$dest][$id]['id'],
+                "text"=> html_entity_decode($data[$dest][$id]['name'])." ( ".html_entity_decode($data[$dest][$id]['description'])." ) - ".html_entity_decode($data[$dest][$id]['id']),
                 "id"=> $dest."%".$id,
                 "type"=> "input"
             );
             $widget['entities'][] = array(
-                "text"=> $langArray["base_app_announcement_string"].": ".$data['recordings'][$data[$dest][$id]['announcement']]['name']." ( ".$data[$dest][$id]['announcement']." )",
+                "text"=> $langArray["base_app_announcement_string"].": ".html_entity_decode($data['recordings'][$data[$dest][$id]['announcement']]['name'])." ( ".html_entity_decode($data[$dest][$id]['announcement'])." )",
                 "id"=> "announcement-".$dest."%".$id,
                 "type"=> "text"
             );
@@ -787,6 +717,12 @@ function nethvplan_bindData($data, $dest, $id)
               "destination"=> "",
               "cssClass"=> "link"
             );
+            $widget['userData'] = array(
+              "id"=> html_entity_decode($data[$dest][$id]['id']),
+              "name"=> html_entity_decode($data[$dest][$id]['name']),
+              "description"=> html_entity_decode($data[$dest][$id]['description']),
+              "announcement"=> html_entity_decode($data[$dest][$id]['announcement'])
+            );
             if (array_key_exists('selections', $data[$dest][$id])) {
                 foreach ($data[$dest][$id]['selections'] as $value) {
                     $widget['entities'][] = array(
@@ -800,7 +736,6 @@ function nethvplan_bindData($data, $dest, $id)
         break;
         
         case "cqr":
-            $widget = $widgetTemplate;
             $widget['type'] = "Base";
             $widget['radius'] = "0";
             $widget['bgColor'] = "#528ba7";
@@ -809,12 +744,12 @@ function nethvplan_bindData($data, $dest, $id)
             $widget['y'] = $yPos;
             $widget['name'] = $langArray["base_cqr_string"];
             $widget['entities'][] = array(
-                "text"=> $data[$dest][$id]['name']." ( ".$data[$dest][$id]['description']." ) - ".$data[$dest][$id]['id'],
+                "text"=> html_entity_decode($data[$dest][$id]['name'])." ( ".html_entity_decode($data[$dest][$id]['description'])." ) - ".html_entity_decode($data[$dest][$id]['id']),
                 "id"=> $dest."%".$id,
                 "type"=> "input"
             );
             $widget['entities'][] = array(
-                "text"=> $langArray["base_app_announcement_string"].": ".$data['recordings'][$data[$dest][$id]['announcement']]['name']." ( ".$data[$dest][$id]['announcement']." )",
+                "text"=> $langArray["base_app_announcement_string"].": ".html_entity_decode($data['recordings'][$data[$dest][$id]['announcement']]['name'])." ( ".html_entity_decode($data[$dest][$id]['announcement'])." )",
                 "id"=> "announcement-".$dest."%".$id,
                 "type"=> "text"
             );
@@ -829,6 +764,12 @@ function nethvplan_bindData($data, $dest, $id)
                 "id"=> "suggest-".$dest."%".$id,
                 "type"=> "text"
             );
+            $widget['userData'] = array(
+                "id"=> html_entity_decode($data[$dest][$id]['id']),
+                "name"=> html_entity_decode($data[$dest][$id]['name']),
+                "description"=> html_entity_decode($data[$dest][$id]['description']),
+                "announcement"=> html_entity_decode($data[$dest][$id]['announcement'])
+            );
             if (array_key_exists('selections', $data[$dest][$id])) {
                 foreach ($data[$dest][$id]['selections'] as $value) {
                     $widget['entities'][] = array(
@@ -842,7 +783,6 @@ function nethvplan_bindData($data, $dest, $id)
         break;
         
         case "ext-queues":
-            $widget = $widgetTemplate;
             $widget['type'] = "Base";
             $widget['radius'] = "0";
             $widget['bgColor'] = "#9b59b6";
@@ -929,7 +869,6 @@ function nethvplan_bindData($data, $dest, $id)
         break;
         
         case "ext-group":
-            $widget = $widgetTemplate;
             $widget['type'] = "Base";
             $widget['radius'] = "0";
             $widget['bgColor'] = "#2980b9";
@@ -981,29 +920,21 @@ function nethvplan_bindData($data, $dest, $id)
     return $widget;
 }
 
-// create connections
+/**
+ * @method
+ * 
+ * Creates draw2D objects for connection arrows between figures creation.
+ * 
+ * @param {Object} $data - All asterisk elements data.
+ * @param {string} $dest - The element destionation/name.
+ * @param {string} $id - The element id .
+ **/
 function nethvplan_bindConnection($data, $dest, $id)
 {
     global $connectionTemplate;
     $connection = $connectionTemplate;
 
     switch ($dest) {
-        case "night":
-            $res = nethvplan_getDestination($data[$dest][$id]['dest']);
-            $destNew = $res[0];
-            $idDest = $res[1];
-
-            $connection['id'] = $dest."%".$id."=".$data[$dest][$id]['dest'];
-            $connection['source'] = array(
-                "node"=> $dest."%".$id,
-                "port"=> "output_nightdest-".$dest."%".$id
-            );
-            $connection['target'] = array(
-                "node"=> $destNew."%".$idDest,
-                "port"=> "input_".$destNew."%".$idDest,
-                "decoration"=> "draw2d.decoration.connection.ArrowDecorator"
-            );
-        break;
         
         case "app-announcement":
             $res = nethvplan_getDestination($data[$dest][$id]['postdest']);
@@ -1249,9 +1180,18 @@ function nethvplan_bindConnection($data, $dest, $id)
     return $connection;
 }
 
-// searching connections function
+/**
+ * @method
+ * 
+ * Creates final object for draw2D using the functions above.
+ * 
+ * @param {Object} $data - All asterisk elements data.
+ * @param {string} $destination - The element destination/name.
+ * @param {Objext} $destArray - Elements destinations/names array.
+ **/
 function nethvplan_explore($data, $destination, $destArray)
 {
+    // initialize global variables
     global $xPos;
     global $xOffset;
     global $yPos;
@@ -1299,16 +1239,6 @@ function nethvplan_explore($data, $destination, $destArray)
                 array_push($widgets, $widget);
             break;
 
-            case "night":
-                $widget = nethvplan_bindData($data, $dest, $id);
-                array_push($widgets, $widget);
-
-                $connection = nethvplan_bindConnection($data, $dest, $id);
-                array_push($connections, $connection);
-
-                nethvplan_explore($data, $data[$dest][$id]['dest'], $destArray);
-            break;
-            
             case "app-announcement":
                 $widget = nethvplan_bindData($data, $dest, $id);
                 // add widget

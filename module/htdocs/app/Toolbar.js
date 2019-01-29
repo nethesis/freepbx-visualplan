@@ -116,8 +116,13 @@ example.Toolbar = Class.extend({
 		this.html.append(this.modifyButton);
 		this.modifyButton.click($.proxy(function () {
 			var node = this.view.getCurrentSelection();
+
+
+			console.log("GET CURRENT SELECTION NODE");
+			console.log(node);
+
 			try {
-				var idExt = node.children.data[1].figure.text.split('-')[1].trim();
+				var idExt = node.getUserData().id;
 			} catch (e) {
 				var idExt = "";
 			}
@@ -133,7 +138,8 @@ example.Toolbar = Class.extend({
 				width: node.width,
 				height: node.height,
 				context: node.canvas,
-				shape: node.cssClass
+				shape: node.cssClass,
+				userData: node.userData
 			};
 			if (typeObj !== 'ext-local' && typeObj !== 'app-blackhole') {
 				this.createDialog(nodeObj, node);
@@ -164,11 +170,8 @@ example.Toolbar = Class.extend({
 		this.html.append(this.saveButton);
 		this.saveButton.click($.proxy(function () {
 
-			var currentView = this.view;
-
 			var writer = new draw2d.io.json.Writer();
 			writer.marshal(this.view, function (json) {
-
 				// simply data
 				for (item in json) {
 					if (json[item].type == "Base") {
@@ -176,7 +179,6 @@ example.Toolbar = Class.extend({
 						delete json[item].height;
 						delete json[item].name;
 						delete json[item].alpha;
-						delete json[item].userData;
 						delete json[item].cssClass;
 						delete json[item].bgColor;
 						delete json[item].color;
@@ -187,7 +189,6 @@ example.Toolbar = Class.extend({
 					if (json[item].type == "MyConnection") {
 						delete json[item].outlineStroke;
 						delete json[item].alpha;
-						delete json[item].userData;
 						delete json[item].cssClass;
 						delete json[item].color;
 						delete json[item].stroke;
@@ -206,16 +207,21 @@ example.Toolbar = Class.extend({
 						$('#emptier').fadeOut("slow");
 					}, 5000);
 				} else {
+
+					console.log("JSON");
+					console.log(json);
+
+					// return;
 					$.ajax({
 						url: "./create.php?",
 						type: "POST",
-						data: "jsonData=" + window.btoa(unescape(encodeURIComponent(JSON.stringify(json)))),
+						contentType: 'application/json',
+						data: JSON.stringify(json),
 						beforeSend: function (xhr) {
 							$('#loader').show();
 						}
 					}).done(function (c) {
 						$('#loader').hide();
-
 						try {
 							var resp = JSON.parse(c);
 						} catch (e) {
@@ -223,7 +229,6 @@ example.Toolbar = Class.extend({
 							resp = resp.substring(resp.indexOf("{"));
 							resp = JSON.parse(resp);
 						}
-
 						if (resp.success) {
 							$('#saver').children().html("&nbsp;&nbsp;" + languages[browserLang]["toolbar_save_string"]);
 							$('#saver').fadeIn("slow");
@@ -232,30 +237,22 @@ example.Toolbar = Class.extend({
 							}, 3000);
 							highlight($('#save_button'));
 
-							for (elem in resp.success) {
-								for (widget in currentView.figures.data) {
-									if (currentView.figures.data[widget].id === resp.success[elem].idElem) {
-										var cWid = currentView.figures.data[widget];
-										var newId = resp.success[elem].idObj;
-										var nameComplete = cWid.children.data[1].figure.text;
-										var name = nameComplete.split('-')[0].trim();
 
-										// set new name
-										cWid.children.data[1].figure.setText(name + " - " + newId);
-									}
-								}
-							}
-							if (location.href.indexOf('?did=new_route') !== -1) {
-								for (var i = 0; i < json.length; i++) {
-									if (json[0].id.indexOf('incoming') === 0) {
-										var name = json[0].id.split('%')[1];
-										location.replace(location.origin + '/freepbx/visualplan/?did=' + encodeURIComponent(name));
-										break;
-									}
-								}
-							} else {
-								location.reload();
-							}
+
+							// if (location.href.indexOf('?did=new_route') !== -1) {
+							// 	for (var i = 0; i < json.length; i++) {
+							// 		if (json[0].id.indexOf('incoming') === 0) {
+							// 			var name = json[0].id.split('%')[1];
+							// 			location.replace(location.origin + '/freepbx/visualplan/?did=' + encodeURIComponent(name));
+							// 			break;
+							// 		}
+							// 	}
+							// } else {
+							// 	location.reload();
+							// }
+
+
+
 						} else { //TODO: maybe never executed?
 							$('#loader').hide();
 							$('#errorer').children().eq(0).html("&nbsp;&nbsp;" + languages[browserLang]["toolbar_not_save_string"]);
@@ -349,6 +346,7 @@ example.Toolbar = Class.extend({
 						$(this).dialog('destroy').remove();
 					},
 					Save: function () {
+
 						// update values
 						var usableElems = obj.context.getElemByAttr("usable");
 						thisApp.updateValues(usableElems, node, obj);
@@ -370,26 +368,20 @@ example.Toolbar = Class.extend({
 		});
 	},
 
+	/**
+	 * @method
+	 * 
+	 * Called on form save button click.
+	 * Updates figures informations.
+	 * 
+	 * @param {Object} elems - The inputs values.
+	 * @param {Object} node - The draw2d figure.
+	 * @param {Object} obj - The saved figure.
+	 **/
 	updateValues: function (elems, node, obj) {
 		switch (obj.id) {
 			case "incoming":
 				node.children.data[1].figure.setText(elems[0].value + ' / ' + elems[1].value + ' ( ' + elems[2].value + ' )');
-				break;
-
-			case "night":
-				var id = node.children.data[1].figure.text.split('-')[1];
-				if (id) {
-					id = id.trim();
-					node.children.data[1].figure.setText(elems[0].value + ' - ' + id);
-				} else {
-					node.children.data[1].figure.setText(elems[0].value);
-				}
-				if (elems[1].value === '1')
-					node.children.data[2].figure.setText(languages[browserLang]["base_active_string"]);
-				if (elems[1].value === '0')
-					node.children.data[2].figure.setText(languages[browserLang]["base_not_active_string"]);
-				if (elems[1].value === 'period')
-					node.children.data[2].figure.setText(elems[2].children[1].value + ' - ' + elems[2].children[3].value);
 				break;
 
 			case "from-did-direct":
@@ -404,7 +396,6 @@ example.Toolbar = Class.extend({
 				break;
 
 			case "ext-queues":
-
 				if (elems[5].value == 1) {
 					var timeout = "1 " + languages[browserLang]["view_queuesTimeString_second"];
 				} else if (elems[5].value < 60) {
@@ -437,20 +428,32 @@ example.Toolbar = Class.extend({
 				break;
 
 			case "ivr":
-				var id = node.children.data[1].figure.text.split('-')[1];
+				var id = node.getUserData().id;
+				node.setUserData({
+					"name": elems[0].value,
+					"description": elems[1].value,
+					"announcement": elems[2].selectedOptions[0].attributes["annid"].value
+				});
 				if (id) {
-					id = id.trim();
 					node.children.data[1].figure.setText(elems[0].value + ' ( ' + elems[1].value + ' )' + ' - ' + id);
 				} else {
 					node.children.data[1].figure.setText(elems[0].value + ' ( ' + elems[1].value + ' )');
 				}
 				node.children.data[2].figure.setText(languages[browserLang]["base_app_announcement_string"] + ': ' + elems[2].value);
+
+				console.log("NODE");
+				console.log(node);
+
 				break;
 
 			case "cqr":
-				var id = node.children.data[1].figure.text.split('-')[1];
+				var id = node.getUserData().id;
+				node.setUserData({
+					"name": elems[0].value,
+					"description": elems[1].value,
+					"announcement": elems[2].selectedOptions[0].attributes["annid"].value
+				});
 				if (id) {
-					id = id.trim();
 					node.children.data[1].figure.setText(elems[0].value + ' ( ' + elems[1].value + ' )' + ' - ' + id);
 				} else {
 					node.children.data[1].figure.setText(elems[0].value + ' ( ' + elems[1].value + ' )');
@@ -459,9 +462,8 @@ example.Toolbar = Class.extend({
 				break;
 
 			case "app-announcement":
-				var id = node.children.data[1].figure.text.split('-')[1];
+				var id = node.getUserData().id;
 				if (id) {
-					id = id.trim();
 					node.children.data[1].figure.setText(elems[0].value + ' - ' + id);
 				} else {
 					node.children.data[1].figure.setText(elems[0].value);
@@ -470,9 +472,8 @@ example.Toolbar = Class.extend({
 				break;
 
 			case "timeconditions":
-				var id = node.children.data[1].figure.text.split('-')[1];
+				var id = node.getUserData().id;
 				if (id) {
-					id = id.trim();
 					node.children.data[1].figure.setText(elems[0].value + ' - ' + id);
 				} else {
 					node.children.data[1].figure.setText(elems[0].value);
@@ -517,3 +518,19 @@ function hideSidenav() {
 		$(".ui-dialog").css("margin-left", "210px");
 	};
 };
+
+function escapeHtml (string) {
+	const entityMap = {
+		'&': '&amp;',
+		'<': '&lt;',
+		'>': '&gt;',
+		'"': '&quot;',
+		"'": '&#39;',
+		'/': '&#x2F;',
+		'`': '&#x60;',
+		'=': '&#x3D;'
+	};
+	return String(string).replace(/[&<>"'`=\/]/g, function (s) {
+		return entityMap[s];
+	});
+}

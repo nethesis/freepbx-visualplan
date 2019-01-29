@@ -1,3 +1,8 @@
+/**
+ * This script is used to:
+ * - create figures in after drop and form save
+ */
+
 Base = draw2d.shape.layout.VerticalLayout.extend({
 
     NAME: "Base",
@@ -350,36 +355,6 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                 }];
                 break;
 
-            case "night":
-                templateObj.id = type + "%" + id;
-                templateObj.bgColor = "#34495e";
-                templateObj.radius = 0;
-                templateObj.entities = [{
-                    text: elem[0].value,
-                    id: "night-service_name%" + id,
-                    type: "input"
-                }];
-
-                if (parseInt(elem[1].value)) text = languages[browserLang]["base_active_string"];
-                if (!parseInt(elem[1].value)) text = languages[browserLang]["base_not_active_string"];
-                if (elem[1].value == "period") {
-                    var from = elem[2].children[1].value;
-                    var to = elem[2].children[3].value;
-                    text = from + " - " + to;
-                }
-                templateObj.entities.push({
-                    text: text,
-                    id: "night-service_state%" + id,
-                    type: "text"
-                });
-
-                templateObj.entities.push({
-                    text: languages[browserLang]["base_destination_string"],
-                    id: "night-service_destination%" + id,
-                    type: "output"
-                });
-                break;
-
             case "from-did-direct":
                 templateObj.id = type + "%" + elem[0].value;
                 templateObj.bgColor = "#27ae60";
@@ -505,6 +480,7 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                 break;
 
             case "ivr":
+
                 templateObj.id = type + "%" + id;
                 templateObj.bgColor = "#7f8c8d";
                 templateObj.radius = 0;
@@ -528,7 +504,13 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                     text: languages[browserLang]["base_ivr_suggest_string"],
                     id: "ivr_suggest-dest%" + id,
                     type: "text"
-                }];
+                }];     
+                // set ivr data inside user data
+                templateObj.userData = {
+                    name: elem[0].value,
+                    description: elem[1].value,
+                    announcement: elem[2].selectedOptions[0].attributes["annid"].value
+                };
                 break;
 
             case "cqr":
@@ -552,6 +534,15 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                     id: "cqr_suggest-dest%" + id,
                     type: "text"
                 }];
+                // set cqr data inside user data
+                templateObj.userData = {
+                    name: elem[0].value,
+                    description: elem[1].value,
+                    announcement: elem[2].selectedOptions[0].attributes["annid"].value
+                };
+
+                console.log("templateObj");
+                console.log(templateObj);
                 break;
 
             case "app-announcement":
