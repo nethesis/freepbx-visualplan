@@ -540,12 +540,13 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                     description: elem[1].value,
                     announcement: elem[2].selectedOptions[0].attributes["annid"].value
                 };
-
-                console.log("templateObj");
-                console.log(templateObj);
                 break;
 
             case "app-announcement":
+
+                console.log("ELEM");
+                console.log(elem);
+
                 templateObj.id = type + "%" + id;
                 templateObj.bgColor = "#f4b350";
                 templateObj.radius = 0;
@@ -562,6 +563,14 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                     id: "announcement_output%" + id,
                     type: "output"
                 }];
+                // set announcement data inside user data
+                templateObj.userData = {
+                    description: elem[0].value,
+                    announcement: elem[1].selectedOptions[0].attributes["annid"].value
+                };
+
+                console.log("templateObj");
+                console.log(templateObj);
                 break;
 
             case "timeconditions":

@@ -462,8 +462,8 @@ example.View = draw2d.Canvas.extend({
                 break;
 
             case "app-announcement":
-                var v1 = data[1].figure.text.split('-')[0].trim();
-                var v2 = data[2].figure.text.split(':')[1].split('(')[0].trim();
+                var v1 = userData.description;
+                var v2 = userData.announcement;
                 return [v1, v2];
                 break;
 
@@ -1306,10 +1306,10 @@ function dialogNewAnn(elemId, nameValue, newRecName) {
             } else {
                 selectedOption = "";
             }
-            htmlSelect += '<option ' + selectedOption + ' value="' + data[e].name + ' ( ' + e + ' )">' + data[e].name + '</option>';
+            htmlSelect += '<option ' + selectedOption + ' annId="' + e + '" value="' + escapeHtml(data[e].name) + ' ( ' + e + ' )">' + data[e].name + '</option>';
         }
         var html = '<label class="label-creation listRecordingSection">' + languages[browserLang]["view_name_string"] + ': </label>';
-        html += '<input autofocus value="' + values[0] + '" usable id="' + elemId + '-name" class="input-creation listRecordingSection"></input><div></div>';
+        html += '<input autofocus value="' + escapeHtml(values[0]) + '" usable id="' + elemId + '-name" class="input-creation listRecordingSection"></input><div></div>';
         html += '<label class="listRecordingSection label-creation">' + languages[browserLang]["view_recording_string"] + ': </label>';
         html += '<select usable id="' + elemId + '-recording" class="listRecordingSection input-creation">' + htmlSelect + '</select>';
         $.ajax({

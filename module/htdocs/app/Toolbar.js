@@ -463,6 +463,10 @@ example.Toolbar = Class.extend({
 
 			case "app-announcement":
 				var id = node.getUserData().id;
+				node.setUserData({
+					"description": elems[0].value,
+					"announcement": elems[1].selectedOptions[0].attributes["annid"].value
+				});
 				if (id) {
 					node.children.data[1].figure.setText(elems[0].value + ' - ' + id);
 				} else {

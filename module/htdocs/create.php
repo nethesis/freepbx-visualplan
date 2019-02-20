@@ -318,14 +318,9 @@ function nethvplan_switchCreate($wType, $value, $connectionArray)
         break;
 
         case "app-announcement":
-            $nameParts = explode("-", $value['entities'][0]['text']);
-            $name = trim($nameParts[0]);
             $id = $value['userData']['id'];
-
-            $parts = explode("(", $value['entities'][1]['text']);
-            $extParts = explode(")", $parts[1]);
-            $rec_id = trim($extParts[0]);
-
+            $name = $value['userData']['description'];
+            $rec_id = $value['userData']['announcement'];
             if (!array_key_exists($value['id'], $currentCreated)) {
                 if (empty($id)) {
                     $idAnn = announcement_add($name, $rec_id, "", $destination, null, null, null);
@@ -346,9 +341,9 @@ function nethvplan_switchCreate($wType, $value, $connectionArray)
         break;
 
         case "ivr":
+            $id = $value['userData']['id'];
             $name = $value['userData']['name'];
             $description = $value['userData']['description'];
-            $id = $value['userData']['id'];
             $announcement = $value['userData']['announcement'];
 
             if (!array_key_exists($value['id'], $currentCreated)) {
@@ -486,9 +481,9 @@ function nethvplan_switchCreate($wType, $value, $connectionArray)
         break;
 
         case "cqr":
+            $id = $value['userData']['id'];
             $name = $value['userData']['name'];
             $description = $value['userData']['description'];
-            $id = $value['userData']['id'];
             $announcement = $value['userData']['announcement'];
 
             if (!array_key_exists($value['id'], $currentCreated)) {

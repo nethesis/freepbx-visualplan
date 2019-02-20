@@ -97,11 +97,6 @@ $get_data = FreePBX::Ivr()->getDetails();
 foreach ($get_data as $key => $row) {
     $data['ivr'][$row['id']]["name"] = $row['name'];
     $data['ivr'][$row['id']]["id"] = $row['id'];
-    $data['ivr'][$row['id']]["userData"] = array(
-        "id" => $row['id'],
-        "description" => $row['description'],
-        "announcement" => $row['announcement']
-    );
     $data['ivr'][$row['id']]["description"] = $row['description'];
     $data['ivr'][$row['id']]["announcement"] = $row['announcement'];
     $data['ivr'][$row['id']]["invalid_destination"] = $row['invalid_destination'];
@@ -120,15 +115,9 @@ $get_cqr = nethcqr_get_details();
 foreach ($get_cqr as $row) {
     $data['cqr'][$row['id_cqr']]["id"] = $row['id_cqr'];
     $data['cqr'][$row['id_cqr']]["name"] = $row['name'];
-    $data['cqr'][$row['id_cqr']]["userData"] = array(
-        "id" => $row['id_cqr'],
-        "description" => $row['description'],
-        "announcement" => $row['announcement']
-    );
     $data['cqr'][$row['id_cqr']]["description"] = $row['description'];
     $data['cqr'][$row['id_cqr']]["announcement"] = $row['announcement'];
     $data['cqr'][$row['id_cqr']]["default_destination"] = $row['default_destination'];
-
     $get_entries = nethcqr_get_entries($row['id_cqr']);
     foreach ($get_entries as $key => $value) {
         $data['cqr'][$row['id_cqr']]['selections'][$value['position']] = array( "position" => $value['pisition'],
@@ -164,9 +153,6 @@ $get_data = FreePBX::Announcement()->getAnnouncements();
 foreach ($get_data as $key => $row) {
     $rec_details = recordings_get($row['recording_id']);
     $data['app-announcement'][$row['announcement_id']] = array(
-        "userData" => array(
-            "id" => $row['announcement_id']
-        ),
         "description" => $row['description'],
         "id" => $row['announcement_id'],
         "postdest" => $row['post_dest'],
@@ -578,12 +564,12 @@ function nethvplan_bindData($data, $dest, $id)
             $widget['y'] = $yPos;
             $widget['name'] = $langArray["base_app_announcement_string"];
             $widget['entities'][] = array(
-                "text"=> $data[$dest][$id]['description'] ." - ".$id,
+                "text"=> html_entity_decode($data[$dest][$id]['description']) ." - ".$id,
                 "id"=> $dest."%".$id,
                 "type"=> "input"
             );
             $widget['entities'][] = array(
-                "text"=> $langArray["view_recording_string"].": ".$data[$dest][$id]['rec_name']." ( ".$data[$dest][$id]['rec_id']." )",
+                "text"=> $langArray["view_recording_string"].": ".html_entity_decode($data[$dest][$id]['rec_name'])." ( ".$data[$dest][$id]['rec_id']." )",
                 "id"=> $dest."%".$id,
                 "type"=> "text"
             );
@@ -599,6 +585,11 @@ function nethvplan_bindData($data, $dest, $id)
               "type"=> "text",
               "destination"=> "",
               "cssClass"=> "link"
+            );
+            $widget['userData'] = array(
+                "id"=> html_entity_decode($data[$dest][$id]['id']),
+                "description"=> html_entity_decode($data[$dest][$id]['description']),
+                "announcement"=> html_entity_decode($data[$dest][$id]['rec_id'])
             );
         break;
         
