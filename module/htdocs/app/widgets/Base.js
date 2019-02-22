@@ -505,7 +505,7 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                     id: "ivr_suggest-dest%" + id,
                     type: "text"
                 }];     
-                // set ivr data inside user data
+                // set ivr data inside userData
                 templateObj.userData = {
                     name: elem[0].value,
                     description: elem[1].value,
@@ -534,7 +534,7 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                     id: "cqr_suggest-dest%" + id,
                     type: "text"
                 }];
-                // set cqr data inside user data
+                // set cqr data inside userData
                 templateObj.userData = {
                     name: elem[0].value,
                     description: elem[1].value,
@@ -543,10 +543,6 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                 break;
 
             case "app-announcement":
-
-                console.log("ELEM");
-                console.log(elem);
-
                 templateObj.id = type + "%" + id;
                 templateObj.bgColor = "#f4b350";
                 templateObj.radius = 0;
@@ -563,14 +559,12 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                     id: "announcement_output%" + id,
                     type: "output"
                 }];
-                // set announcement data inside user data
+                // set announcement data inside userData
                 templateObj.userData = {
                     description: elem[0].value,
                     announcement: elem[1].selectedOptions[0].attributes["annid"].value
                 };
 
-                console.log("templateObj");
-                console.log(templateObj);
                 break;
 
             case "timeconditions":
@@ -594,6 +588,11 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                     id: "timeconditions_falsegoto%" + id,
                     type: "output"
                 }];
+                // set timecondition data inside userData
+                templateObj.userData = {
+                    name: elem[0].value,
+                    time: elem[1].selectedOptions[0].attributes["timeid"].value
+                };
                 break;
 
             case "app-daynight":
@@ -613,6 +612,11 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                     id: "app-daynight_falsegoto%" + id,
                     type: "output"
                 }];
+                // set flow call control data inside userData
+                templateObj.userData = {
+                    name: elem[0].value,
+                    code: elem[1].value
+                };
                 break;
 
             case "ext-meetme":

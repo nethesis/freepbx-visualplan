@@ -76,12 +76,9 @@ if ($reqGet && ($reqGet === "tools")) {
     }    
 } else {
 
-    if ($_POST['jsonData']) {
-        $json = $_POST['jsonData'];
-    }
+    $json = file_get_contents("php://input");
     
     if ($json) {
-        $json = base64_decode($json);
         $jsonArray = json_decode($json, true);
         $type = $jsonArray['type'];
         $rest = $jsonArray['rest'];
@@ -167,7 +164,7 @@ if ($reqGet && ($reqGet === "tools")) {
                 } else if ($rest == "set") {
     
                     $addedTime = FreePBX::Timeconditions()->addTimeGroup($jsonArray["times"][0]['name'], $jsonArray["times"]);
-                    echo json_encode($addedTime);
+                    echo $addedTime;
     
                 } else if ($rest == "update") {
     

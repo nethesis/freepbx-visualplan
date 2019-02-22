@@ -123,14 +123,7 @@ if (!isset($_SESSION['AMP_user']) || !$_SESSION['AMP_user']->checkSection('visua
 					}
 				}).done(function (c) {
 					try {
-
-						console.log(c);
-
 						var jsonDocument = JSON.parse(c);
-
-						console.log("JSON DOCUMENT");
-						console.log(jsonDocument);
-
 						var g = new dagre.graphlib.Graph();
 						g.setGraph({});
 						g.setDefaultEdgeLabel(function () {

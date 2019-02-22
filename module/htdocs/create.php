@@ -644,13 +644,10 @@ function nethvplan_switchCreate($wType, $value, $connectionArray)
         break;
 
         case "timeconditions":
-            $nameParts = explode("-", $value['entities'][0]['text']);
-            $name = trim($nameParts[0]);
-            $id = $value['userData']['id'];
 
-            $parts = explode("(", $value['entities'][1]['text']);
-            $extParts = explode(")", $parts[1]);
-            $time = trim($extParts[0]);
+            $id = $value['userData']['id'];
+            $name = $value['userData']['name'];
+            $time = $value['userData']['time'];
 
             if (!array_key_exists($value['id'], $currentCreated)) {
                 if (empty($id)) {
@@ -699,13 +696,13 @@ function nethvplan_switchCreate($wType, $value, $connectionArray)
         break;
 
         case "app-daynight":
-            $parts = explode("(", $value['entities'][0]['text']);
-            $name = trim($parts[0]);
-            $extParts = explode(")", $parts[1]);
-            $controlCode = substr(trim($extParts[0]), -1);
+            $id = $value['userData']['id'];
+            $name = $value['userData']['name'];
+            $controlCode = $value['userData']['code'];
 
             $destinations = nethvplan_getDestination($value, $connectionArray, $currentCreated, $wType);
             $exists = daynight_get_obj($controlCode);
+        
             daynight_edit(array(
                 "day_recording_id" => $exists['day_recording_id'],
                 "night_recording_id" => $exists['night_recording_id'],

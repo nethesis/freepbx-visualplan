@@ -116,11 +116,6 @@ example.Toolbar = Class.extend({
 		this.html.append(this.modifyButton);
 		this.modifyButton.click($.proxy(function () {
 			var node = this.view.getCurrentSelection();
-
-
-			console.log("GET CURRENT SELECTION NODE");
-			console.log(node);
-
 			try {
 				var idExt = node.getUserData().id;
 			} catch (e) {
@@ -207,10 +202,6 @@ example.Toolbar = Class.extend({
 						$('#emptier').fadeOut("slow");
 					}, 5000);
 				} else {
-
-					console.log("JSON");
-					console.log(json);
-
 					// return;
 					$.ajax({
 						url: "./create.php?",
@@ -236,23 +227,17 @@ example.Toolbar = Class.extend({
 								$('#saver').fadeOut("slow");
 							}, 3000);
 							highlight($('#save_button'));
-
-
-
-							// if (location.href.indexOf('?did=new_route') !== -1) {
-							// 	for (var i = 0; i < json.length; i++) {
-							// 		if (json[0].id.indexOf('incoming') === 0) {
-							// 			var name = json[0].id.split('%')[1];
-							// 			location.replace(location.origin + '/freepbx/visualplan/?did=' + encodeURIComponent(name));
-							// 			break;
-							// 		}
-							// 	}
-							// } else {
-							// 	location.reload();
-							// }
-
-
-
+							if (location.href.indexOf('?did=new_route') !== -1) {
+								for (var i = 0; i < json.length; i++) {
+									if (json[0].id.indexOf('incoming') === 0) {
+										var name = json[0].id.split('%')[1];
+										location.replace(location.origin + '/freepbx/visualplan/?did=' + encodeURIComponent(name));
+										break;
+									}
+								}
+							} else {
+								location.reload();
+							}
 						} else { //TODO: maybe never executed?
 							$('#loader').hide();
 							$('#errorer').children().eq(0).html("&nbsp;&nbsp;" + languages[browserLang]["toolbar_not_save_string"]);
@@ -440,10 +425,6 @@ example.Toolbar = Class.extend({
 					node.children.data[1].figure.setText(elems[0].value + ' ( ' + elems[1].value + ' )');
 				}
 				node.children.data[2].figure.setText(languages[browserLang]["base_app_announcement_string"] + ': ' + elems[2].value);
-
-				console.log("NODE");
-				console.log(node);
-
 				break;
 
 			case "cqr":
@@ -477,6 +458,10 @@ example.Toolbar = Class.extend({
 
 			case "timeconditions":
 				var id = node.getUserData().id;
+				node.setUserData({
+					"name": elems[0].value,
+					"time": elems[1].selectedOptions[0].attributes["timeid"].value
+				});
 				if (id) {
 					node.children.data[1].figure.setText(elems[0].value + ' - ' + id);
 				} else {
@@ -484,12 +469,18 @@ example.Toolbar = Class.extend({
 				}
 				node.children.data[2].figure.setText(languages[browserLang]["view_timegroup_string"] + ': ' + elems[1].value);
 				break;
+
 			case "app-daynight":
+				node.setUserData({
+					"name": elems[0].value,
+					"code": elems[1].value
+				});
 				node.children.data[1].figure.setText(elems[0].value + ' ( *28' + elems[1].value + ' )');
 				break;
 			case "ext-meetme":
 				node.children.data[1].figure.setText(elems[1].value + ' ( ' + elems[0].value + ' )');
 				break;
+
 		}
 	}
 });

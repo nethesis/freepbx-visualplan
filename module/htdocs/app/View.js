@@ -468,14 +468,14 @@ example.View = draw2d.Canvas.extend({
                 break;
 
             case "timeconditions":
-                var v1 = data[1].figure.text.split('-')[0].trim();
-                var v2 = data[2].figure.text.split(':')[1].split('(')[0].trim();
+                var v1 = userData.name;
+                var v2 = userData.time;
                 return [v1, v2];
                 break;
 
             case "app-daynight":
-                var v1 = data[1].figure.text.split('(')[0].trim();
-                var v2 = data[1].figure.text.split('*')[1].split(')')[0].trim().slice(-1);
+                var v1 = userData.name;
+                var v2 = userData.code;
                 return [v1, v2];
                 break;
 
@@ -493,9 +493,6 @@ example.View = draw2d.Canvas.extend({
         var isDisabled = "";
         var strategyList = new Array('ringall', 'ringall-prim', 'hunt', 'hunt-prim', 'memoryhunt', 'memoryhunt-prim', 'firstavailable', 'firstnotonphone', 'random');
         var strategyListQueues = new Array('ringall', 'leastrecent', 'fewestcalls', 'random', 'rrmemory', 'rrordered', 'linear', 'wrandom');
-
-        console.log("ELEM ELEM");
-        console.log(elem);
 
         values = ["", "", "", "", "", "", "", "", ""];
         if (mod) {
@@ -762,14 +759,15 @@ example.View = draw2d.Canvas.extend({
                         };
 
                         for (e in data) {
-                            if ((data[e].description === values[1]) || (selTimeGroup == data[e].description)) {
+                            if (data[e].id === values[1] || data[e].id == selTimeGroup ) {
                                 selectedOption = "selected";
                             } else {
                                 selectedOption = "";
                             }
 
-                            htmlSelect += '<option ' + selectedOption + ' value="' + data[e].description + ' ( ' + e + ' )">' + data[e].description + '</option>';
+                            htmlSelect += '<option ' + selectedOption + ' timeid="' + e + '" value="' + escapeHtml(data[e].description) + ' ( ' + e + ' )">' + data[e].description + '</option>';
                         }
+
                         for (var k = 0; k < 24; k++) {
                             htmlSelectHours += '<option value="' + k + '">' + (k < 10 ? '0' + k : k) + '</option>';
                         }
@@ -791,7 +789,7 @@ example.View = draw2d.Canvas.extend({
                         html = '';
                         //html += '<div id="addCondTemp">';
                         html += '<label id="' + elem.id + '-namelabel" class="label-creation on-action-disabled">' + languages[browserLang]["view_timeconditionname_string"] + ': </label>';
-                        html += '<input autofocus value="' + values[0] + '" usable id="' + elem.id + '-name" class="input-creation on-action-disabled"></input>';
+                        html += '<input autofocus value="' + escapeHtml(values[0]) + '" usable id="' + elem.id + '-name" class="input-creation on-action-disabled"></input>';
                         html += '<label id="' + elem.id + '-timegrouplabel" class="label-creation on-action-disabled">' + languages[browserLang]["view_timegroup_string"] + ': </label>';
                         html += '<select usable id="' + elem.id + '-timegroup" class="input-creation on-action-disabled">' + htmlSelect + '</select>';
                         html += '<button id="modifyTimeGroupButton" class="addButtons on-action-disabled" title="' + languages[browserLang]["view_modifytimegrouptitle_string"] + '" class="listRecordingSection"><i class="fa fa-pencil"></i></button>';
@@ -806,7 +804,7 @@ example.View = draw2d.Canvas.extend({
                         html += '<span id="' + elem.id + '-title" class="input-creation"></span>';
 
                         html += '<label class="label-creation">' + languages[browserLang]["view_timegroupname_string"] + ': </label>';
-                        html += '<input autofocus value="' + values[0] + '" id="' + elem.id + '-timegroupname" class="input-creation"></input>';
+                        html += '<input autofocus value="' + escapeHtml(values[0]) + '" id="' + elem.id + '-timegroupname" class="input-creation"></input>';
 
                         html += '<div id="time-1" class="times-forms">';
 
@@ -885,12 +883,16 @@ example.View = draw2d.Canvas.extend({
                             return json;
                         }
 
-                        function resetReload(json, elem) {
+                        function resetReload(json, elem, id) {
                             $("#" + elem.id + "-timegroupname").removeClass("error-input");
                             $(".error-message").text("");
                             $(".error-message").css("margin-bottom", "0px");
                             var condName = $("#" + elem.id + "-name").val();
-                            dialogNewTimeCond(json.times[0].name, condName);
+                            if (json.rest == "set") {
+                                dialogNewTimeCond(id, condName);
+                            } else if ((json.rest == "update")) {
+                                dialogNewTimeCond(json.id, condName);
+                            }
                             $($(".ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix button")[1]).button('enable');
                         }
 
@@ -935,28 +937,28 @@ example.View = draw2d.Canvas.extend({
                         });
 
                         $("#modifyTimeGroupButton").click(function () {
+                            // graphic adjustments
                             $(".on-action-disabled").attr('disabled', 'disabled').addClass('disabled');
                             $($(".ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix button")[1]).button('disable');
                             $("#" + elem.id + "-titleStringModify").removeClass("hide");
                             $("#" + elem.id + "-titleString").addClass("hide");
                             $("#updateAddTimeGroups").removeClass("hide");
                             $("#saveAddTimeGroups").addClass("hide");
-
-                            var selected = $("#" + elem.id + "-timegroup").val();
-                            var selectedId = selected.split("(")[1].split(")")[0].trim();
-                            var selectedText = $("#" + elem.id + "-timegroup").val().split("(")[0].trim();
+                            // start creating request selected timegroup data
+                            var selected = $("#" + elem.id + "-timegroup");
+                            var selectedId = selected[0].selectedOptions[0].attributes["timeid"].value;
+                            var selectedText = selected[0].selectedOptions[0].text;
                             $("#" + elem.id + "-timegroupname").val(selectedText);
-
                             var json = {
                                 type: "timegroup",
                                 rest: "get",
                                 id: selectedId
                             };
-
                             $.ajax({
                                 method: "POST",
                                 url: "./plugins.php?",
-                                data: "jsonData=" + window.btoa(unescape(encodeURIComponent(JSON.stringify(json))))
+                                contentType: 'application/json',
+                                data: JSON.stringify(json)
                             }).done(function (d) {
                                 var time = JSON.parse(d);
                                 var l = time.length;
@@ -982,24 +984,21 @@ example.View = draw2d.Canvas.extend({
                                 }
                             });
                             $("#addTimeGroups").show();
-
                         });
 
                         $("#updateAddTimeGroups").click(function () {
-
-                            var selected = $("#" + elem.id + "-timegroup").val();
-                            var selectedId = selected.split("(")[1].split(")")[0].trim();
-
+                            var selected = $("#" + elem.id + "-timegroup");
+                            var selectedId = selected[0].selectedOptions[0].attributes["timeid"].value;
                             var json = getValues(elem);
                             json.type = "timegroup";
                             json.rest = "update";
                             json.id = selectedId;
-
                             if (json.times[0].name != "") {
                                 $.ajax({
                                     method: "POST",
                                     url: "./plugins.php?",
-                                    data: "jsonData=" + window.btoa(unescape(encodeURIComponent(JSON.stringify(json))))
+                                    contentType: 'application/json',
+                                    data: JSON.stringify(json)
                                 }).done(function (d) {
                                     resetReload(json, elem);
                                 });
@@ -1011,18 +1010,17 @@ example.View = draw2d.Canvas.extend({
                         });
 
                         $("#saveAddTimeGroups").click(function () {
-
                             var json = getValues(elem);
                             json.type = "timegroup";
                             json.rest = "set";
-
                             if (json.times[0].name != "") {
                                 $.ajax({
                                     method: "POST",
                                     url: "./plugins.php?",
-                                    data: "jsonData=" + window.btoa(unescape(encodeURIComponent(JSON.stringify(json))))
+                                    contentType: 'application/json',
+                                    data: JSON.stringify(json)
                                 }).done(function (d) {
-                                    resetReload(json, elem);
+                                    resetReload(json, elem, d);
                                 });
                             } else {
                                 $("#" + elem.id + "-timegroupname").addClass("error-input");
@@ -1030,7 +1028,6 @@ example.View = draw2d.Canvas.extend({
                                 $(".error-message").text(languages[browserLang]["view_error_required_string"]);
                             }
                         });
-
                         if (condName) {
                             $("#" + elem.id + "-name").val(condName);
                         }
@@ -1056,8 +1053,8 @@ example.View = draw2d.Canvas.extend({
                     if (mod) {
                         htmlSelect += '<option selected value="' + values[1] + '">' + values[1] + '</option>';
                     }
-                    html += '<label class="label-creation">' + languages[browserLang]["view_name_string"] + ': </label>';
-                    html += '<input autofocus value="' + values[0] + '" usable id="' + elem.id + '-name" class="input-creation"></input>';
+                    html += '<label class="label-creation">' + languages[browserLang]["view_description_string"] + ': </label>';
+                    html += '<input autofocus value="' + escapeHtml(values[0]) + '" usable id="' + elem.id + '-name" class="input-creation"></input>';
                     html += '<label class="label-creation">' + languages[browserLang]["view_control_code_string"] + ': </label>';
                     html += '<select ' + isDisabled + ' usable id="' + elem.id + '-controlcode" class="input-creation">' + htmlSelect + '</select>';
 
@@ -1306,9 +1303,9 @@ function dialogNewAnn(elemId, nameValue, newRecName) {
             } else {
                 selectedOption = "";
             }
-            htmlSelect += '<option ' + selectedOption + ' annId="' + e + '" value="' + escapeHtml(data[e].name) + ' ( ' + e + ' )">' + data[e].name + '</option>';
+            htmlSelect += '<option ' + selectedOption + ' annid="' + e + '" value="' + escapeHtml(data[e].name) + ' ( ' + e + ' )">' + data[e].name + '</option>';
         }
-        var html = '<label class="label-creation listRecordingSection">' + languages[browserLang]["view_name_string"] + ': </label>';
+        var html = '<label class="label-creation listRecordingSection">' + languages[browserLang]["view_description_string"] + ': </label>';
         html += '<input autofocus value="' + escapeHtml(values[0]) + '" usable id="' + elemId + '-name" class="input-creation listRecordingSection"></input><div></div>';
         html += '<label class="listRecordingSection label-creation">' + languages[browserLang]["view_recording_string"] + ': </label>';
         html += '<select usable id="' + elemId + '-recording" class="listRecordingSection input-creation">' + htmlSelect + '</select>';
@@ -1330,9 +1327,6 @@ function dialogNewAnn(elemId, nameValue, newRecName) {
 
 function dialogNewCqr(elemId, nameValue, descriptionValue, newRecName) {
 
-    console.log("VALUES");
-    console.log(values);
-
     $.ajax({
         url: "./visualize.php?readData=recordings",
         context: document.body,
@@ -1349,7 +1343,7 @@ function dialogNewCqr(elemId, nameValue, descriptionValue, newRecName) {
             } else {
                 selectedOption = "";
             }
-            htmlSelect += '<option ' + selectedOption + ' annId="' + e + '" value="' + escapeHtml(data[e].name) + ' ( ' + e + ' )">' + data[e].name + '</option>';
+            htmlSelect += '<option ' + selectedOption + ' annid="' + e + '" value="' + escapeHtml(data[e].name) + ' ( ' + e + ' )">' + data[e].name + '</option>';
         }
         var html = '<label class="label-creation listRecordingSection">' + languages[browserLang]["view_name_string"] + ': </label>';
         html += '<input autofocus value="' + escapeHtml(values[0]) + '" usable id="' + elemId + '-name" class="input-creation listRecordingSection"></input>';
@@ -1386,15 +1380,9 @@ function dialogNewIvr(elemId, nameValue, descriptionValue, newRecName) {
         }
     }).done(function (c) {
 
-        console.log("VALUE");
-        console.log(values);
-
         var data = JSON.parse(c);
         var htmlSelect = "";
         var selectedOption = "";
-
-        console.log("VALUES DATA ANN");
-        console.log(data);
 
         for (e in data) {
             if (e === values[2] || data[e].name === newRecName) {
@@ -1402,7 +1390,7 @@ function dialogNewIvr(elemId, nameValue, descriptionValue, newRecName) {
             } else {
                 selectedOption = "";
             }
-            htmlSelect += '<option ' + selectedOption + ' annId="' + e + '" value="' + escapeHtml(data[e].name) + ' ( ' + e + ' )">' + data[e].name + '</option>';
+            htmlSelect += '<option ' + selectedOption + ' annid="' + e + '" value="' + escapeHtml(data[e].name) + ' ( ' + e + ' )">' + data[e].name + '</option>';
         }
         var html = '<label class="label-creation listRecordingSection">' + languages[browserLang]["view_name_string"] + ': </label>';
         html += '<input type="text" autofocus value="' + escapeHtml(values[0]) + '" usable id="' + elemId + '-name" class="input-creation listRecordingSection"></input>';
@@ -1466,7 +1454,12 @@ function initRecordingListeners() {
             $.ajax({
                 url: "./plugins.php",
                 type: "post",
-                data: {"getType": "tools", "rest": "savekey", "key": key}
+                contentType: 'application/json',
+                data: {
+                    "getType": "tools",
+                    "rest": "savekey",
+                    "key": key
+                }
             }).done(function(res) {
                 apiKey = key;
                 $("#errorMsgApy").hide();
@@ -1683,7 +1676,14 @@ function initRecordingListeners() {
             $.ajax({
                 url: "./plugins.php",
                 type: "post",
-                data: {"getType": "tools", "rest": "ttstext", "lang": lang, "voice": voice, "text": text}
+                contentType: 'application/json',
+                data: {
+                    "getType": "tools",
+                    "rest": "ttstext",
+                    "lang": lang,
+                    "voice": voice,
+                    "text": text
+                }
             }).done(function(res) {
                 if (res == "false") {
                     ttsGetFail();

@@ -132,9 +132,6 @@ $get_data = FreePBX::Timeconditions()->listTimeconditions(false);
 foreach ($get_data as $key => $row) {
     $data['timeconditions'][$row['timeconditions_id']] = array(
         "displayname" => $row['displayname'],
-        "userData" => array(
-            "id" => $row['timeconditions_id']
-        ),
         "time" => $row['time'],
         "truegoto" => $row['truegoto'],
         "falsegoto" => $row['falsegoto']
@@ -215,6 +212,7 @@ foreach ($get_data as $key => $row) {
     $data['app-daynight'][$row['ext']] = array(
         "name"=> $daynight_obj['fc_description'],
         "control_code"=> "*28".$row['ext'],
+        "ext"=> $row['ext'],
         "green_flow"=> $daynight_obj['day'],
         "red_flow"=> $daynight_obj['night']
     );
@@ -625,6 +623,10 @@ function nethvplan_bindData($data, $dest, $id)
               "destination"=> "",
               "cssClass"=> "link"
             );
+            $widget['userData'] = array(
+                "name"=> html_entity_decode($data[$dest][$id]['name']),
+                "code"=> html_entity_decode($data[$dest][$id]['ext']),
+            );
         break;
         
         case "timeconditions":
@@ -636,12 +638,12 @@ function nethvplan_bindData($data, $dest, $id)
             $widget['y'] = $yPos;
             $widget['name'] = $langArray["base_timeconditions_string"];
             $widget['entities'][] = array(
-                "text"=> $data[$dest][$id]['displayname'] ." - ".$id,
+                "text"=> html_entity_decode($data[$dest][$id]['displayname']) ." - ".$id,
                 "id"=> $dest."%".$id,
                 "type" => "input"
             );
             $widget['entities'][] = array(
-                "text"=> $langArray["view_timegroup_string"].": ".$data['timegroups'][$data[$dest][$id]['time']]['description']." ( ".$data['timegroups'][$data[$dest][$id]['time']]['id']." )",
+                "text"=> $langArray["view_timegroup_string"].": ".html_entity_decode($data['timegroups'][$data[$dest][$id]['time']]['description'])." ( ".$data['timegroups'][$data[$dest][$id]['time']]['id']." )",
                 "id"=> $dest."%".$id,
                 "type" => "text"
             );
@@ -658,11 +660,16 @@ function nethvplan_bindData($data, $dest, $id)
                 "destination"=> $data[$dest][$id]['falsegoto']
             );
             $widget['entities'][] = array(
-              "text"=> $langArray["base_details_string"],
-              "id"=> $id,
-              "type"=> "text",
-              "destination"=> "",
-              "cssClass"=> "link"
+                "text"=> $langArray["base_details_string"],
+                "id"=> $id,
+                "type"=> "text",
+                "destination"=> "",
+                "cssClass"=> "link"
+            );
+            $widget['userData'] = array(
+                "id"=> $id, 
+                "name"=> html_entity_decode($data[$dest][$id]['displayname']),
+                "time"=> $data['timegroups'][$data[$dest][$id]['time']]['id']
             );
         break;
         
