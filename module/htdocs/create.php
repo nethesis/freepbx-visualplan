@@ -203,17 +203,13 @@ function nethvplan_switchCreate($wType, $value, $connectionArray)
         break;
 
         case "ext-group":
-            $parts = explode("(", $value['entities'][0]['text']);
-            $name = trim($parts[0]);
-            $extParts = explode(")", $parts[1]);
-            $extension = trim($extParts[0]);
-      $list = preg_replace('/\s+/', '-', $value['entities'][2]['text']);
-            $ringStrategy = explode("(", $value['entities'][3]['text']);
-            $tmpStrategy = explode(")", $ringStrategy[1]);
-            $strategy = trim($tmpStrategy[0]);
-            $time = explode("(", $value['entities'][4]['text']);
-            $tmpTime = explode(")", $time[1]);
-            $grpTime = (int)trim($tmpTime[0]);
+            $name = $value['userData']['name'];
+            $extension = $value['userData']['extension'];
+            $list = preg_replace('/\s+/', '-', $value['userData']['list']);
+
+            $strategy = $value['userData']['strategy'];
+            $grpTime = (int)$value['userData']['ringtime'];
+
             $destinations = nethvplan_getDestination($value, $connectionArray, $currentCreated, $wType);
             $destination = trim($destinations["output_".$value['entities'][5]['id']]);
             $exists = ringgroups_get($extension);
@@ -229,7 +225,7 @@ function nethvplan_switchCreate($wType, $value, $connectionArray)
                     $list,
                     $destination,
                     $name,
-                $exists['grppre'],
+                    $exists['grppre'],
                     $exists['annmsg_id'],
                     $exists['alertinfo'],
                     $exists['needsconf'],

@@ -415,6 +415,14 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                     id: "groups_output%" + id,
                     type: "output"
                 }];
+                // set group data inside userData
+                templateObj.userData = {
+                    name: elem[1].value,
+                    extension: elem[0].value,
+                    list: elem[2].value,
+                    strategy: elem[3].value,
+                    ringtime: elem[4].value
+                };
                 break;
 
             case "ext-queues":

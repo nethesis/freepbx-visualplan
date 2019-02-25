@@ -875,7 +875,7 @@ function nethvplan_bindData($data, $dest, $id)
             $widget['y'] = $yPos;
             $widget['name'] = $langArray["base_ext_group_string"];
             $widget['entities'][] = array(
-                "text"=> $data[$dest][$id]['description']." ( ".$data[$dest][$id]['num']." )",
+                "text"=> html_entity_decode($data[$dest][$id]['description'])." ( ".$data[$dest][$id]['num']." )",
                 "id"=> $dest."%".$id,
                 "type"=> "input"
             );
@@ -906,11 +906,18 @@ function nethvplan_bindData($data, $dest, $id)
                 "destination"=> $data[$dest][$id]['postdest']
             );
             $widget['entities'][] = array(
-              "text"=> $langArray["base_details_string"],
-              "id"=> $id,
-              "type"=> "text",
-              "destination"=> "",
-              "cssClass"=> "link"
+                "text"=> $langArray["base_details_string"],
+                "id"=> $id,
+                "type"=> "text",
+                "destination"=> "",
+                "cssClass"=> "link"
+            );
+            $widget['userData'] = array(
+                "name"=> html_entity_decode($data[$dest][$id]['description']),
+                "extension"=> html_entity_decode($data[$dest][$id]['num']),
+                "list"=> $data[$dest][$id]['grplist'],
+                "strategy"=> $data[$dest][$id]['strategy'],
+                "ringtime"=> $data[$dest][$id]['grptime']
             );
         break;
     }

@@ -374,6 +374,13 @@ example.Toolbar = Class.extend({
 				break;
 
 			case "ext-group":
+				node.setUserData({
+					"name": elems[1].value,
+					"extension": elems[0].value,
+					"list": elems[2].value,
+                    "strategy": elems[3].value,
+                    "ringtime": elems[4].value
+				});
 				node.children.data[1].figure.setText(elems[1].value + ' ( ' + elems[0].value + ' )');
 				node.children.data[3].figure.setText(elems[2].value.match(/\d+(#|)/g).join("\n"));
 				node.children.data[4].figure.setText(languages[browserLang]["view_strategy_string"] + ' ( ' + elems[3].value + ' )');
