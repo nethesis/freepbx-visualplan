@@ -436,13 +436,18 @@ example.View = draw2d.Canvas.extend({
                 break;
 
             case "ext-queues":
-                var v1 = data[1].figure.text.split('(')[1].split(')')[0].trim();
-                var v2 = data[1].figure.text.split('(')[0].trim();
-                var v3 = data[3].figure.text;
-                var v4 = data[5].figure.text;
-                var v5 = data[6].figure.text.split('(')[1].split(')')[0].trim();
-                var v6 = data[7].figure.id.split('|')[1].trim();
-                var v7 = data[8].figure.id.split('|')[1].trim();
+                var v1 = userData.extension;
+                var v2 = userData.name;
+                var v3 = userData.staticExt
+                        .replace(/Local\//g, "\n")
+                        .replace(/@from-queue\/n/g, "")
+                        .replace(/-/g, " ")
+                        .match(/-?\d+(,\d+|#|)/g)
+                        .join("\n");
+                var v4 = userData.dynamicExt;
+                var v5 = userData.strategy;
+                var v6 = userData.timeout;
+                var v7 = userData.maxwait;
                 return [v1, v2, v3, v4, v5, v6, v7];
                 break;
 
@@ -654,7 +659,7 @@ example.View = draw2d.Canvas.extend({
                     html += '<label class="label-creation">' + languages[browserLang]["view_number_string"] + ': </label>';
                     html += '<input pattern="^(_[\\dNXZ\\.\\-\\[\\]]*|[\\d]*)$" ' + isDisabled + ' autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="input-creation"></input>';
                     html += '<label class="label-creation">' + languages[browserLang]["view_name_string"] + ': </label>';
-                    html += '<input usable value="' + values[1] + '" id="' + elem.id + '-name" class="input-creation"></input>';
+                    html += '<input usable value="' + escapeHtml(values[1]) + '" id="' + elem.id + '-name" class="input-creation"></input>';
                     html += '<label class="label-creation">' + languages[browserLang]["base_static_memb_string"] + ': </label>';
                     html += '<select id="selectExtQueue1" class="input-creation">' + htmlSelect + '</select>';
                     html += '<label class="label-creation"></label>';

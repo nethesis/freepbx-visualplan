@@ -378,8 +378,8 @@ example.Toolbar = Class.extend({
 					"name": elems[1].value,
 					"extension": elems[0].value,
 					"list": elems[2].value,
-                    "strategy": elems[3].value,
-                    "ringtime": elems[4].value
+					"strategy": elems[3].value,
+					"ringtime": elems[4].value
 				});
 				node.children.data[1].figure.setText(elems[1].value + ' ( ' + elems[0].value + ' )');
 				node.children.data[3].figure.setText(elems[2].value.match(/\d+(#|)/g).join("\n"));
@@ -388,6 +388,15 @@ example.Toolbar = Class.extend({
 				break;
 
 			case "ext-queues":
+				node.setUserData({
+					"name": elems[1].value,
+                    "extension": elems[0].value,
+                    "staticExt": elems[2].value,
+                    "dynamicExt": elems[3].value,
+                    "strategy": elems[4].value,
+                    "timeout": elems[5].value,
+                    "maxwait": elems[6].value
+				});
 				if (elems[5].value == 1) {
 					var timeout = "1 " + languages[browserLang]["view_queuesTimeString_second"];
 				} else if (elems[5].value < 60) {

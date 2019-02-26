@@ -245,12 +245,9 @@ function nethvplan_switchCreate($wType, $value, $connectionArray)
         break;
 
         case "ext-queues":
-            $parts = explode("(", $value['entities'][0]['text']);
-            $name = trim($parts[0]);
-            $extParts = explode(")", $parts[1]);
-            $extension = trim($extParts[0]);
-
-            $listStaticArr = explode("\n", $value['entities'][2]['text']);
+            $name = $value['userData']['name'];
+            $extension = $value['userData']['extension'];
+            $listStaticArr = explode("\n", $value['userData']['staticExt']);
             $listStatic = [];
             if (count($listStaticArr) > 0 && $listStaticArr[0] !== "") {
                 foreach ($listStaticArr as $k => $v) {
@@ -261,16 +258,10 @@ function nethvplan_switchCreate($wType, $value, $connectionArray)
                     $listStatic[$k] = "Local/".$tmp[0]."@from-queue/n,".$tmp[1];
                 }
             }
-
-            $listDynamic = explode("\n", $value['entities'][4]['text']);
-
-            $ringStrategy = explode("(", $value['entities'][5]['text']);
-            $tmpStrategy = explode(")", $ringStrategy[1]);
-            $strategy = trim($tmpStrategy[0]);
-            $tmpTimeout = explode("|", $value['entities'][6]['id']);
-            $timeout = trim($tmpTimeout[1]);
-            $tmpMaxwait = explode("|", $value['entities'][7]['id']);
-            $maxwait = trim($tmpMaxwait[1]);
+            $listDynamic = explode("\n", $value['userData']['dynamicExt']);
+            $strategy = $value['userData']['strategy'];
+            $timeout = $value['userData']['timeout'];
+            $maxwait = $value['userData']['maxwait'];
 
             $destinations = nethvplan_getDestination($value, $connectionArray, $currentCreated, $wType);
             $destination = trim($destinations["output_".$value['entities'][8]['id']]);

@@ -485,6 +485,16 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                     id: "queues_output%" + id,
                     type: "output"
                 }];
+                // set queues data inside userData
+                templateObj.userData = {
+                    name: elem[1].value,
+                    extension: elem[0].value,
+                    staticExt: elem[2].value,
+                    dynamicExt: elem[3].value,
+                    strategy: elem[4].value,
+                    timeout: elem[5].value,
+                    maxwait: elem[6].value
+                };
                 break;
 
             case "ivr":

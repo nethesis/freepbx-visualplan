@@ -823,7 +823,6 @@ function nethvplan_bindData($data, $dest, $id)
                 "id"=> $dest."%".$id."slist",
                 "type"=> "list"
             );
-
             $widget['entities'][] = array(
                 "text"=> $langArray["base_dyn_memb_string"],
                 "id"=> $dest."%".$id."dtext",
@@ -834,7 +833,6 @@ function nethvplan_bindData($data, $dest, $id)
                 "id"=> $dest."%".$id."dlist",
                 "type"=> "list"
             );
-
             $widget['entities'][] = array(
                 "text"=> $langArray["view_strategy_string"]." ( ".$data[$dest][$id]['strategy']." )",
                 "id"=> $dest."%".$id."stext",
@@ -850,20 +848,28 @@ function nethvplan_bindData($data, $dest, $id)
                 "id"=> "%".$id."mwtext|".$data[$dest][$id]['maxwait'],
                 "type"=> "text"
             );
-
             $widget['entities'][] = array(
                 "text"=> $langArray["base_fail_dest_string"],
                 "id"=> "faildest-".$dest."%".$id,
                 "type"=> "output",
                 "destination"=> $data[$dest][$id]['dest']
             );
-
             $widget['entities'][] = array(
-              "text"=> $langArray["base_details_string"],
-              "id"=> $id,
-              "type"=> "text",
-              "destination"=> ""
-          );
+                "text"=> $langArray["base_details_string"],
+                "id"=> $id,
+                "type"=> "text",
+                "destination"=> ""
+            );
+            $widget['userData'] = array(
+                "name"=> html_entity_decode($data[$dest][$id]['descr']),
+                "extension"=> $data[$dest][$id]['num'],
+                "staticExt"=> implode(",", $data[$dest][$id]['members']),
+                "dynamicExt"=> $data[$dest][$id]['dynmembers'],
+                "strategy"=> $data[$dest][$id]['strategy'],
+                "timeout"=> $data[$dest][$id]['timeout'],
+                "maxwait"=> $data[$dest][$id]['maxwait'],
+
+            );
         break;
         
         case "ext-group":
@@ -914,7 +920,7 @@ function nethvplan_bindData($data, $dest, $id)
             );
             $widget['userData'] = array(
                 "name"=> html_entity_decode($data[$dest][$id]['description']),
-                "extension"=> html_entity_decode($data[$dest][$id]['num']),
+                "extension"=> $data[$dest][$id]['num'],
                 "list"=> $data[$dest][$id]['grplist'],
                 "strategy"=> $data[$dest][$id]['strategy'],
                 "ringtime"=> $data[$dest][$id]['grptime']
