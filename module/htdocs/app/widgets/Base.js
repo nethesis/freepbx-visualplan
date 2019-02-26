@@ -646,6 +646,11 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                     id: "ext-meetme_dest%" + id,
                     type: "input"
                 }];
+                // set conference data inside userData
+                templateObj.userData = {
+                    name: elem[1].value,
+                    extension: elem[0].value
+                };
                 break;
         }
         this.setPersistentAttributes(templateObj, type);

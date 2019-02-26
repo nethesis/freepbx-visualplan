@@ -494,6 +494,10 @@ example.Toolbar = Class.extend({
 				node.children.data[1].figure.setText(elems[0].value + ' ( *28' + elems[1].value + ' )');
 				break;
 			case "ext-meetme":
+				node.setUserData({
+					"name": elems[1].value,
+					"extension": elems[0].value
+				});
 				node.children.data[1].figure.setText(elems[1].value + ' ( ' + elems[0].value + ' )');
 				break;
 

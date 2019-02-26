@@ -484,8 +484,8 @@ example.View = draw2d.Canvas.extend({
                 break;
 
             case "ext-meetme":
-                var v1 = data[1].figure.text.split('(')[1].split(')')[0].trim();
-                var v2 = data[1].figure.text.split('(')[0].trim();
+                var v1 = userData.extension;
+                var v2 = userData.name;
                 return [v1, v2];
                 break;
         }
@@ -1070,7 +1070,7 @@ example.View = draw2d.Canvas.extend({
                 html += '<label class="label-creation">' + languages[browserLang]["view_number_string"] + ': </label>';
                 html += '<input pattern="^(_[\\dNXZ\\.\\-\\[\\]]*|[\\d]*)$" ' + isDisabled + ' autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="input-creation"></input>';
                 html += '<label class="label-creation">' + languages[browserLang]["view_name_string"] + ': </label>';
-                html += '<input value="' + values[1] + '" usable id="' + elem.id + '-name" class="input-creation"></input>';
+                html += '<input value="' + escapeHtml(values[1]) + '" usable id="' + elem.id + '-name" class="input-creation"></input>';
                 break;
         }
 

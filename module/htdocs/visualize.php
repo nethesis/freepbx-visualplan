@@ -509,6 +509,10 @@ function nethvplan_bindData($data, $dest, $id)
               "destination"=> "",
               "cssClass"=> "link"
             );
+            $widget['userData'] = array(
+                "name"=> html_entity_decode($data[$dest][$id]['description']),
+                "extension"=> $data[$dest][$id]['id']
+            );
         break;
         
         case "app-blackhole":

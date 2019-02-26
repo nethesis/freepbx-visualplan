@@ -188,10 +188,8 @@ function nethvplan_switchCreate($wType, $value, $connectionArray)
 
         // ext-meetme = conference
         case "ext-meetme":
-            $parts = explode("(", $value['entities'][0]['text']);
-            $name = trim($parts[0]);
-            $extParts = explode(")", $parts[1]);
-            $extension = trim($extParts[0]);
+            $name = $value['userData']['name'];
+            $extension = $value['userData']['extension'];
 
             $exists = conferences_get($extension);
             if (empty($exists)) {
