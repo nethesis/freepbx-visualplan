@@ -120,19 +120,17 @@ example.View = draw2d.Canvas.extend({
                     // inject html
                     dialog.html(event.context.switchDescription(containerData, event.dropped[0].id));
 
-                    // bind click on buttons
+                    // bind click on select existing buttons
                     $('.button-elem-list').bind('click', function (el) {
-                        var elemId = el.target.attributes.elemId.value;
-                        var getChildId = window.btoa(decodeURIComponent(encodeURIComponent(containerData[elemId].id)));
-
+                        var elemId = el.currentTarget.attributes.elemId.value;
+                        var getChildId = window.btoa(containerData[elemId].id);
                         var childDestStr = "";
                         for (ent in containerData[elemId].entities) {
                             if (containerData[elemId].entities[ent].type === "output") {
                                 childDestStr += containerData[elemId].entities[ent].destination + "|";
                             }
                         }
-                        var getChildDest = window.btoa(decodeURIComponent(encodeURIComponent(childDestStr)));
-
+                        var getChildDest = window.btoa(childDestStr);
                         $.ajax({
                             url: "./visualize.php?getChild=" + getChildId + "&getChildDest=" + getChildDest,
                             context: document.body,
@@ -399,7 +397,7 @@ example.View = draw2d.Canvas.extend({
         });
     },
 
-    extracInfo: function (data, type, userData) {
+    extractInfo: function (data, type, userData) {
         switch (type) {
             case "incoming":
                 var v1 = data[1].figure.text.split('/')[0].trim();
@@ -500,7 +498,7 @@ example.View = draw2d.Canvas.extend({
 
         values = ["", "", "", "", "", "", "", "", ""];
         if (mod) {
-            values = this.extracInfo(elem.data || {}, elem.id, elem.userData);
+            values = this.extractInfo(elem.data || {}, elem.id, elem.userData);
             isDisabled = 'disabled';
         }
 
@@ -1458,14 +1456,12 @@ function initRecordingListeners() {
             $.ajax({
                 url: "./plugins.php",
                 type: "post",
-                contentType: 'application/json',
                 data: {
                     "getType": "tools",
                     "rest": "savekey",
                     "key": key
                 }
             }).done(function(res) {
-                apiKey = key;
                 $("#errorMsgApy").hide();
                 $("#newRecordTTStext").removeClass("error-border");
                 $("#ttsKeyContainer").hide();
@@ -1543,7 +1539,6 @@ function initRecordingListeners() {
         $.ajax({
             url: "./plugins.php",
             type: "post",
-            contentType: 'application/json',
             data: {
                 "getType": "tools",
                 "rest": "savetts",
@@ -1680,7 +1675,6 @@ function initRecordingListeners() {
             $.ajax({
                 url: "./plugins.php",
                 type: "post",
-                contentType: 'application/json',
                 data: {
                     "getType": "tools",
                     "rest": "ttstext",

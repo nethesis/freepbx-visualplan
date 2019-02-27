@@ -390,12 +390,12 @@ example.Toolbar = Class.extend({
 			case "ext-queues":
 				node.setUserData({
 					"name": elems[1].value,
-                    "extension": elems[0].value,
-                    "staticExt": elems[2].value,
-                    "dynamicExt": elems[3].value,
-                    "strategy": elems[4].value,
-                    "timeout": elems[5].value,
-                    "maxwait": elems[6].value
+					"extension": elems[0].value,
+					"staticExt": elems[2].value,
+					"dynamicExt": elems[3].value,
+					"strategy": elems[4].value,
+					"timeout": elems[5].value,
+					"maxwait": elems[6].value
 				});
 				if (elems[5].value == 1) {
 					var timeout = "1 " + languages[browserLang]["view_queuesTimeString_second"];
