@@ -98,7 +98,6 @@ if (!isset($_SESSION['AMP_user']) || !$_SESSION['AMP_user']->checkSection('visua
 			// set widget name
 			$('#incoming').text(languages[browserLang]["base_incoming_string"]);
 
-			// $('#night').text(languages[browserLang]["base_night_service_string"]);
 			$('#ext-group').text(languages[browserLang]["base_ext_group_string"]);
 			$('#ext-queues').text(languages[browserLang]["base_ext_queues_string"]);
 			$('#ivr').text(languages[browserLang]["base_ivr_string"]);
@@ -125,7 +124,6 @@ if (!isset($_SESSION['AMP_user']) || !$_SESSION['AMP_user']->checkSection('visua
 				}).done(function (c) {
 					try {
 						var jsonDocument = JSON.parse(c);
-
 						var g = new dagre.graphlib.Graph();
 						g.setGraph({});
 						g.setDefaultEdgeLabel(function () {
@@ -159,8 +157,8 @@ if (!isset($_SESSION['AMP_user']) || !$_SESSION['AMP_user']->checkSection('visua
 						$('#loader').hide();
 
 						var zoomLevel = g.nodes().length / 5.9 > 1.2 ? g.nodes().length / 5.9 : 1.3;
-            app.view.setZoom(zoomLevel, 0, 0, true);
-            $('tspan:contains("' + languages[browserLang]["base_details_string"] + '")').css('cursor','pointer').css('text-decoration','underline');
+						app.view.setZoom(zoomLevel, 0, 0, true);
+						$('tspan:contains("' + languages[browserLang]["base_details_string"] + '")').css('cursor','pointer').css('text-decoration','underline');
 
 					} catch (e) {
 						$('#loader').hide();
@@ -199,10 +197,6 @@ if (!isset($_SESSION['AMP_user']) || !$_SESSION['AMP_user']->checkSection('visua
 			<!-- Cerchio -->
 			<div data-shape="Base" data-radius="20" id="incoming" class="palette_node_element draw2d_droppable startWidget" title="drag&amp;drop the table into the canvas..">
 			</div>
-			<!-- -->
-			<!-- Rettangolo -->
-			<!-- <div data-shape="Base" id="night" class="palette_node_element draw2d_droppable" title="drag&amp;drop the table into the canvas..">
-      </div> -->
 			<div data-shape="Base" id="ext-group" class="palette_node_element draw2d_droppable" title="drag&amp;drop the table into the canvas..">
 			</div>
 			<div data-shape="Base" id="ext-queues" class="palette_node_element draw2d_droppable" title="drag&amp;drop the table into the canvas..">

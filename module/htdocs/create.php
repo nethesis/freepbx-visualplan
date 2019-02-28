@@ -34,9 +34,7 @@ if ($handle = opendir(__DIR__. '/../..')) {
     closedir($handle);
 }
 
-$json = $_POST['jsonData'];
-$json = base64_decode($json);
-
+$json = file_get_contents("php://input");
 $jsonArray = json_decode($json, true);
 
 $widgetArray = array_filter(
@@ -135,66 +133,7 @@ function nethvplan_switchCreate($wType, $value, $connectionArray)
             }
         break;
 
-        case "night":
-            $nameParts = explode("-", $value['entities'][0]['text']);
-            $name = trim($nameParts[0]);
-            $id = trim($nameParts[1]);
-            $state = trim($value['entities'][1]['text']);
-
-            if (strcasecmp($state, "active") == 0 || strcasecmp($state, "attivo") == 0) {
-                $date = "attivo";
-            } elseif (strcasecmp($state, "not active") == 0 || strcasecmp($state, "non attivo") == 0) {
-                $date = "inattivo";
-            } else {
-                $dateparts = explode("-", $state);
-
-                $offset = nethvplan_timeZoneOffset();
-
-                $timebegin = trim($dateparts[0]);
-                $timestampBeg = strtotime(str_replace('/', '-', $timebegin)) + $offset;
-                $timestampBeg = $timestampBeg - $offset;
-
-                $timebegin = date("Y-m-d H:i:s", $timestampBeg);
-
-                $timeend = trim($dateparts[1]);
-                $timestampEnd = strtotime(str_replace('/', '-', $timeend)) + $offset;
-                $timestampEnd = $timestampEnd - $offset;
-
-                $timeend = date("Y-m-d H:i:s", $timestampEnd);
-                $date = 'custom';
-            }
-
-            $destinations = nethvplan_getDestination($value, $connectionArray, $currentCreated, $wType);
-            $destination = trim($destinations["output_".$value['entities'][2]['id']]);
-
-            $exists = nethnight_get($id);
-            if (empty($exists)) {
-                $nethNightId = nethnight_add(array(
-                    "description" => $name,
-                    "date" => $date,
-                    "tsbegin" => $timebegin,
-                    "tsend" => $timeend,
-                    "goto0" => "dest",
-                    "dest0" => $destination,
-                    "enabled" => ""
-                ));
-                $idReturn = $nethNightId;
-            } else {
-                nethnight_edit($id, array(
-                    "description" => $name,
-                    "date" => $date,
-                    "tsbegin" => $timebegin,
-                    "tsend" => $timeend,
-                    "goto0" => "dest",
-                    "dest0" => $destination,
-                    "enabled" => ""
-                ));
-                $idReturn = $id;
-            }
-
-            nethvplan_nightGetSource($value['id'], $connectionArray, $idReturn);
-        break;
-
+        // from-did-direct = extension
         case "from-did-direct":
             $parts = explode("(", $value['entities'][0]['text']);
             $name = trim($parts[0]);
@@ -226,6 +165,7 @@ function nethvplan_switchCreate($wType, $value, $connectionArray)
             }
         break;
 
+        // ext-local = voice mail
         case "ext-local":
             $parts = explode("-", $value['entities'][0]['text']);
             $parts = explode("(", $parts[0]);
@@ -246,11 +186,10 @@ function nethvplan_switchCreate($wType, $value, $connectionArray)
             }
         break;
 
+        // ext-meetme = conference
         case "ext-meetme":
-            $parts = explode("(", $value['entities'][0]['text']);
-            $name = trim($parts[0]);
-            $extParts = explode(")", $parts[1]);
-            $extension = trim($extParts[0]);
+            $name = $value['userData']['name'];
+            $extension = $value['userData']['extension'];
 
             $exists = conferences_get($extension);
             if (empty($exists)) {
@@ -262,17 +201,13 @@ function nethvplan_switchCreate($wType, $value, $connectionArray)
         break;
 
         case "ext-group":
-            $parts = explode("(", $value['entities'][0]['text']);
-            $name = trim($parts[0]);
-            $extParts = explode(")", $parts[1]);
-            $extension = trim($extParts[0]);
-      $list = preg_replace('/\s+/', '-', $value['entities'][2]['text']);
-            $ringStrategy = explode("(", $value['entities'][3]['text']);
-            $tmpStrategy = explode(")", $ringStrategy[1]);
-            $strategy = trim($tmpStrategy[0]);
-            $time = explode("(", $value['entities'][4]['text']);
-            $tmpTime = explode(")", $time[1]);
-            $grpTime = (int)trim($tmpTime[0]);
+            $name = $value['userData']['name'];
+            $extension = $value['userData']['extension'];
+            $list = preg_replace('/\s+/', '-', $value['userData']['list']);
+
+            $strategy = $value['userData']['strategy'];
+            $grpTime = (int)$value['userData']['ringtime'];
+
             $destinations = nethvplan_getDestination($value, $connectionArray, $currentCreated, $wType);
             $destination = trim($destinations["output_".$value['entities'][5]['id']]);
             $exists = ringgroups_get($extension);
@@ -288,7 +223,7 @@ function nethvplan_switchCreate($wType, $value, $connectionArray)
                     $list,
                     $destination,
                     $name,
-                $exists['grppre'],
+                    $exists['grppre'],
                     $exists['annmsg_id'],
                     $exists['alertinfo'],
                     $exists['needsconf'],
@@ -308,12 +243,9 @@ function nethvplan_switchCreate($wType, $value, $connectionArray)
         break;
 
         case "ext-queues":
-            $parts = explode("(", $value['entities'][0]['text']);
-            $name = trim($parts[0]);
-            $extParts = explode(")", $parts[1]);
-            $extension = trim($extParts[0]);
-
-            $listStaticArr = explode("\n", $value['entities'][2]['text']);
+            $name = $value['userData']['name'];
+            $extension = $value['userData']['extension'];
+            $listStaticArr = explode("\n", $value['userData']['staticExt']);
             $listStatic = [];
             if (count($listStaticArr) > 0 && $listStaticArr[0] !== "") {
                 foreach ($listStaticArr as $k => $v) {
@@ -324,16 +256,10 @@ function nethvplan_switchCreate($wType, $value, $connectionArray)
                     $listStatic[$k] = "Local/".$tmp[0]."@from-queue/n,".$tmp[1];
                 }
             }
-
-            $listDynamic = explode("\n", $value['entities'][4]['text']);
-
-            $ringStrategy = explode("(", $value['entities'][5]['text']);
-            $tmpStrategy = explode(")", $ringStrategy[1]);
-            $strategy = trim($tmpStrategy[0]);
-            $tmpTimeout = explode("|", $value['entities'][6]['id']);
-            $timeout = trim($tmpTimeout[1]);
-            $tmpMaxwait = explode("|", $value['entities'][7]['id']);
-            $maxwait = trim($tmpMaxwait[1]);
+            $listDynamic = explode("\n", $value['userData']['dynamicExt']);
+            $strategy = $value['userData']['strategy'];
+            $timeout = $value['userData']['timeout'];
+            $maxwait = $value['userData']['maxwait'];
 
             $destinations = nethvplan_getDestination($value, $connectionArray, $currentCreated, $wType);
             $destination = trim($destinations["output_".$value['entities'][8]['id']]);
@@ -377,14 +303,9 @@ function nethvplan_switchCreate($wType, $value, $connectionArray)
         break;
 
         case "app-announcement":
-            $nameParts = explode("-", $value['entities'][0]['text']);
-            $name = trim($nameParts[0]);
-            $id = trim($nameParts[1]);
-
-            $parts = explode("(", $value['entities'][1]['text']);
-            $extParts = explode(")", $parts[1]);
-            $rec_id = trim($extParts[0]);
-
+            $id = $value['userData']['id'];
+            $name = $value['userData']['description'];
+            $rec_id = $value['userData']['announcement'];
             if (!array_key_exists($value['id'], $currentCreated)) {
                 if (empty($id)) {
                     $idAnn = announcement_add($name, $rec_id, "", $destination, null, null, null);
@@ -405,17 +326,10 @@ function nethvplan_switchCreate($wType, $value, $connectionArray)
         break;
 
         case "ivr":
-            $parts = explode("(", $value['entities'][0]['text']);
-            $name = trim($parts[0]);
-            $extParts = explode(")", $parts[1]);
-            $description = trim($extParts[0]);
-
-            $idParts = explode("-", $value['entities'][0]['text']);
-            $id = trim($idParts[1]);
-
-            $annParts = explode("(", $value['entities'][1]['text']);
-            $annExParts = explode(")", $annParts[1]);
-            $announcement = trim($annExParts[0]);
+            $id = $value['userData']['id'];
+            $name = $value['userData']['name'];
+            $description = $value['userData']['description'];
+            $announcement = $value['userData']['announcement'];
 
             if (!array_key_exists($value['id'], $currentCreated)) {
                 if (empty($invDest)) {
@@ -552,18 +466,10 @@ function nethvplan_switchCreate($wType, $value, $connectionArray)
         break;
 
         case "cqr":
-            $parts = explode("(", $value['entities'][0]['text']);
-
-            $name = trim($parts[0]);
-            $extParts = explode(")", $parts[1]);
-            $description = trim($extParts[0]);
-
-            $idParts = explode("-", $value['entities'][0]['text']);
-            $id = trim($idParts[1]);
-
-            $annParts = explode("(", $value['entities'][1]['text']);
-            $annExParts = explode(")", $annParts[1]);
-            $announcement = trim($annExParts[0]);
+            $id = $value['userData']['id'];
+            $name = $value['userData']['name'];
+            $description = $value['userData']['description'];
+            $announcement = $value['userData']['announcement'];
 
             if (!array_key_exists($value['id'], $currentCreated)) {
                 if (empty($defDest)) {
@@ -616,8 +522,8 @@ function nethvplan_switchCreate($wType, $value, $connectionArray)
                         "err_announcement" => "",
                         "code_length" => 5,
                         "code_retries" => 3,
-            "default_destination" => $defDest,
-            "db_type" => "mysql",
+                        "default_destination" => $defDest,
+                        "db_type" => "mysql",
                         "db_url" => "localhost",
                         "db_name" => "",
                         "db_user" => "",
@@ -704,9 +610,7 @@ function nethvplan_switchCreate($wType, $value, $connectionArray)
                     ));
                     $idReturn = $idCQR;
                 }
-
                 $cqrArray = array();
-
                 $position = 1;
                 foreach ($value['entities'] as $k => $v) {
                     if ($k > 3) {
@@ -725,13 +629,10 @@ function nethvplan_switchCreate($wType, $value, $connectionArray)
         break;
 
         case "timeconditions":
-            $nameParts = explode("-", $value['entities'][0]['text']);
-            $name = trim($nameParts[0]);
-            $id = trim($nameParts[1]);
 
-            $parts = explode("(", $value['entities'][1]['text']);
-            $extParts = explode(")", $parts[1]);
-            $time = trim($extParts[0]);
+            $id = $value['userData']['id'];
+            $name = $value['userData']['name'];
+            $time = $value['userData']['time'];
 
             if (!array_key_exists($value['id'], $currentCreated)) {
                 if (empty($id)) {
@@ -780,13 +681,13 @@ function nethvplan_switchCreate($wType, $value, $connectionArray)
         break;
 
         case "app-daynight":
-            $parts = explode("(", $value['entities'][0]['text']);
-            $name = trim($parts[0]);
-            $extParts = explode(")", $parts[1]);
-            $controlCode = substr(trim($extParts[0]), -1);
+            $id = $value['userData']['id'];
+            $name = $value['userData']['name'];
+            $controlCode = $value['userData']['code'];
 
             $destinations = nethvplan_getDestination($value, $connectionArray, $currentCreated, $wType);
             $exists = daynight_get_obj($controlCode);
+        
             daynight_edit(array(
                 "day_recording_id" => $exists['day_recording_id'],
                 "night_recording_id" => $exists['night_recording_id'],
@@ -851,10 +752,6 @@ function nethvplan_getDestination($values, $connectionArray)
                     $destAsterisk[$value['source']['port']] = trim($parts[0]).",".trim($parts[1]).",1";
                 break;
 
-                case "night":
-                    $destAsterisk[$value['source']['port']] = trim($parts[1]);
-                break;
-
                 case "ext-local":
                     $d = $value['target']['port'];
                     $p = explode("%", $d);
@@ -896,17 +793,6 @@ function nethvplan_getDestination($values, $connectionArray)
         }
     }
     return $destAsterisk;
-}
-
-function nethvplan_nightGetSource($id, $connectionArray, $nightId)
-{
-    foreach ($connectionArray as $key => $value) {
-        if ($value['target']['node'] == $id) {
-            $parts = explode("%", $value['source']['node']);
-            $incomingId = str_replace(' ', '', $parts[1]);
-            nethnigh_set_destination($incomingId, $nightId);
-        }
-    }
 }
 
 function nethvplan_timeZoneOffset()

@@ -10,7 +10,6 @@ example.View = draw2d.Canvas.extend({
             canvas.addEventListener("mousewheel", this.MouseWheelHandler, false);
             canvas.addEventListener("DOMMouseScroll", this.MouseWheelHandler, false);
         }
-
         this.setScrollArea("#" + id);
     },
 
@@ -121,19 +120,17 @@ example.View = draw2d.Canvas.extend({
                     // inject html
                     dialog.html(event.context.switchDescription(containerData, event.dropped[0].id));
 
-                    // bind click on buttons
+                    // bind click on select existing buttons
                     $('.button-elem-list').bind('click', function (el) {
-                        var elemId = el.target.attributes.elemId.value;
-                        var getChildId = window.btoa(unescape(encodeURIComponent(containerData[elemId].id)));
-
+                        var elemId = el.currentTarget.attributes.elemId.value;
+                        var getChildId = window.btoa(containerData[elemId].id);
                         var childDestStr = "";
                         for (ent in containerData[elemId].entities) {
                             if (containerData[elemId].entities[ent].type === "output") {
                                 childDestStr += containerData[elemId].entities[ent].destination + "|";
                             }
                         }
-                        var getChildDest = window.btoa(unescape(encodeURIComponent(childDestStr)));
-
+                        var getChildDest = window.btoa(childDestStr);
                         $.ajax({
                             url: "./visualize.php?getChild=" + getChildId + "&getChildDest=" + getChildDest,
                             context: document.body,
@@ -273,6 +270,7 @@ example.View = draw2d.Canvas.extend({
                     Cancel: function () {
                         $(this).dialog('destroy').remove();
                     },
+                    // save modal
                     Save: function () {
                         var pattern = event.context.getElemByAttr("pattern");
                         var usableElem = event.context.getElemByAttr("usable");
@@ -376,20 +374,17 @@ example.View = draw2d.Canvas.extend({
             } else {
                 missing = true;
             }
-
             if (type === "ext-local") {
                 missing = true;
             }
-            if (number.length == 0 || number.indexOf('-') > -1) {
+            if (number.length == 0) {
                 missing = false;
             }
 
             if (missing) {
                 var typeFig = $(event.dropped).data("shape") || event.shape;
                 var figure = eval("new " + typeFig + "();");
-
                 figure.onDrop(event.dropped, event.x, event.y, elem);
-
                 var command = new draw2d.command.CommandAdd(event.context, figure, event.x - figure.width - 75, event.y - 25);
                 event.context.getCommandStack().execute(command);
 
@@ -402,7 +397,7 @@ example.View = draw2d.Canvas.extend({
         });
     },
 
-    extracInfo: function (data, type) {
+    extractInfo: function (data, type, userData) {
         switch (type) {
             case "incoming":
                 var v1 = data[1].figure.text.split('/')[0].trim();
@@ -423,31 +418,6 @@ example.View = draw2d.Canvas.extend({
                 return [v1, v2, v3, v4, v5];
                 break;
 
-            case "night":
-                var v1 = data[1].figure.text.split('-')[0].trim();
-                var nightType = data[2].figure.text.trim();
-                if (nightType === 'Active' || nightType === 'Attivo') {
-                    var v2 = "selected";
-                    var v3 = "";
-                    var v4 = "";
-                    var v5 = "";
-                    var v6 = "";
-                } else if (nightType === 'Not Active' || nightType === 'Non Attivo') {
-                    var v2 = "";
-                    var v3 = "selected";
-                    var v4 = "";
-                    var v5 = "";
-                    var v6 = "";
-                } else {
-                    var v2 = "";
-                    var v3 = "";
-                    var v4 = "selected";
-                    var v5 = data[2].figure.text.split('-')[0].trim();
-                    var v6 = data[2].figure.text.split('-')[1].trim();
-                }
-                return [v1, v2, v3, v4, v5, v6];
-                break;
-
             case "from-did-direct":
                 var v1 = data[1].figure.text.split('(')[1].split(')')[0].trim();
                 var v2 = data[1].figure.text.split('(')[0].trim();
@@ -455,60 +425,65 @@ example.View = draw2d.Canvas.extend({
                 break;
 
             case "ext-group":
-                var v1 = data[1].figure.text.split('(')[1].split(')')[0].trim();
-                var v2 = data[1].figure.text.split('(')[0].trim();
-                var v3 = data[3].figure.text;
-                var v4 = data[4].figure.text.split('(')[1].split(')')[0].trim();
-                var v5 = data[5].figure.text.split('(')[1].split(')')[0].trim();
+                var v1 = userData.extension;
+                var v2 = userData.name;
+                var v3 = userData.list;
+                var v4 = userData.strategy;
+                var v5 = userData.ringtime;
                 return [v1, v2, v3, v4, v5];
                 break;
 
             case "ext-queues":
-                var v1 = data[1].figure.text.split('(')[1].split(')')[0].trim();
-                var v2 = data[1].figure.text.split('(')[0].trim();
-                var v3 = data[3].figure.text;
-                var v4 = data[5].figure.text;
-                var v5 = data[6].figure.text.split('(')[1].split(')')[0].trim();
-                var v6 = data[7].figure.id.split('|')[1].trim();
-                var v7 = data[8].figure.id.split('|')[1].trim();
+                var v1 = userData.extension;
+                var v2 = userData.name;
+                var v3 = userData.staticExt
+                        .replace(/Local\//g, "\n")
+                        .replace(/@from-queue\/n/g, "")
+                        .replace(/-/g, " ")
+                        .match(/-?\d+(,\d+|#|)/g)
+                        .join("\n");
+                var v4 = userData.dynamicExt;
+                var v5 = userData.strategy;
+                var v6 = userData.timeout;
+                var v7 = userData.maxwait;
                 return [v1, v2, v3, v4, v5, v6, v7];
                 break;
 
             case "ivr":
-                var v1 = data[1].figure.text.split('(')[0].trim();
-                var v2 = data[1].figure.text.split('(')[1].split(')')[0].trim();
-                var v3 = data[2].figure.text.split(':')[1].split('(')[0].trim();
+                var v1 = userData.name;
+                var v2 = userData.description;
+                var v3 = userData.announcement;
                 return [v1, v2, v3];
                 break;
 
             case "cqr":
-                var v1 = data[1].figure.text.split('(')[0].trim();
-                var v2 = data[1].figure.text.split('(')[1].split(')')[0].trim();
-                var v3 = data[2].figure.text.split(':')[1].split('(')[0].trim();
+                var v1 = userData.name;
+                var v2 = userData.description;
+                var v3 = userData.announcement;
                 return [v1, v2, v3];
                 break;
 
             case "app-announcement":
-                var v1 = data[1].figure.text.split('-')[0].trim();
-                var v2 = data[2].figure.text.split(':')[1].split('(')[0].trim();
+                var v1 = userData.description;
+                var v2 = userData.announcement;
                 return [v1, v2];
                 break;
 
             case "timeconditions":
-                var v1 = data[1].figure.text.split('-')[0].trim();
-                var v2 = data[2].figure.text.split(':')[1].split('(')[0].trim();
+                var v1 = userData.name;
+                var v2 = userData.time;
                 return [v1, v2];
                 break;
 
             case "app-daynight":
-                var v1 = data[1].figure.text.split('(')[0].trim();
-                var v2 = data[1].figure.text.split('*')[1].split(')')[0].trim().slice(-1);
+                var v1 = userData.name;
+                var v2 = userData.code;
                 return [v1, v2];
                 break;
 
             case "ext-meetme":
-                var v1 = data[1].figure.text.split('(')[1].split(')')[0].trim();
-                var v2 = data[1].figure.text.split('(')[0].trim();
+                var v1 = userData.extension;
+                var v2 = userData.name;
                 return [v1, v2];
                 break;
         }
@@ -523,7 +498,7 @@ example.View = draw2d.Canvas.extend({
 
         values = ["", "", "", "", "", "", "", "", ""];
         if (mod) {
-            values = this.extracInfo(elem.data || {}, elem.id);
+            values = this.extractInfo(elem.data || {}, elem.id, elem.userData);
             isDisabled = 'disabled';
         }
 
@@ -535,14 +510,6 @@ example.View = draw2d.Canvas.extend({
                 html += '<input pattern="^(_[\\dNXZ\\.\\-\\[\\]]*|[\\d]*)$" placeholder="' + languages[browserLang]["view_any_string"] + '" ' + isDisabled + ' value="' + values[1] + '" usable id="' + elem.id + '-cidnum"></input>';
                 html += '<label class="label-creation">' + languages[browserLang]["view_description_string"] + ': </label>';
                 html += '<input value="' + values[2] + '" usable id="' + elem.id + '-description"></input>';
-                break;
-
-            case "night":
-                html += '<label class="label-creation">' + languages[browserLang]["view_name_string"] + ': </label>';
-                html += '<input autofocus value="' + values[0] + '" usable id="' + elem.id + '-name" class="input-creation"></input>';
-                html += '<label class="label-creation">' + languages[browserLang]["view_manual_act_string"] + ': </label>';
-                html += '<select id="selectNightType" usable onchange="if(this.selectedIndex==2)$(\'#calGroup\').show();else $(\'#calGroup\').hide();" id="' + elem.id + '-activation" class="input-creation"><option ' + values[1] + ' value="1">' + languages[browserLang]["base_active_string"] + '</option><option ' + values[2] + ' value="0">' + languages[browserLang]["base_not_active_string"] + '</option><option ' + values[3] + ' value="period">' + languages[browserLang]["base_period_string"] + '</option></select>';
-                html += '<script>if($("#selectNightType").val() === "period")$("#calGroup").show();</script><div usable id="calGroup" style="display:none;"><label class="label-creation">' + languages[browserLang]["base_period_from_string"] + ': </label><input value="' + values[4] + '" placeholder="dd/mm/yyyy" usable id="' + elem.id + '-fromperiod" class="input-creation"></input><label class="label-creation">' + languages[browserLang]["base_period_to_string"] + ': </label><input value="' + values[5] + '" placeholder="dd/mm/yyyy" usable id="' + elem.id + '-toperiod" class="input-creation"></input></div>';
                 break;
 
             case "from-did-direct":
@@ -601,7 +568,7 @@ example.View = draw2d.Canvas.extend({
                     html += '<label class="label-creation">' + languages[browserLang]["view_number_string"] + ': </label>';
                     html += '<input pattern="^(_[\\dNXZ\\.\\-\\[\\]]*|[\\d]*)$" ' + isDisabled + ' autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="input-creation"></input>';
                     html += '<label class="label-creation">' + languages[browserLang]["view_description_string"] + ': </label>';
-                    html += '<input usable value="' + values[1] + '" id="' + elem.id + '-description" class="input-creation"></input>';
+                    html += '<input usable value="' + escapeHtml(values[1]) + '" id="' + elem.id + '-description" class="input-creation"></input>';
                     html += '<label class="label-creation">' + languages[browserLang]["base_ext_list_string"] + ': </label>';
                     html += '<select id="selectExtGroup" class="input-creation">' + htmlSelect + '</select>';
                     html += '<label class="label-creation"></label>';
@@ -690,7 +657,7 @@ example.View = draw2d.Canvas.extend({
                     html += '<label class="label-creation">' + languages[browserLang]["view_number_string"] + ': </label>';
                     html += '<input pattern="^(_[\\dNXZ\\.\\-\\[\\]]*|[\\d]*)$" ' + isDisabled + ' autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="input-creation"></input>';
                     html += '<label class="label-creation">' + languages[browserLang]["view_name_string"] + ': </label>';
-                    html += '<input usable value="' + values[1] + '" id="' + elem.id + '-name" class="input-creation"></input>';
+                    html += '<input usable value="' + escapeHtml(values[1]) + '" id="' + elem.id + '-name" class="input-creation"></input>';
                     html += '<label class="label-creation">' + languages[browserLang]["base_static_memb_string"] + ': </label>';
                     html += '<select id="selectExtQueue1" class="input-creation">' + htmlSelect + '</select>';
                     html += '<label class="label-creation"></label>';
@@ -716,12 +683,12 @@ example.View = draw2d.Canvas.extend({
                     if (timeout) {
                         $('#qut-' + timeout).attr("selected", "selected");
                     } else {
-                        $('#qut-0').attr("selected", "selected");
+                        $('#qut-15').attr("selected", "selected");
                     }
                     if (maxwait) {
                         $('#qum-' + maxwait).attr("selected", "selected");
                     } else {
-                        $('#qum-15').attr("selected", "selected");
+                        $('#qum-0').attr("selected", "selected");
                     }
 
                     thisApp.bindExtSelect({
@@ -794,14 +761,15 @@ example.View = draw2d.Canvas.extend({
                         };
 
                         for (e in data) {
-                            if ((data[e].description === values[1]) || (selTimeGroup == data[e].description)) {
+                            if (data[e].id === values[1] || data[e].id == selTimeGroup ) {
                                 selectedOption = "selected";
                             } else {
                                 selectedOption = "";
                             }
 
-                            htmlSelect += '<option ' + selectedOption + ' value="' + data[e].description + ' ( ' + e + ' )">' + data[e].description + '</option>';
+                            htmlSelect += '<option ' + selectedOption + ' timeid="' + e + '" value="' + escapeHtml(data[e].description) + ' ( ' + e + ' )">' + data[e].description + '</option>';
                         }
+
                         for (var k = 0; k < 24; k++) {
                             htmlSelectHours += '<option value="' + k + '">' + (k < 10 ? '0' + k : k) + '</option>';
                         }
@@ -823,7 +791,7 @@ example.View = draw2d.Canvas.extend({
                         html = '';
                         //html += '<div id="addCondTemp">';
                         html += '<label id="' + elem.id + '-namelabel" class="label-creation on-action-disabled">' + languages[browserLang]["view_timeconditionname_string"] + ': </label>';
-                        html += '<input autofocus value="' + values[0] + '" usable id="' + elem.id + '-name" class="input-creation on-action-disabled"></input>';
+                        html += '<input autofocus value="' + escapeHtml(values[0]) + '" usable id="' + elem.id + '-name" class="input-creation on-action-disabled"></input>';
                         html += '<label id="' + elem.id + '-timegrouplabel" class="label-creation on-action-disabled">' + languages[browserLang]["view_timegroup_string"] + ': </label>';
                         html += '<select usable id="' + elem.id + '-timegroup" class="input-creation on-action-disabled">' + htmlSelect + '</select>';
                         html += '<button id="modifyTimeGroupButton" class="addButtons on-action-disabled" title="' + languages[browserLang]["view_modifytimegrouptitle_string"] + '" class="listRecordingSection"><i class="fa fa-pencil"></i></button>';
@@ -838,7 +806,7 @@ example.View = draw2d.Canvas.extend({
                         html += '<span id="' + elem.id + '-title" class="input-creation"></span>';
 
                         html += '<label class="label-creation">' + languages[browserLang]["view_timegroupname_string"] + ': </label>';
-                        html += '<input autofocus value="' + values[0] + '" id="' + elem.id + '-timegroupname" class="input-creation"></input>';
+                        html += '<input autofocus value="' + escapeHtml(values[0]) + '" id="' + elem.id + '-timegroupname" class="input-creation"></input>';
 
                         html += '<div id="time-1" class="times-forms">';
 
@@ -917,12 +885,16 @@ example.View = draw2d.Canvas.extend({
                             return json;
                         }
 
-                        function resetReload(json, elem) {
+                        function resetReload(json, elem, id) {
                             $("#" + elem.id + "-timegroupname").removeClass("error-input");
                             $(".error-message").text("");
                             $(".error-message").css("margin-bottom", "0px");
                             var condName = $("#" + elem.id + "-name").val();
-                            dialogNewTimeCond(json.times[0].name, condName);
+                            if (json.rest == "set") {
+                                dialogNewTimeCond(id, condName);
+                            } else if ((json.rest == "update")) {
+                                dialogNewTimeCond(json.id, condName);
+                            }
                             $($(".ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix button")[1]).button('enable');
                         }
 
@@ -967,28 +939,28 @@ example.View = draw2d.Canvas.extend({
                         });
 
                         $("#modifyTimeGroupButton").click(function () {
+                            // graphic adjustments
                             $(".on-action-disabled").attr('disabled', 'disabled').addClass('disabled');
                             $($(".ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix button")[1]).button('disable');
                             $("#" + elem.id + "-titleStringModify").removeClass("hide");
                             $("#" + elem.id + "-titleString").addClass("hide");
                             $("#updateAddTimeGroups").removeClass("hide");
                             $("#saveAddTimeGroups").addClass("hide");
-
-                            var selected = $("#" + elem.id + "-timegroup").val();
-                            var selectedId = selected.split("(")[1].split(")")[0].trim();
-                            var selectedText = $("#" + elem.id + "-timegroup").val().split("(")[0].trim();
+                            // start creating request selected timegroup data
+                            var selected = $("#" + elem.id + "-timegroup");
+                            var selectedId = selected[0].selectedOptions[0].attributes["timeid"].value;
+                            var selectedText = selected[0].selectedOptions[0].text;
                             $("#" + elem.id + "-timegroupname").val(selectedText);
-
                             var json = {
                                 type: "timegroup",
                                 rest: "get",
                                 id: selectedId
                             };
-
                             $.ajax({
                                 method: "POST",
                                 url: "./plugins.php?",
-                                data: "jsonData=" + window.btoa(unescape(encodeURIComponent(JSON.stringify(json))))
+                                contentType: 'application/json',
+                                data: JSON.stringify(json)
                             }).done(function (d) {
                                 var time = JSON.parse(d);
                                 var l = time.length;
@@ -1014,24 +986,21 @@ example.View = draw2d.Canvas.extend({
                                 }
                             });
                             $("#addTimeGroups").show();
-
                         });
 
                         $("#updateAddTimeGroups").click(function () {
-
-                            var selected = $("#" + elem.id + "-timegroup").val();
-                            var selectedId = selected.split("(")[1].split(")")[0].trim();
-
+                            var selected = $("#" + elem.id + "-timegroup");
+                            var selectedId = selected[0].selectedOptions[0].attributes["timeid"].value;
                             var json = getValues(elem);
                             json.type = "timegroup";
                             json.rest = "update";
                             json.id = selectedId;
-
                             if (json.times[0].name != "") {
                                 $.ajax({
                                     method: "POST",
                                     url: "./plugins.php?",
-                                    data: "jsonData=" + window.btoa(unescape(encodeURIComponent(JSON.stringify(json))))
+                                    contentType: 'application/json',
+                                    data: JSON.stringify(json)
                                 }).done(function (d) {
                                     resetReload(json, elem);
                                 });
@@ -1043,18 +1012,17 @@ example.View = draw2d.Canvas.extend({
                         });
 
                         $("#saveAddTimeGroups").click(function () {
-
                             var json = getValues(elem);
                             json.type = "timegroup";
                             json.rest = "set";
-
                             if (json.times[0].name != "") {
                                 $.ajax({
                                     method: "POST",
                                     url: "./plugins.php?",
-                                    data: "jsonData=" + window.btoa(unescape(encodeURIComponent(JSON.stringify(json))))
+                                    contentType: 'application/json',
+                                    data: JSON.stringify(json)
                                 }).done(function (d) {
-                                    resetReload(json, elem);
+                                    resetReload(json, elem, d);
                                 });
                             } else {
                                 $("#" + elem.id + "-timegroupname").addClass("error-input");
@@ -1062,7 +1030,6 @@ example.View = draw2d.Canvas.extend({
                                 $(".error-message").text(languages[browserLang]["view_error_required_string"]);
                             }
                         });
-
                         if (condName) {
                             $("#" + elem.id + "-name").val(condName);
                         }
@@ -1088,8 +1055,8 @@ example.View = draw2d.Canvas.extend({
                     if (mod) {
                         htmlSelect += '<option selected value="' + values[1] + '">' + values[1] + '</option>';
                     }
-                    html += '<label class="label-creation">' + languages[browserLang]["view_name_string"] + ': </label>';
-                    html += '<input autofocus value="' + values[0] + '" usable id="' + elem.id + '-name" class="input-creation"></input>';
+                    html += '<label class="label-creation">' + languages[browserLang]["view_description_string"] + ': </label>';
+                    html += '<input autofocus value="' + escapeHtml(values[0]) + '" usable id="' + elem.id + '-name" class="input-creation"></input>';
                     html += '<label class="label-creation">' + languages[browserLang]["view_control_code_string"] + ': </label>';
                     html += '<select ' + isDisabled + ' usable id="' + elem.id + '-controlcode" class="input-creation">' + htmlSelect + '</select>';
 
@@ -1101,7 +1068,7 @@ example.View = draw2d.Canvas.extend({
                 html += '<label class="label-creation">' + languages[browserLang]["view_number_string"] + ': </label>';
                 html += '<input pattern="^(_[\\dNXZ\\.\\-\\[\\]]*|[\\d]*)$" ' + isDisabled + ' autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="input-creation"></input>';
                 html += '<label class="label-creation">' + languages[browserLang]["view_name_string"] + ': </label>';
-                html += '<input value="' + values[1] + '" usable id="' + elem.id + '-name" class="input-creation"></input>';
+                html += '<input value="' + escapeHtml(values[1]) + '" usable id="' + elem.id + '-name" class="input-creation"></input>';
                 break;
         }
 
@@ -1110,7 +1077,6 @@ example.View = draw2d.Canvas.extend({
 
     getDestination: function (destination) {
         var values, dests, dest, id, idlong, ids = null;
-
         if (destination.match(/ivr-*/)) {
             values = destination.split(",");
             dests = values[0].split("-");
@@ -1132,7 +1098,6 @@ example.View = draw2d.Canvas.extend({
             dest = values[0];
             id = values[1];
         }
-
         return [dest, id];
     },
 
@@ -1150,10 +1115,10 @@ example.View = draw2d.Canvas.extend({
     },
 
     onDrop: function (droppedDomNode, x, y, shiftKey, ctrlKey) {
+
         if (droppedDomNode[0].id !== "app-blackhole" && droppedDomNode[0].id !== "incoming" && droppedDomNode[0].id !== "from-did-direct") {
             // add context menu
             this.contextMenu();
-
             $('#container').trigger('contextmenu', {
                 x: x,
                 y: y,
@@ -1180,7 +1145,6 @@ example.View = draw2d.Canvas.extend({
             } else {
                 var type = $(droppedDomNode[0]).data("shape");
                 var figure = eval("new " + type + "();");
-
                 figure.onDrop(droppedDomNode, x, y, []);
 
                 var command = new draw2d.command.CommandAdd(this, figure, x - figure.width - 75, y - 25);
@@ -1335,20 +1299,18 @@ function dialogNewAnn(elemId, nameValue, newRecName) {
         var data = JSON.parse(c);
         var htmlSelect = "";
         var selectedOption = "";
-
         for (e in data) {
             if (data[e].name === values[1] || data[e].name === newRecName) {
                 selectedOption = "selected";
             } else {
                 selectedOption = "";
             }
-            htmlSelect += '<option ' + selectedOption + ' value="' + data[e].name + ' ( ' + e + ' )">' + data[e].name + '</option>';
+            htmlSelect += '<option ' + selectedOption + ' annid="' + e + '" value="' + escapeHtml(data[e].name) + ' ( ' + e + ' )">' + data[e].name + '</option>';
         }
-        var html = '<label class="label-creation listRecordingSection">' + languages[browserLang]["view_name_string"] + ': </label>';
-        html += '<input autofocus value="' + values[0] + '" usable id="' + elemId + '-name" class="input-creation listRecordingSection"></input><div></div>';
+        var html = '<label class="label-creation listRecordingSection">' + languages[browserLang]["view_description_string"] + ': </label>';
+        html += '<input autofocus value="' + escapeHtml(values[0]) + '" usable id="' + elemId + '-name" class="input-creation listRecordingSection"></input><div></div>';
         html += '<label class="listRecordingSection label-creation">' + languages[browserLang]["view_recording_string"] + ': </label>';
         html += '<select usable id="' + elemId + '-recording" class="listRecordingSection input-creation">' + htmlSelect + '</select>';
-     
         $.ajax({
             url: "./plugins.php?getType=tools&rest=getvoices&lang=it",
             context: document.body
@@ -1360,13 +1322,13 @@ function dialogNewAnn(elemId, nameValue, newRecName) {
             if (nameValue) {
                 $("#" + elemId + "-name").val(nameValue);
             }
-
             initRecordingListeners();
         });
     });
 }
 
 function dialogNewCqr(elemId, nameValue, descriptionValue, newRecName) {
+
     $.ajax({
         url: "./visualize.php?readData=recordings",
         context: document.body,
@@ -1378,20 +1340,19 @@ function dialogNewCqr(elemId, nameValue, descriptionValue, newRecName) {
         var htmlSelect = "";
         var selectedOption = "";
         for (e in data) {
-            if (data[e].name === values[2] || data[e].name === newRecName) {
+            if (e === values[2] || data[e].name === newRecName) {
                 selectedOption = "selected";
             } else {
                 selectedOption = "";
             }
-            htmlSelect += '<option ' + selectedOption + ' value="' + data[e].name + ' ( ' + e + ' )">' + data[e].name + '</option>';
+            htmlSelect += '<option ' + selectedOption + ' annid="' + e + '" value="' + escapeHtml(data[e].name) + ' ( ' + e + ' )">' + data[e].name + '</option>';
         }
         var html = '<label class="label-creation listRecordingSection">' + languages[browserLang]["view_name_string"] + ': </label>';
-        html += '<input autofocus value="' + values[0] + '" usable id="' + elemId + '-name" class="input-creation listRecordingSection"></input>';
+        html += '<input autofocus value="' + escapeHtml(values[0]) + '" usable id="' + elemId + '-name" class="input-creation listRecordingSection"></input>';
         html += '<label class="label-creation listRecordingSection">' + languages[browserLang]["view_description_string"] + ': </label>';
-        html += '<input usable value="' + values[1] + '" id="' + elemId + '-description" class="input-creation listRecordingSection"></input>';
+        html += '<input usable value="' + escapeHtml(values[1]) + '" id="' + elemId + '-description" class="input-creation listRecordingSection"></input>';
         html += '<label class="label-creation listRecordingSection">' + languages[browserLang]["view_recording_string"] + ': </label>';
         html += '<select usable id="' + elemId + '-recording" class="input-creation listRecordingSection">' + htmlSelect + '</select>';
-
         $.ajax({
             url: "./plugins.php?getType=tools&rest=getvoices&lang=it",
             context: document.body
@@ -1420,21 +1381,23 @@ function dialogNewIvr(elemId, nameValue, descriptionValue, newRecName) {
             $('#loader').show();
         }
     }).done(function (c) {
+
         var data = JSON.parse(c);
         var htmlSelect = "";
         var selectedOption = "";
+
         for (e in data) {
-            if (data[e].name === values[2] || data[e].name === newRecName) {
+            if (e === values[2] || data[e].name === newRecName) {
                 selectedOption = "selected";
             } else {
                 selectedOption = "";
             }
-            htmlSelect += '<option ' + selectedOption + ' value="' + data[e].name + ' ( ' + e + ' )">' + data[e].name + '</option>';
+            htmlSelect += '<option ' + selectedOption + ' annid="' + e + '" value="' + escapeHtml(data[e].name) + ' ( ' + e + ' )">' + data[e].name + '</option>';
         }
         var html = '<label class="label-creation listRecordingSection">' + languages[browserLang]["view_name_string"] + ': </label>';
-        html += '<input autofocus value="' + values[0] + '" usable id="' + elemId + '-name" class="input-creation listRecordingSection"></input>';
+        html += '<input type="text" autofocus value="' + escapeHtml(values[0]) + '" usable id="' + elemId + '-name" class="input-creation listRecordingSection"></input>';
         html += '<label class="label-creation listRecordingSection">' + languages[browserLang]["view_description_string"] + ': </label>';
-        html += '<input usable value="' + values[1] + '" id="' + elemId + '-description" class="input-creation listRecordingSection"></input>';
+        html += '<input type="text" usable value="' + escapeHtml(values[1]) + '" id="' + elemId + '-description" class="input-creation listRecordingSection"></input>';
         html += '<label class="label-creation listRecordingSection">' + languages[browserLang]["view_recording_string"] + ': </label>';
         html += '<select usable id="' + elemId + '-recording" class="input-creation listRecordingSection">' + htmlSelect + '</select>';
         
@@ -1493,9 +1456,12 @@ function initRecordingListeners() {
             $.ajax({
                 url: "./plugins.php",
                 type: "post",
-                data: {"getType": "tools", "rest": "savekey", "key": key}
+                data: {
+                    "getType": "tools",
+                    "rest": "savekey",
+                    "key": key
+                }
             }).done(function(res) {
-                apiKey = key;
                 $("#errorMsgApy").hide();
                 $("#newRecordTTStext").removeClass("error-border");
                 $("#ttsKeyContainer").hide();
@@ -1570,11 +1536,17 @@ function initRecordingListeners() {
         var token = $("#tokenDiv").attr("content");
         var elemId = $(this).attr('attr-elemid');
         var newRecName = $("#newRecordingName3").val();
-
         $.ajax({
             url: "./plugins.php",
             type: "post",
-            data: {"getType": "tools", "rest": "savetts", "lang": lang, "name": name, "desc": desc, "token": token}
+            data: {
+                "getType": "tools",
+                "rest": "savetts",
+                "lang": lang,
+                "name": name,
+                "desc": desc,
+                "token": token
+            }
         }).done(function(res) {
             refreshDialog(elemId, newRecName);
             $($(".ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix button")[1]).button('enable');
@@ -1583,31 +1555,32 @@ function initRecordingListeners() {
     });
 
     $('#saveNewRecordingBtn2').click(function (e) {
-        if ($('#newRecordingName2').val() === '') {
+        var newRecName = $("#newRecordingName2").val();
+        if (newRecName === '') {
             $('#newRecordingName2').focus();
             return;
         }
+        var lang = $('#newRecordingLangSelect2').val();
         var elemId = $(this).attr('attr-elemid');
         var filename = audioFileName.substring(0, audioFileName.lastIndexOf("."));
         $.ajax({
             url: "/freepbx/admin/ajax.php",
             type: "POST",
             contentType: "application/x-www-form-urlencoded; charset=UTF-8",
-            data: "file=" + tempFilename + "&name=custom/" + filename +
-                "&codec=wav&lang=" + $('#newRecordingLangSelect2').val() +
+            data: "file=" + encodeURIComponent(tempFilename) + "&name=custom/" + encodeURIComponent(filename) +
+                "&codec=wav&lang=" + encodeURIComponent(lang) +
                 "&temporary=1&command=convert&module=recordings"
         }).done(function (c) {
             $.ajax({
                 url: "/freepbx/admin/ajax.php",
                 type: "POST",
                 contentType: "application/x-www-form-urlencoded; charset=UTF-8",
-                data: "module=recordings&command=save&id=&playback%5B%5D=custom/" + filename + "&name=" +
-                    $('#newRecordingName2').val() + "&description=&fcode=0&fcode_pass=&remove%5B%5D=" + tempFilename
+                data: "module=recordings&command=save&id=&playback%5B%5D=custom/" + encodeURIComponent(filename) + "&name=" +
+                    encodeURIComponent(newRecName) + "&description=&fcode=0&fcode_pass=&remove%5B%5D=" + encodeURIComponent(tempFilename)
             }).done(function (c) {
                 $($(".ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix button")[1]).button('enable');
                 $('#addRecordingSection').toggle();
                 $('.addRecordingBtn i').addClass("fa-plus").removeClass("fa-times");
-                var newRecName = $("#newRecordingName2").val();
                 refreshDialog(elemId, newRecName)
             }).fail(function (err) {
                 console.error(err);
@@ -1618,7 +1591,8 @@ function initRecordingListeners() {
     });
 
     $('#saveNewRecordingBtn').click(function (e) {
-        if ($('#newRecordingName').val() === '') {
+        var newRecName = $("#newRecordingName").val();
+        if (newRecName === '') {
             $('#newRecordingName').focus();
             return;
         }
@@ -1629,20 +1603,19 @@ function initRecordingListeners() {
             url: "/freepbx/admin/ajax.php",
             type: "POST",
             contentType: "application/x-www-form-urlencoded; charset=UTF-8",
-            data: "file=" + tempFilename + "&name=custom/" + filename +
-                "&codec=wav&lang=" + lang + "&temporary=1&command=convert&module=recordings"
+            data: "file=" + encodeURIComponent(tempFilename) + "&name=custom/" + encodeURIComponent(filename) +
+                "&codec=wav&lang=" + encodeURIComponent(lang) + "&temporary=1&command=convert&module=recordings"
         }).done(function (c) {
             $.ajax({
                 url: "/freepbx/admin/ajax.php",
                 type: "POST",
                 contentType: "application/x-www-form-urlencoded; charset=UTF-8",
-                data: "module=recordings&command=save&id=&playback%5B%5D=custom/" + filename + "&name=" +
-                    $('#newRecordingName').val() + "&description=&fcode=0&fcode_pass=&remove%5B%5D=" + tempFilename
+                data: "module=recordings&command=save&id=&playback%5B%5D=custom/" + encodeURIComponent(filename) + "&name=" +
+                    encodeURIComponent(newRecName) + "&description=&fcode=0&fcode_pass=&remove%5B%5D=" + encodeURIComponent(tempFilename)
             }).done(function (c) {
                 $($(".ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix button")[1]).button('enable');
                 $('#addRecordingSection').toggle();
                 $('.addRecordingBtn i').addClass("fa-plus").removeClass("fa-times");
-                var newRecName = $("#newRecordingName").val();
                 refreshDialog(elemId, newRecName);
             }).fail(function (err) {
                 console.error(err);
@@ -1702,7 +1675,13 @@ function initRecordingListeners() {
             $.ajax({
                 url: "./plugins.php",
                 type: "post",
-                data: {"getType": "tools", "rest": "ttstext", "lang": lang, "voice": voice, "text": text}
+                data: {
+                    "getType": "tools",
+                    "rest": "ttstext",
+                    "lang": lang,
+                    "voice": voice,
+                    "text": text
+                }
             }).done(function(res) {
                 if (res == "false") {
                     ttsGetFail();
