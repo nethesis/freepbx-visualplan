@@ -1,7 +1,7 @@
 example.View = draw2d.Canvas.extend({
 
     init: function (id) {
-        this._super(id, 5000, 5000);
+        this._super(id, 15000, 15000);
 
         var canvas = document.getElementById(id);
         var svgElem = canvas.children[0];
@@ -261,6 +261,7 @@ example.View = draw2d.Canvas.extend({
                 position: 'center',
                 autoOpen: false,
                 resizable: false,
+                height: "auto",
                 width: 500,
                 modal: true,
                 close: function (ev, ui) {
@@ -301,7 +302,7 @@ example.View = draw2d.Canvas.extend({
         $(".ui-dialog-titlebar").css("background", $(event.dropped[0]).css("backgroundColor"));
 
         // inject html
-        dialog.html(event.context.modalCreate(event.dropped[0], "", event));
+        dialog.html( event.context.modalCreate(event.dropped[0], "", event) );
 
         // show dialog
         dialog.dialog("open");
@@ -315,11 +316,9 @@ example.View = draw2d.Canvas.extend({
 
     getElemByAttr: function (attr) {
         var matchingElements = [];
-        var allElements = $("#modalCreation").children();
+        var allElements = $("#modalCreation").find("[" + attr + "]");
         for (var i = 0, n = allElements.length; i < n; i++) {
-            if (allElements[i].getAttribute(attr) !== null) {
-                matchingElements.push(allElements[i]);
-            }
+            matchingElements.push(allElements[i]);
         }
         return matchingElements;
     },
@@ -351,7 +350,6 @@ example.View = draw2d.Canvas.extend({
             if (sufx.slice(-1) !== ".") sufx = sufx + ".";
             number = elem[0].value + " / " + sufx;
         }
-
         $.ajax({
             url: "./visualize.php?readData=" + type,
             context: document.body,
@@ -380,7 +378,6 @@ example.View = draw2d.Canvas.extend({
             if (number.length == 0) {
                 missing = false;
             }
-
             if (missing) {
                 var typeFig = $(event.dropped).data("shape") || event.shape;
                 var figure = eval("new " + typeFig + "();");
@@ -495,28 +492,34 @@ example.View = draw2d.Canvas.extend({
         var isDisabled = "";
         var strategyList = new Array('ringall', 'ringall-prim', 'hunt', 'hunt-prim', 'memoryhunt', 'memoryhunt-prim', 'firstavailable', 'firstnotonphone', 'random');
         var strategyListQueues = new Array('ringall', 'leastrecent', 'fewestcalls', 'random', 'rrmemory', 'rrordered', 'linear', 'wrandom');
-
         values = ["", "", "", "", "", "", "", "", ""];
         if (mod) {
             values = this.extractInfo(elem.data || {}, elem.id, elem.userData);
             isDisabled = 'disabled';
         }
-
         switch (elem.id) {
             case "incoming":
-                html += '<label class="label-creation">' + languages[browserLang]["view_number_string_did"] + ': </label>';
-                html += '<input pattern="^(_[\\dNXZ\\.\\-\\[\\]]*|[\\d]*)$" ' + isDisabled + ' autofocus value="' + values[0] + '" usable id="' + elem.id + '-number"></input>';
-                html += '<label class="label-creation">' + languages[browserLang]["view_number_string_cid"] + ': </label>';
-                html += '<input pattern="^(_[\\dNXZ\\.\\-\\[\\]]*|[\\d]*)$" placeholder="' + languages[browserLang]["view_any_string"] + '" ' + isDisabled + ' value="' + values[1] + '" usable id="' + elem.id + '-cidnum"></input>';
-                html += '<label class="label-creation">' + languages[browserLang]["view_description_string"] + ': </label>';
-                html += '<input value="' + values[2] + '" usable id="' + elem.id + '-description"></input>';
-                break;
-
-            case "from-did-direct":
-                html += '<label class="label-creation">' + languages[browserLang]["view_number_string"] + ': </label>';
-                html += '<input pattern="^(_[\\dNXZ\\.\\-\\[\\]]*|[\\d]*)$" ' + isDisabled + ' autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="input-creation"></input>';
-                html += '<label class="label-creation">' + languages[browserLang]["view_name_string"] + ': </label>';
-                html += '<input usable value="' + values[1] + '" id="' + elem.id + '-name" class="input-creation"></input>';
+                html += '<form class="form-horizontal">';
+                html += '<div class="form-group">';
+                html += '<label class="col-sm-4 control-label label-creation">' + languages[browserLang]["view_number_string_did"] + ': </label>';
+                html += '<div class="col-sm-7">';
+                html += '<input class="form-control" pattern="^(_[\\dNXZ\\.\\-\\[\\]]*|[\\d]*)$" ' + isDisabled + ' autofocus value="' + values[0] + '" usable id="' + elem.id + '-number"></input>';
+                html += '</div>';
+                html += '</div>';
+                html += '<div class="form-group">';
+                html += '<label class="col-sm-4 control-label label-creation">' + languages[browserLang]["view_number_string_cid"] + ': </label>';
+                html += '<div class="col-sm-7">';
+                html += '<input class="form-control" pattern="^(_[\\dNXZ\\.\\-\\[\\]]*|[\\d]*)$" placeholder="' + languages[browserLang]["view_any_string"] + '" ' + isDisabled + ' value="' + values[1] + '" usable id="' + elem.id + '-cidnum"></input>';
+                html += '</div>';
+                html += '</div>';
+                html += '<div class="form-group">';
+                html += '<label class="col-sm-4 control-label label-creation">' + languages[browserLang]["view_description_string"] + ': </label>';
+                html += '<div class="col-sm-7">';
+                html += '<input class="form-control" value="' + values[2] + '" usable id="' + elem.id + '-description"></input>';
+                html += '</div>';
+                html += '</div>';
+                html += '</form>';
+                $("#modalCreation").html(html);
                 break;
 
             case "ext-local":
@@ -534,9 +537,14 @@ example.View = draw2d.Canvas.extend({
                         if (data[e].voicemail === "novm")
                             htmlSelect += '<option value="' + data[e].name + ' ( ' + e + ' )">' + data[e].name + ' ( ' + e + ' )</option>';
                     }
-                    html += '<label class="label-creation">' + languages[browserLang]["view_enable_voicemail_string"] + ': </label>';
-                    html += '<select usable id="' + elem.id + '-voicenum" class="input-creation">' + htmlSelect + '</select>';
-
+                    html += '<form class="form-horizontal">';
+                    html += '<div class="form-group">';
+                    html += '<label class="col-sm-4 control-label label-creation">' + languages[browserLang]["view_enable_voicemail_string"] + ': </label>';
+                    html += '<div class="col-sm-7">';
+                    html += '<select class="form-control" usable id="' + elem.id + '-voicenum">' + htmlSelect + '</select>';
+                    html += '</div>';
+                    html += '</div>';
+                    html += '</form>';
                     $("#modalCreation").html(html);
                 });
                 break;
@@ -565,26 +573,50 @@ example.View = draw2d.Canvas.extend({
                             var strategy = strategyList[s];
                         }
                     }
-                    html += '<label class="label-creation">' + languages[browserLang]["view_number_string"] + ': </label>';
-                    html += '<input pattern="^(_[\\dNXZ\\.\\-\\[\\]]*|[\\d]*)$" ' + isDisabled + ' autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="input-creation"></input>';
-                    html += '<label class="label-creation">' + languages[browserLang]["view_description_string"] + ': </label>';
-                    html += '<input usable value="' + escapeHtml(values[1]) + '" id="' + elem.id + '-description" class="input-creation"></input>';
-                    html += '<label class="label-creation">' + languages[browserLang]["base_ext_list_string"] + ': </label>';
-                    html += '<select id="selectExtGroup" class="input-creation">' + htmlSelect + '</select>';
-                    html += '<label class="label-creation"></label>';
-                    html += '<textarea id="textareaExtGroup" usable id="' + elem.id + '-extensionList" class="input-creation">' + values[2] + '</textarea>';
-                    html += '<label class="label-creation">' + languages[browserLang]["view_strategy_string"] + ': </label>';
-                    html += '<select usable id="' + elem.id + '-ringstrategy" class="input-creation">' + htmlStrategy + '</select>';
-                    html += '<label class="label-creation">' + languages[browserLang]["view_ringtime_string"] + ': </label>';
-                    html += '<input pattern="^(([1-2][0-9][0-9])|([1-9][0-9])|([1-9])|(300))$" placeholder="MAX 300 SEC" value="' + values[4] + '" usable id="' + elem.id + '-ringtime" class="input-creation"></input>';
-
+                    html += '<form class="form-horizontal">';
+                    html += '<div class="form-group">';
+                    html += '<label class="col-sm-4 control-label label-creation">' + languages[browserLang]["view_number_string"] + ': </label>';
+                    html += '<div class="col-sm-7">';
+                    html += '<input pattern="^(_[\\dNXZ\\.\\-\\[\\]]*|[\\d]*)$" ' + isDisabled + ' autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="form-control input-creation"></input>';
+                    html += '</div>';
+                    html += '</div>';
+                    html += '<div class="form-group">';
+                    html += '<label class="col-sm-4 control-label label-creation">' + languages[browserLang]["view_description_string"] + ': </label>';
+                    html += '<div class="col-sm-7">';
+                    html += '<input usable value="' + escapeHtml(values[1]) + '" id="' + elem.id + '-description" class="form-control input-creation"></input>';
+                    html += '</div>';
+                    html += '</div>';
+                    html += '<div class="form-group">';
+                    html += '<label class="col-sm-4 control-label label-creation">' + languages[browserLang]["base_ext_list_string"] + ': </label>';
+                    html += '<div class="col-sm-7">';
+                    html += '<select id="selectExtGroup" class="form-control input-creation">' + htmlSelect + '</select>';
+                    html += '</div>';
+                    html += '</div>';
+                    html += '<div class="form-group">';
+                    html += '<label class="col-sm-4 control-label label-creation"></label>';
+                    html += '<div class="col-sm-7">';
+                    html += '<textarea id="textareaExtGroup" usable id="' + elem.id + '-extensionList" class="form-control input-creation">' + values[2] + '</textarea>';
+                    html += '</div>';
+                    html += '</div>';
+                    html += '<div class="form-group">';
+                    html += '<label class="col-sm-4 control-label label-creation">' + languages[browserLang]["view_strategy_string"] + ': </label>';
+                    html += '<div class="col-sm-7">';
+                    html += '<select usable id="' + elem.id + '-ringstrategy" class="form-control input-creation">' + htmlStrategy + '</select>';
+                    html += '</div>';
+                    html += '</div>';
+                    html += '<div class="form-group">';
+                    html += '<label class="col-sm-4 control-label label-creation">' + languages[browserLang]["view_ringtime_string"] + ': </label>';
+                    html += '<div class="col-sm-7">';
+                    html += '<input pattern="^(([1-2][0-9][0-9])|([1-9][0-9])|([1-9])|(300))$" placeholder="MAX 300 SEC" value="' + values[4] + '" usable id="' + elem.id + '-ringtime" class="form-control input-creation"></input>';
+                    html += '</div>';
+                    html += '</div>';
+                    html += '</form>';
                     $("#modalCreation").html(html);
                     if (strategy) {
                         $('#opt-' + strategy).attr("selected", "selected");
                     } else {
                         $('#opt-ringall').attr("selected", "selected");
                     }
-
                     thisApp.bindExtSelect({
                         "group": {
                             0: {
@@ -653,26 +685,62 @@ example.View = draw2d.Canvas.extend({
                     for (s in strategyListQueues) {
                         htmlStrategy += '<option id="qus-' + strategyListQueues[s] + '" value="' + strategyListQueues[s] + '">' + strategyListQueues[s] + '</option>';
                     }
-
-                    html += '<label class="label-creation">' + languages[browserLang]["view_number_string"] + ': </label>';
-                    html += '<input pattern="^(_[\\dNXZ\\.\\-\\[\\]]*|[\\d]*)$" ' + isDisabled + ' autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="input-creation"></input>';
-                    html += '<label class="label-creation">' + languages[browserLang]["view_name_string"] + ': </label>';
-                    html += '<input usable value="' + escapeHtml(values[1]) + '" id="' + elem.id + '-name" class="input-creation"></input>';
-                    html += '<label class="label-creation">' + languages[browserLang]["base_static_memb_string"] + ': </label>';
-                    html += '<select id="selectExtQueue1" class="input-creation">' + htmlSelect + '</select>';
-                    html += '<label class="label-creation"></label>';
-                    html += '<textarea id="textareaExtQueue1" usable id="' + elem.id + '-staticMem" class="input-creation">' + values[2] + '</textarea>';
-                    html += '<label class="label-creation">' + languages[browserLang]["base_dyn_memb_string"] + ': </label>';
-                    html += '<select id="selectExtQueue2" class="input-creation">' + htmlSelect + '</select>';
-                    html += '<label class="label-creation"></label>';
-                    html += '<textarea id="textareaExtQueue2" usable id="' + elem.id + '-dynamicMem" class="input-creation">' + values[3] + '</textarea>';
-                    html += '<label class="label-creation">' + languages[browserLang]["view_strategy_string"] + ': </label>';
-                    html += '<select id="queueStrategy" usable class="input-creation">' + htmlStrategy + '</select>';
-                    html += '<label class="label-creation">' + languages[browserLang]["view_agenttimeout_string"] + ': </label>';
-                    html += '<select id="selectAgentTimeout" usable class="input-creation">' + agentTimeout + '</select>';
-                    html += '<label class="label-creation">' + languages[browserLang]["view_queuesTimeString_maxWait"] + ': </label>';
-                    html += '<select id="selectMaxWait" usable class="input-creation">' + htmlMaxWait + '</select>';
-
+                    html += '<form class="form-horizontal">';
+                    html += '<div class="form-group">';
+                    html += '<label class="col-sm-4 control-label label-creation">' + languages[browserLang]["view_number_string"] + ': </label>';
+                    html += '<div class="col-sm-7">';
+                    html += '<input pattern="^(_[\\dNXZ\\.\\-\\[\\]]*|[\\d]*)$" ' + isDisabled + ' autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="form-control input-creation"></input>';
+                    html += '</div>';
+                    html += '</div>';
+                    html += '<div class="form-group">';
+                    html += '<label class="col-sm-4 control-label label-creation">' + languages[browserLang]["view_name_string"] + ': </label>';
+                    html += '<div class="col-sm-7">';
+                    html += '<input usable value="' + escapeHtml(values[1]) + '" id="' + elem.id + '-name" class="form-control input-creation"></input>';
+                    html += '</div>';
+                    html += '</div>';
+                    html += '<div class="form-group">';
+                    html += '<label class="col-sm-4 control-label label-creation">' + languages[browserLang]["base_static_memb_string"] + ': </label>';
+                    html += '<div class="col-sm-7">';
+                    html += '<select id="selectExtQueue1" class="form-control input-creation">' + htmlSelect + '</select>';
+                    html += '</div>';
+                    html += '</div>';
+                    html += '<div class="form-group">';
+                    html += '<label class="col-sm-4 control-label label-creation"></label>';
+                    html += '<div class="col-sm-7">';
+                    html += '<textarea id="textareaExtQueue1" usable id="' + elem.id + '-staticMem" class="form-control input-creation">' + values[2] + '</textarea>';
+                    html += '</div>';
+                    html += '</div>';
+                    html += '<div class="form-group">';
+                    html += '<label class="col-sm-4 control-label label-creation">' + languages[browserLang]["base_dyn_memb_string"] + ': </label>';
+                    html += '<div class="col-sm-7">';
+                    html += '<select id="selectExtQueue2" class="form-control input-creation">' + htmlSelect + '</select>';
+                    html += '</div>';
+                    html += '</div>';
+                    html += '<div class="form-group">';
+                    html += '<label class="col-sm-4 control-label label-creation"></label>';
+                    html += '<div class="col-sm-7">';
+                    html += '<textarea id="textareaExtQueue2" usable id="' + elem.id + '-dynamicMem" class="form-control input-creation">' + values[3] + '</textarea>';
+                    html += '</div>';
+                    html += '</div>';
+                    html += '<div class="form-group">';
+                    html += '<label class="col-sm-4 control-label label-creation">' + languages[browserLang]["view_strategy_string"] + ': </label>';
+                    html += '<div class="col-sm-7">';
+                    html += '<select id="queueStrategy" usable class="form-control input-creation">' + htmlStrategy + '</select>';
+                    html += '</div>';
+                    html += '</div>';
+                    html += '<div class="form-group">';
+                    html += '<label class="col-sm-4 control-label label-creation">' + languages[browserLang]["view_agenttimeout_string"] + ': </label>';
+                    html += '<div class="col-sm-7">';
+                    html += '<select id="selectAgentTimeout" usable class="form-control input-creation">' + agentTimeout + '</select>';
+                    html += '</div>';
+                    html += '</div>';
+                    html += '<div class="form-group">';
+                    html += '<label class="col-sm-4 control-label label-creation">' + languages[browserLang]["view_queuesTimeString_maxWait"] + ': </label>';
+                    html += '<div class="col-sm-7">';
+                    html += '<select id="selectMaxWait" usable class="form-control input-creation">' + htmlMaxWait + '</select>';
+                    html += '</div>';
+                    html += '</div>';
+                    html += '</form>';
                     $("#modalCreation").html(html);
                     //select default
                     if (strategy) {
@@ -759,7 +827,6 @@ example.View = draw2d.Canvas.extend({
                             "view_november_string": "nov",
                             "view_december_string": "dec"
                         };
-
                         for (e in data) {
                             if (data[e].id === values[1] || data[e].id == selTimeGroup ) {
                                 selectedOption = "selected";
@@ -769,7 +836,6 @@ example.View = draw2d.Canvas.extend({
 
                             htmlSelect += '<option ' + selectedOption + ' timeid="' + e + '" value="' + escapeHtml(data[e].description) + ' ( ' + e + ' )">' + data[e].description + '</option>';
                         }
-
                         for (var k = 0; k < 24; k++) {
                             htmlSelectHours += '<option value="' + k + '">' + (k < 10 ? '0' + k : k) + '</option>';
                         }
@@ -790,60 +856,123 @@ example.View = draw2d.Canvas.extend({
 
                         html = '';
                         //html += '<div id="addCondTemp">';
-                        html += '<label id="' + elem.id + '-namelabel" class="label-creation on-action-disabled">' + languages[browserLang]["view_timeconditionname_string"] + ': </label>';
-                        html += '<input autofocus value="' + escapeHtml(values[0]) + '" usable id="' + elem.id + '-name" class="input-creation on-action-disabled"></input>';
-                        html += '<label id="' + elem.id + '-timegrouplabel" class="label-creation on-action-disabled">' + languages[browserLang]["view_timegroup_string"] + ': </label>';
-                        html += '<select usable id="' + elem.id + '-timegroup" class="input-creation on-action-disabled">' + htmlSelect + '</select>';
-                        html += '<button id="modifyTimeGroupButton" class="addButtons on-action-disabled" title="' + languages[browserLang]["view_modifytimegrouptitle_string"] + '" class="listRecordingSection"><i class="fa fa-pencil"></i></button>';
-                        html += '<button id="addTimeGroupButton" class="addButtons on-action-disabled" title="' + languages[browserLang]["view_addtimegrouptitle_string"] + '" class="listRecordingSection"><i class="fa fa-plus"></i></button>';
+                        html += '<form class="form-horizontal">';
+                        html += '<div class="form-group">';
+                        html += '<label id="' + elem.id + '-namelabel" class="col-sm-4 control-label label-creation on-action-disabled">' + languages[browserLang]["view_timeconditionname_string"] + ': </label>';
+                        html += '<div class="col-sm-7">';
+                        html += '<input autofocus value="' + escapeHtml(values[0]) + '" usable id="' + elem.id + '-name" class="form-control input-creation on-action-disabled"></input>';
+                        html += '</div>';
+                        html += '</div>';
+                        html += '<div class="form-group">';
+                        html += '<label id="' + elem.id + '-timegrouplabel" class="col-sm-4 control-label label-creation on-action-disabled">' + languages[browserLang]["view_timegroup_string"] + ': </label>';
+                        html += '<div class="col-sm-7">';
+                        html += '<select usable id="' + elem.id + '-timegroup" class="form-control input-creation on-action-disabled">' + htmlSelect + '</select>';
+                        html += '</div>';
+                        html += '</div>';
+                        html += '<div class="form-group">';
+                        html += '<label class="col-sm-4 control-label label-creation"></label>';
+                        html += '<div class="col-sm-7">';
+                        html += '<button type="button" id="modifyTimeGroupButton" class="btn btn-default addButtons on-action-disabled" title="' + languages[browserLang]["view_modifytimegrouptitle_string"] + '" class="listRecordingSection"><i class="fa fa-pencil"></i></button>';
+                        html += '<button type="button" id="addTimeGroupButton" class="btn btn-default addButtons on-action-disabled" title="' + languages[browserLang]["view_addtimegrouptitle_string"] + '" class="listRecordingSection"><i class="fa fa-plus"></i></button>';
+                        html += '</div>';
+                        html += '</div>';
+                        html += '</form>';
                         //html += '</div>';
-
                         //time group creation
-                        html += '<div id="addTimeGroups" class="hide">';
+                        html += '<div id="addTimeGroups" class="simplehide">';
                         html += '<hr class="hr-form"><br>';
                         html += '<label id="' + elem.id + '-titleString" class="label-creation label-title"><b>' + languages[browserLang]["view_newtemporalgroup_string"] + ': </b></label>';
                         html += '<label id="' + elem.id + '-titleStringModify" class="label-creation label-title hide"><b>' + languages[browserLang]["view_modifytemporalgroup_string"] + ': </b></label>';
                         html += '<span id="' + elem.id + '-title" class="input-creation"></span>';
-
-                        html += '<label class="label-creation">' + languages[browserLang]["view_timegroupname_string"] + ': </label>';
-                        html += '<input autofocus value="' + escapeHtml(values[0]) + '" id="' + elem.id + '-timegroupname" class="input-creation"></input>';
-
+                        html += '<form class="form-horizontal">';
+                        html += '<div class="form-group">';
+                        html += '<label class="col-sm-4 control-label label-creation">' + languages[browserLang]["view_timegroupname_string"] + ': </label>';
+                        html += '<div class="col-sm-7">';
+                        html += '<input autofocus value="' + escapeHtml(values[0]) + '" id="' + elem.id + '-timegroupname" class="form-control input-creation"></input>';
+                        html += '</div>';
+                        html += '</div>';
                         html += '<div id="time-1" class="times-forms">';
-
                         // time to start
-                        html += '<label class="label-creation">' + languages[browserLang]["view_timetostart_string"] + ': </label>';
-                        html += '<select id="' + elem.id + '-timetostart-hours" class="input-creation tg-select">' + htmlSelectHours + '</select>';
-                        html += '<select id="' + elem.id + '-timetostart-min" class="input-creation tg-select">' + htmlSelectMin + '</select>';
-                        html += '<button id="removeTimeGroupForm" title="' + languages[browserLang]["view_removetimetimegroup_string"] + '" class="addButtons hide"><i class="fa fa-minus"></i></button>';
+                        html += '<div class="form-group">';
+                        html += '<label class="col-sm-4 control-label label-creation"></label>';
+                        html += '<div class="col-sm-7">';
+                        html += '<button id="removeTimeGroupForm" title="' + languages[browserLang]["view_removetimetimegroup_string"] + '" class="btn btn-default addButtons hide"><i class="fa fa-minus"></i></button>';
+                        html += '</div>';
+                        html += '</div>';
+                        html += '<div class="form-group">';
+                        html += '<label class="col-sm-4 control-label label-creation">' + languages[browserLang]["view_timetostart_string"] + ': </label>';
+                        html += '<div class="col-sm-7">';
+                        html += '<select id="' + elem.id + '-timetostart-hours" class="form-control input-creation">' + htmlSelectHours + '</select>';
+                        html += '<select id="' + elem.id + '-timetostart-min" class="form-control input-creation">' + htmlSelectMin + '</select>';
+                        html += '</div>';
+                        html += '</div>';
                         // time to finish
-                        html += '<label class="label-creation">' + languages[browserLang]["view_timetofinish_string"] + ': </label>';
-                        html += '<select id="' + elem.id + '-timetofinish-hours" class="input-creation tg-select">' + htmlSelectHours + '</select>';
-                        html += '<select id="' + elem.id + '-timetofinish-min" class="input-creation tg-select">' + htmlSelectMin + '</select>';
+                        html += '<div class="form-group">';
+                        html += '<label class="col-sm-4 control-label label-creation">' + languages[browserLang]["view_timetofinish_string"] + ': </label>';
+                        html += '<div class="col-sm-7">';
+                        html += '<select id="' + elem.id + '-timetofinish-hours" class="form-control input-creation">' + htmlSelectHours + '</select>';
+                        html += '<select id="' + elem.id + '-timetofinish-min" class="form-control input-creation">' + htmlSelectMin + '</select>';
+                        html += '</div>';
+                        html += '</div>';
                         // week day start
-                        html += '<label class="label-creation">' + languages[browserLang]["view_weekdaystart_string"] + ': </label>';
-                        html += '<select id="' + elem.id + '-weekdaystart" class="input-creation">' + htmlSelectWeekDays + '</select>';
+                        html += '<div class="form-group">';
+                        html += '<label class="col-sm-4 control-label label-creation">' + languages[browserLang]["view_weekdaystart_string"] + ': </label>';
+                        html += '<div class="col-sm-7">';
+                        html += '<select id="' + elem.id + '-weekdaystart" class="form-control input-creation">' + htmlSelectWeekDays + '</select>';
+                        html += '</div>';
+                        html += '</div>';
                         // week day finish
-                        html += '<label class="label-creation">' + languages[browserLang]["view_weekdayfinish_string"] + ': </label>';
-                        html += '<select id="' + elem.id + '-weekdayfinish" class="input-creation">' + htmlSelectWeekDays + '</select>';
+                        html += '<div class="form-group">';
+                        html += '<label class="col-sm-4 control-label label-creation">' + languages[browserLang]["view_weekdayfinish_string"] + ': </label>';
+                        html += '<div class="col-sm-7">';
+                        html += '<select id="' + elem.id + '-weekdayfinish" class="form-control input-creation">' + htmlSelectWeekDays + '</select>';
+                        html += '</div>';
+                        html += '</div>';
                         // month day start
-                        html += '<label class="label-creation">' + languages[browserLang]["view_monthsdaytart_string"] + ': </label>';
-                        html += '<select id="' + elem.id + '-monthsdaystart" class="input-creation">' + htmlSelectMonthDay + '</select>';
+                        html += '<div class="form-group">';
+                        html += '<label class="col-sm-4 control-label label-creation">' + languages[browserLang]["view_monthsdaytart_string"] + ': </label>';
+                        html += '<div class="col-sm-7">';
+                        html += '<select id="' + elem.id + '-monthsdaystart" class="form-control input-creation">' + htmlSelectMonthDay + '</select>';
+                        html += '</div>';
+                        html += '</div>';
                         // month day finish
-                        html += '<label class="label-creation">' + languages[browserLang]["view_monthdayfinish_string"] + ': </label>';
-                        html += '<select id="' + elem.id + '-monthsdayfinish" class="input-creation">' + htmlSelectMonthDay + '</select>';
+                        html += '<div class="form-group">';
+                        html += '<label class="col-sm-4 control-label label-creation">' + languages[browserLang]["view_monthdayfinish_string"] + ': </label>';
+                        html += '<div class="col-sm-7">';
+                        html += '<select id="' + elem.id + '-monthsdayfinish" class="form-control input-creation">' + htmlSelectMonthDay + '</select>';
+                        html += '</div>';
+                        html += '</div>';
                         // month start
-                        html += '<label class="label-creation">' + languages[browserLang]["view_monthstart_string"] + ': </label>';
-                        html += '<select id="' + elem.id + '-monthstart" class="input-creation">' + htmlSelectMonths + '</select>';
+                        html += '<div class="form-group">';
+                        html += '<label class="col-sm-4 control-label label-creation">' + languages[browserLang]["view_monthstart_string"] + ': </label>';
+                        html += '<div class="col-sm-7">';
+                        html += '<select id="' + elem.id + '-monthstart" class="form-control input-creation">' + htmlSelectMonths + '</select>';
+                        html += '</div>';
+                        html += '</div>';
                         // month finish
-                        html += '<label class="label-creation">' + languages[browserLang]["view_monthfinish_string"] + ': </label>';
-                        html += '<select id="' + elem.id + '-monthfinish" class="input-creation">' + htmlSelectMonths + '</select>';
+                        html += '<div class="form-group">';
+                        html += '<label class="col-sm-4 control-label label-creation">' + languages[browserLang]["view_monthfinish_string"] + ': </label>';
+                        html += '<div class="col-sm-7">';
+                        html += '<select id="' + elem.id + '-monthfinish" class="form-control input-creation">' + htmlSelectMonths + '</select>';
+                        html += '</div>';
+                        html += '</div>';
                         html += '</div>';
                         html += '<div id="times-form-append"><div id="times-form-last"></div></div>';
                         // error div
                         html += '<p class="error-message"></p>';
                         // save button
-                        html += '<label class="label-creation"></label>';
-                        html += '<span id="' + elem.id + '-title" class="input-creation"><button id="newAddTimeGroupsForm" title="' + languages[browserLang]["view_addtimetimegroup_string"] + '" class="addButtons no-margins" title=""><i class="fa fa-plus"></i></button><button id="updateAddTimeGroups" class="addButtons right_floated saveSecElements hide" title="' + languages[browserLang]["view_savegrouptimegroup_string"] + '"><i class="fa fa-check"></i></button><button id="saveAddTimeGroups" class="addButtons right_floated saveSecElements" title="' + languages[browserLang]["view_savenewtimegroup_string"] + '"><i class="fa fa-check"></i></button><button id="cancelTempGroup" class="addButtons right_floated" title="' + languages[browserLang]["view_cancelnewtimegroup_string"] + '"><i class="fa fa-times"></i></button></span>';
+                        html += '<div class="form-group">';
+                        html += '<label class="col-sm-4 control-label label-creation"></label>';
+                        html += '<div class="col-sm-7">';
+                        html += '<span id="' + elem.id + '-title" class="full-width input-creation">';
+                        html += '<button type="button" id="newAddTimeGroupsForm" title="' + languages[browserLang]["view_addtimetimegroup_string"] + '" class="btn btn-default addButtons no-margins" title=""><i class="fa fa-plus"></i></button>';
+                        html += '<button type="button" id="updateAddTimeGroups" class="btn btn-default addButtons right_floated saveSecElements hide" title="' + languages[browserLang]["view_savegrouptimegroup_string"] + '"><i class="fa fa-check"></i></button>';
+                        html += '<button type="button" id="saveAddTimeGroups" class="btn btn-default addButtons right_floated saveSecElements" title="' + languages[browserLang]["view_savenewtimegroup_string"] + '"><i class="fa fa-check"></i></button>';
+                        html += '<button type="button" id="cancelTempGroup" class="btn btn-default addButtons right_floated" title="' + languages[browserLang]["view_cancelnewtimegroup_string"] + '"><i class="fa fa-times"></i></button>';
+                        html += '</span>';
+                        html += '</div>';
+                        html += '</div>';
+                        html += '</form>';
                         html += '</div>';
 
                         $("#modalCreation").html(html);
@@ -863,7 +992,6 @@ example.View = draw2d.Canvas.extend({
                         }
 
                         function getValues(elem) {
-
                             var json = {};
                             json.times = {};
                             var n = 0;
@@ -964,7 +1092,6 @@ example.View = draw2d.Canvas.extend({
                             }).done(function (d) {
                                 var time = JSON.parse(d);
                                 var l = time.length;
-
                                 if (time) {
                                     for (var i = 1; i < time.length; i++) {
                                         cloneForm();
@@ -1055,20 +1182,39 @@ example.View = draw2d.Canvas.extend({
                     if (mod) {
                         htmlSelect += '<option selected value="' + values[1] + '">' + values[1] + '</option>';
                     }
-                    html += '<label class="label-creation">' + languages[browserLang]["view_description_string"] + ': </label>';
-                    html += '<input autofocus value="' + escapeHtml(values[0]) + '" usable id="' + elem.id + '-name" class="input-creation"></input>';
-                    html += '<label class="label-creation">' + languages[browserLang]["view_control_code_string"] + ': </label>';
-                    html += '<select ' + isDisabled + ' usable id="' + elem.id + '-controlcode" class="input-creation">' + htmlSelect + '</select>';
-
+                    html += '<form class="form-horizontal">';
+                    html += '<div class="form-group">';
+                    html += '<label class="col-sm-4 control-label label-creation">' + languages[browserLang]["view_description_string"] + ': </label>';
+                    html += '<div class="col-sm-7">';
+                    html += '<input autofocus value="' + escapeHtml(values[0]) + '" usable id="' + elem.id + '-name" class="form-control input-creation"></input>';
+                    html += '</div>';
+                    html += '</div>';
+                    html += '<div class="form-group">';
+                    html += '<label class="col-sm-4 control-label label-creation">' + languages[browserLang]["view_control_code_string"] + ': </label>';
+                    html += '<div class="col-sm-7">';
+                    html += '<select ' + isDisabled + ' usable id="' + elem.id + '-controlcode" class="form-control input-creation">' + htmlSelect + '</select>';
+                    html += '</div>';
+                    html += '</div>';
+                    html += '</form>';
                     $("#modalCreation").html(html);
                 });
                 break;
 
             case "ext-meetme":
-                html += '<label class="label-creation">' + languages[browserLang]["view_number_string"] + ': </label>';
-                html += '<input pattern="^(_[\\dNXZ\\.\\-\\[\\]]*|[\\d]*)$" ' + isDisabled + ' autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="input-creation"></input>';
-                html += '<label class="label-creation">' + languages[browserLang]["view_name_string"] + ': </label>';
-                html += '<input value="' + escapeHtml(values[1]) + '" usable id="' + elem.id + '-name" class="input-creation"></input>';
+                html += '<form class="form-horizontal">';
+                html += '<div class="form-group">';
+                html += '<label class="col-sm-4 control-label label-creation">' + languages[browserLang]["view_number_string"] + ': </label>';
+                html += '<div class="col-sm-7">';
+                html += '<input pattern="^(_[\\dNXZ\\.\\-\\[\\]]*|[\\d]*)$" ' + isDisabled + ' autofocus value="' + values[0] + '" usable id="' + elem.id + '-number" class="form-control input-creation"></input>';
+                html += '</div>';
+                html += '</div>';
+                html += '<div class="form-group">';
+                html += '<label class="col-sm-4 control-label label-creation">' + languages[browserLang]["view_name_string"] + ': </label>';
+                html += '<div class="col-sm-7">';
+                html += '<input value="' + escapeHtml(values[1]) + '" usable id="' + elem.id + '-name" class="form-control input-creation"></input>';
+                html += '</div>';
+                html += '</div>';
+                html += '</form>'
                 break;
         }
 
@@ -1115,7 +1261,6 @@ example.View = draw2d.Canvas.extend({
     },
 
     onDrop: function (droppedDomNode, x, y, shiftKey, ctrlKey) {
-
         if (droppedDomNode[0].id !== "app-blackhole" && droppedDomNode[0].id !== "incoming" && droppedDomNode[0].id !== "from-did-direct") {
             // add context menu
             this.contextMenu();
@@ -1150,95 +1295,189 @@ example.View = draw2d.Canvas.extend({
                 var command = new draw2d.command.CommandAdd(this, figure, x - figure.width - 75, y - 25);
                 this.getCommandStack().execute(command);
             }
-
         }
     }
 });
 
 function getHtmlRecordings(elemId, voices) {
-    var html = '<button class="addRecordingBtn addButtons"><i class="fa fa-plus"></i></button>';
-    html += '<div id="addRecordingSection" class="hide">';
-    html += '<hr class="hr-form"><br>';
-    html += '<label id="' + elemId + '-titleString" class="label-creation label-title"><b>' + languages[browserLang]["view_newrecording_string"] + ': </b></label>';
-    html += '<div class="rowSectionAnn">';
-    html += '<form enctype="multipart/form-data" id="form1" method="post">';
-    html += '<label for="fileupload" class="label-creation">' + languages[browserLang]["view_upload_recording_string"] + ': </label>';
-    html += '<input type="file" name="file1" accept=".mp3,.wav" required="required"/>';
-    html += '<div class="rowSectionAnn hide" id="rowUploadBtn">';
-    html += '<label class="label-creation"></label>';
-    html += '<button title="Upload" name="submit" id="submitFileUpload">' + languages[browserLang]["view_startuploadingfile_string"] + '</button>';
+    var html = '';
+    html += '<form class="form-horizontal">';
+    html += '<div class="form-group">';
+    html += '<label class="col-sm-4 control-label label-creation"></label>';
+    html += '<div class="col-sm-7 col7-newann-btn">';
+    html += '<button type="button" class="btn btn-default addRecordingBtn addButtons"><i class="fa fa-plus"></i></button>';
+    html += '</div>';
     html += '</div>';
     html += '</form>';
-    html += '<div id="newRecordingNameSection" class="hide">';
-    html += '<label class="label-creation">' + languages[browserLang]["view_name_recording_string"] + ': </label>';
-    html += '<input id="newRecordingName" type="input">';
-    html += '<label class="label-creation">' + languages[browserLang]["view_language_string"] + ': </label>';
-    html += '<select id="newRecordingLangSelect">';
+    html += '<div id="addRecordingSection" class="simplehide">';
+    html += '<hr class="hr-form"><br>';
+    html += '<h4 id="' + elemId + '-titleString" class="label-creation label-title"><b>' + languages[browserLang]["view_newrecording_string"] + '</b></h4>';
+    html += '<div class="rowSectionAnn">';   
+    html += '<form class="form-horizontal" enctype="multipart/form-data" id="form1" method="post">';
+    html += '<div class="form-group">';
+    html += '<label for="fileupload" class="col-sm-4 control-label label-creation">' + languages[browserLang]["view_upload_recording_string"] + ': </label>';
+    html += '<div class="col-sm-7">';
+    html += '<input class="form-control-file input-creation" type="file" name="file1" accept=".mp3,.wav" required="required"/>';
+    html += '<div class="rowSectionAnn hide" id="rowUploadBtn">';
+    html += '<label class="label-creation"></label>';
+    html += '<button type="submit" class="btn btn-default" title="Upload" name="submit" id="submitFileUpload">' + languages[browserLang]["view_startuploadingfile_string"] + '</button>';
+    html += '</div>';
+    html += '</div>';
+    html += '</div>';
+    html += '</form>';
+    html += '<div id="newRecordingNameSection" class="simplehide">';
+    html += '<form class="form-horizontal">';
+    html += '<div class="form-group">';
+    html += '<label class="col-sm-4 control-label label-creation">' + languages[browserLang]["view_name_recording_string"] + ': </label>';
+    html += '<div class="col-sm-7">';
+    html += '<input class="form-control input-creation" id="newRecordingName" type="text">';
+    html += '</div>';
+    html += '</div>';
+    html += '<div class="form-group">';
+    html += '<label class="col-sm-4 control-label label-creation">' + languages[browserLang]["view_language_string"] + ': </label>';
+    html += '<div class="col-sm-7">';
+    html += '<select class="form-control input-creation" id="newRecordingLangSelect">';
     html += '<option value="it" selected>Italian</option>';
     html += '<option value="en">English</option>';
     html += '</select>';
-    html += '<button id="saveNewRecordingBtn" attr-elemid="' + elemId + '" class="addButtonsRecording saveSecElements addButtons" title="' + languages[browserLang]["view_savenewtimegroup_string"] + '"><i class="fa fa-check"></i></button>';
+    html += '</div>';
+    html += '</div>';
+    html += '<div class="form-group">';
+    html += '<label class="col-sm-4 control-label label-creation"></label>';
+    html += '<div class="col-sm-7">';
+    html += '<button id="saveNewRecordingBtn" type="button" attr-elemid="' + elemId + '" class="addButtonsRecording saveSecElements addButtons" title="' + languages[browserLang]["view_savenewtimegroup_string"] + '"><i class="fa fa-check"></i></button>';
+    html += '</div>';
+    html += '</div>';
+    html += '</form>';
     html += '</div>';
     html += '</div>';
     html += '<hr class="hr-form-inside">';
-    html += '<div class="rowSectionAnn">';
-    html += '<label class="label-creation">' + languages[browserLang]["view_name_recording_in_browser_string"] + ': </label>';
+    html += '<div class="rowSectionAnn ann-section-record">';
+    html += '<form class="form-horizontal">';
+    html += '<div class="form-group">';
+    html += '<label class="col-sm-4 control-label label-creation">' + languages[browserLang]["view_name_recording_in_browser_string"] + ': </label>';
+    html += '<div class="col-sm-7">';
     html += '<i id="checkRecordingBtn" title="' + languages[browserLang]["view_start_recording_string"] + '" class="pointer fa fa-circle red fa-2x vmiddle"></i>';
     html += '<audio controls class="vmiddle"></audio>';
-    html += '<div id="newRecordingFilenameSection" class="hide rowSectionAnn">';
+    html += '</div>';
+    html += '</div>';
+    html += '<div id="newRecordingFilenameSection" class="simplehide rowSectionAnn">';
     html += '<label class="label-creation"></label>';
-    html += '<button title="Upload" name="submit" id="submitFileUpload2">' + languages[browserLang]["view_startuploadingfile_string"] + '</button>';
+    html += '<button class="btn btn-default" type="button" title="Upload" name="submit" id="submitFileUpload2">' + languages[browserLang]["view_startuploadingfile_string"] + '</button>';
     html += '<label class="label-rec-filename"></label>';
     html += '</div>';
-    html += '<div id="newRecordingNameSection2" class="hide rowSectionAnn">';
-    html += '<label class="label-creation">' + languages[browserLang]["view_name_recording_string"] + ': </label>';
-    html += '<input id="newRecordingName2" type="input">';
-    html += '<label class="label-creation">' + languages[browserLang]["view_language_string"] + ': </label>';
-    html += '<select id="newRecordingLangSelect2">';
+    html += '</form>';
+    html += '<div id="newRecordingNameSection2" class="simplehide rowSectionAnn margin-top-tf">';
+    html += '<form class="form-horizontal">';
+    html += '<div class="form-group">';
+    html += '<label class="col-sm-4 control-label label-creation">' + languages[browserLang]["view_name_recording_string"] + ': </label>';
+    html += '<div class="col-sm-7">';
+    html += '<input class="form-control input-creation" id="newRecordingName2" type="text">';
+    html += '</div>';
+    html += '</div>';
+    html += '<div class="form-group">';
+    html += '<label class="col-sm-4 control-label label-creation">' + languages[browserLang]["view_language_string"] + ': </label>';
+    html += '<div class="col-sm-7">';
+    html += '<select class="form-control input-creation" id="newRecordingLangSelect2">';
     html += '<option value="it" selected>Italian</option>';
     html += '<option value="en">English</option>';
     html += '</select>';
-    html += '<button id="saveNewRecordingBtn2" attr-elemid="' + elemId + '" class="addButtonsRecording saveSecElements addButtons" title="' + languages[browserLang]["view_savenewtimegroup_string"] + '"><i class="fa fa-check"></i></button>';
     html += '</div>';
-    html += '<div class="rowSectionAnn">';
-    html += '<hr class="hr-form-inside">';
+    html += '</div>';
+    html += '<div class="form-group">';
+    html += '<label class="col-sm-4 control-label label-creation"></label>';
+    html += '<div class="col-sm-7">';
+    html += '<button type="button" id="saveNewRecordingBtn2" attr-elemid="' + elemId + '" class="addButtonsRecording saveSecElements addButtons" title="' + languages[browserLang]["view_savenewtimegroup_string"] + '"><i class="fa fa-check"></i></button>';
+    html += '</div>';
+    html += '</div>';
+    html += '</form>';
+    html += '</div>';
+    html += '</div>';
+    html += '<div class="rowSectionAnn last-tts-comtainer">';
+    html += '<hr class="hr-form-inside bottom-twenty-two">';
     html += '<label class="label-creation"></label>';
-    html += '<b>' + languages[browserLang]["view_language_record_tts"] + '</b></br></br>';
-    html += '<p id="errorMsgApy" class="error-message bottom-small hide">' + languages[browserLang]["view_tts_error_1"] + '.</p>';
-    html += '<p id="errorMsgListen" class="error-message bottom-small hide">' + languages[browserLang]["view_tts_error_2"] + '.</p>';
+    html += '<b class="margin-top-six">' + languages[browserLang]["view_language_record_tts"] + '</b></br></br>';
+    html += '<div class="col-md-12">';
+    html += '<p id="errorMsgApy" class="error-message bottom-small simplehide">' + languages[browserLang]["view_tts_error_1"] + '.</p>';
+    html += '<p id="errorMsgListen" class="error-message bottom-small simplehide">' + languages[browserLang]["view_tts_error_2"] + '.</p>';
+    html += '</div>';
     html += '<div id="ttsKeyContainer">';
-    html += '<label id="labelApiKey" class="label-creation">' + languages[browserLang]["view_name_googlekey_label"] + ': </label>';
-    html += '<input id="googleApiKey" type="input">';
-    html += '<button id="setKeyTtsButton" title="' + languages[browserLang]["view_tts_button_set_key"] + '" class="addButtons"><i class="fa fa-key"></i></button>';
+    html += '<form class="form-horizontal">';
+    html += '<div class="form-group">';
+    html += '<label id="labelApiKey" class="col-sm-4 control-label label-creation">' + languages[browserLang]["view_name_googlekey_label"] + ': </label>';
+    html += '<div class="col-sm-7">';
+    html += '<input class="form-control input-creation" id="googleApiKey" type="text">';
+    html += '</div>';
+    html += '</div>';
+    html += '<div class="form-group">';
+    html += '<label class="col-sm-4 control-label label-creation"></label>';
+    html += '<div class="col-sm-7">';
+    html += '<button type="button" id="setKeyTtsButton" title="' + languages[browserLang]["view_tts_button_set_key"] + '" class="btn btn-default">' + languages[browserLang]["view_tts_save_key"] + '</button>';
+    html += '</div>';
+    html += '</div>';
+    html += '</form>';
     html += '</div>';
     html += '<div id="ttsFormContainer">';
-    html += '<label class="label-creation">' + languages[browserLang]["view_language_string"] + ': </label>';
-    html += '<select id="newRecordingLangSelect3">';
+    html += '<form class="form-horizontal">';
+    html += '<div class="form-group">';
+    html += '<label class="col-sm-4 control-label label-creation">' + languages[browserLang]["view_language_string"] + ': </label>';
+    html += '<div class="col-sm-7">';
+    html += '<select class="form-control input-creation" id="newRecordingLangSelect3">';
     html += '<option value="it" selected>Italian</option>';
     html += '<option value="en">English</option>';
     html += '</select>';
-    html += '<label class="label-creation">' + languages[browserLang]["view_tts_voice"] + ': </label>';
-    html += '<select id="newRecordingLangSelect4">';
+    html += '</div>';
+    html += '</div>';
+    html += '<div class="form-group">';
+    html += '<label class="col-sm-4 control-label label-creation">' + languages[browserLang]["view_tts_voice"] + ': </label>';
+    html += '<div class="col-sm-7">';
+    html += '<select class="form-control input-creation" id="newRecordingLangSelect4">';
     voices = JSON.parse(voices);
     for (var v in voices) {
         html += '<option value="' + voices[v][1] + '">' + voices[v][1] + '</option>';
     }
     html += '</select>';
-    html += '<label class="label-creation">' + languages[browserLang]["view_text_tts_string"] + ': </label>';
-    html += '<textarea id="newRecordTTStext" class="input-width"></textarea>';
-    html += '<button id="sendTextTtsButton" title="' + languages[browserLang]["view_tts_button_create_audio"] + '" class="addButtons"><i class="fa fa-volume-up"></i></button>';
+    html += '</div>';
+    html += '</div>';
+    html += '<div class="form-group">';
+    html += '<label class="col-sm-4 control-label label-creation">' + languages[browserLang]["view_text_tts_string"] + ': </label>';
+    html += '<div class="col-sm-7">';
+    html += '<textarea id="newRecordTTStext" class="form-control input-creation"></textarea>';
+    html += '</div>';
+    html += '</div>';
+    html += '<div class="form-group">';
+    html += '<label class="col-sm-4 control-label label-creation"></label>';
+    html += '<div class="col-sm-7">';
+    html += '<button type="button" id="sendTextTtsButton" title="' + languages[browserLang]["view_tts_button_create_audio"] + '" class="btn btn-default"><i class="fa fa-paper-plane"></i> ' + languages[browserLang]["view_text_sendtts_string"] + '</button>';
+    html += '</div>';
+    html += '</div>';
+    html += '</form>';
     html += '<div id="newRecordingNameSection3" class="hide rowSectionAnn">';
-    html += '<label class="label-creation">' + languages[browserLang]["view_name_recording_string"] + ': </label>';
-    html += '<input id="newRecordingName3" type="input">';
-    html += '<label class="label-creation">' + languages[browserLang]["view_description_recording_string"] + ': </label>';
-    html += '<textarea id="newRecordingDescription3" class="input-width"></textarea>';
-    html += '<button id="saveNewRecordingBtn3" attr-elemid="' + elemId + '" class="addButtonsRecording saveSecElements addButtons vertical-align-top" title="' + languages[browserLang]["view_savenewtimegroup_string"] + '"><i class="fa fa-check"></i></button>';
+    html += '<form class="form-horizontal">';
+    html += '<div class="form-group">';
+    html += '<label class="col-sm-4 control-label label-creation">' + languages[browserLang]["view_name_recording_string"] + ': </label>';
+    html += '<div class="col-sm-7">';
+    html += '<input class="form-control input-creation" id="newRecordingName3" type="text">';
+    html += '</div>';
+    html += '</div>';
+    html += '<div class="form-group">';
+    html += '<label class="col-sm-4 control-label label-creation">' + languages[browserLang]["view_description_recording_string"] + ': </label>';
+    html += '<div class="col-sm-7">';
+    html += '<textarea id="newRecordingDescription3" class="form-control input-creation"></textarea>';
+    html += '</div>';
+    html += '</div>';
+    html += '<div class="form-group">';
+    html += '<label class="col-sm-4 control-label label-creation"></label>';
+    html += '<div class="col-sm-7">';
+    html += '<button type="button" id="saveNewRecordingBtn3" attr-elemid="' + elemId + '" class="addButtonsRecording saveSecElements addButtons vertical-align-top" title="' + languages[browserLang]["view_savenewtimegroup_string"] + '"><i class="fa fa-check"></i></button>';
     html += '<div id="tokenDiv" class="hide"></div>'
     html += '</div>';
     html += '</div>';
+    html += '</form>';
     html += '</div>';
     html += '</div>';
-
+    html += '</div>';
+    html += '</div>';
     return html;
 }
 
@@ -1307,10 +1546,21 @@ function dialogNewAnn(elemId, nameValue, newRecName) {
             }
             htmlSelect += '<option ' + selectedOption + ' annid="' + e + '" value="' + escapeHtml(data[e].name) + ' ( ' + e + ' )">' + data[e].name + '</option>';
         }
-        var html = '<label class="label-creation listRecordingSection">' + languages[browserLang]["view_description_string"] + ': </label>';
-        html += '<input autofocus value="' + escapeHtml(values[0]) + '" usable id="' + elemId + '-name" class="input-creation listRecordingSection"></input><div></div>';
-        html += '<label class="listRecordingSection label-creation">' + languages[browserLang]["view_recording_string"] + ': </label>';
-        html += '<select usable id="' + elemId + '-recording" class="listRecordingSection input-creation">' + htmlSelect + '</select>';
+        var html = '';
+        html += '<form class="form-horizontal">';
+        html += '<div class="form-group">';
+        html += '<label class="col-sm-4 control-label label-creation">' + languages[browserLang]["view_description_string"] + ': </label>';
+        html += '<div class="col-sm-7">';
+        html += '<input autofocus value="' + escapeHtml(values[0]) + '" usable id="' + elemId + '-name" class="form-control input-creation listRecordingSection"></input><div></div>';
+        html += '</div>';
+        html += '</div>';
+        html += '<div class="form-group">';
+        html += '<label class="listRecordingSection col-sm-4 control-label label-creation">' + languages[browserLang]["view_recording_string"] + ': </label>';
+        html += '<div class="col-sm-7">';
+        html += '<select usable id="' + elemId + '-recording" class="listRecordingSection form-control input-creation">' + htmlSelect + '</select>';
+        html += '</div>';
+        html += '</div>';
+        html += '</form>';
         $.ajax({
             url: "./plugins.php?getType=tools&rest=getvoices&lang=it",
             context: document.body
@@ -1328,7 +1578,6 @@ function dialogNewAnn(elemId, nameValue, newRecName) {
 }
 
 function dialogNewCqr(elemId, nameValue, descriptionValue, newRecName) {
-
     $.ajax({
         url: "./visualize.php?readData=recordings",
         context: document.body,
@@ -1347,19 +1596,33 @@ function dialogNewCqr(elemId, nameValue, descriptionValue, newRecName) {
             }
             htmlSelect += '<option ' + selectedOption + ' annid="' + e + '" value="' + escapeHtml(data[e].name) + ' ( ' + e + ' )">' + data[e].name + '</option>';
         }
-        var html = '<label class="label-creation listRecordingSection">' + languages[browserLang]["view_name_string"] + ': </label>';
-        html += '<input autofocus value="' + escapeHtml(values[0]) + '" usable id="' + elemId + '-name" class="input-creation listRecordingSection"></input>';
-        html += '<label class="label-creation listRecordingSection">' + languages[browserLang]["view_description_string"] + ': </label>';
-        html += '<input usable value="' + escapeHtml(values[1]) + '" id="' + elemId + '-description" class="input-creation listRecordingSection"></input>';
-        html += '<label class="label-creation listRecordingSection">' + languages[browserLang]["view_recording_string"] + ': </label>';
-        html += '<select usable id="' + elemId + '-recording" class="input-creation listRecordingSection">' + htmlSelect + '</select>';
+        var html = '';
+        html += '<form class="form-horizontal">';
+        html += '<div class="form-group">';
+        html += '<label class="col-sm-4 control-label label-creation listRecordingSection">' + languages[browserLang]["view_name_string"] + ': </label>';
+        html += '<div class="col-sm-7">';
+        html += '<input autofocus value="' + escapeHtml(values[0]) + '" usable id="' + elemId + '-name" class="form-control input-creation listRecordingSection"></input>';
+        html += '</div>';
+        html += '</div>';
+        html += '<div class="form-group">';
+        html += '<label class="col-sm-4 control-label label-creation listRecordingSection">' + languages[browserLang]["view_description_string"] + ': </label>';
+        html += '<div class="col-sm-7">';
+        html += '<input usable value="' + escapeHtml(values[1]) + '" id="' + elemId + '-description" class="form-control input-creation listRecordingSection"></input>';
+        html += '</div>';
+        html += '</div>';
+        html += '<div class="form-group">';
+        html += '<label class="col-sm-4 control-label label-creation listRecordingSection">' + languages[browserLang]["view_recording_string"] + ': </label>';
+        html += '<div class="col-sm-7">';
+        html += '<select usable id="' + elemId + '-recording" class="form-control input-creation listRecordingSection">' + htmlSelect + '</select>';
+        html += '</div>';
+        html += '</div>';
+        html += '</form>';
         $.ajax({
             url: "./plugins.php?getType=tools&rest=getvoices&lang=it",
             context: document.body
         }).done(function(res) {
             $('#loader').hide();
             html += getHtmlRecordings(elemId, res);
-            
             $("#modalCreation").html(html);
             if (nameValue) {
                 $("#" + elemId + "-name").val(nameValue);
@@ -1367,7 +1630,6 @@ function dialogNewCqr(elemId, nameValue, descriptionValue, newRecName) {
             if (descriptionValue) {
                 $("#" + elemId + "-description").val(descriptionValue);
             }
-
             initRecordingListeners();
         });
     });
@@ -1381,11 +1643,10 @@ function dialogNewIvr(elemId, nameValue, descriptionValue, newRecName) {
             $('#loader').show();
         }
     }).done(function (c) {
-
         var data = JSON.parse(c);
         var htmlSelect = "";
         var selectedOption = "";
-
+        var html = "";
         for (e in data) {
             if (e === values[2] || data[e].name === newRecName) {
                 selectedOption = "selected";
@@ -1394,22 +1655,33 @@ function dialogNewIvr(elemId, nameValue, descriptionValue, newRecName) {
             }
             htmlSelect += '<option ' + selectedOption + ' annid="' + e + '" value="' + escapeHtml(data[e].name) + ' ( ' + e + ' )">' + data[e].name + '</option>';
         }
-        var html = '<label class="label-creation listRecordingSection">' + languages[browserLang]["view_name_string"] + ': </label>';
-        html += '<input type="text" autofocus value="' + escapeHtml(values[0]) + '" usable id="' + elemId + '-name" class="input-creation listRecordingSection"></input>';
-        html += '<label class="label-creation listRecordingSection">' + languages[browserLang]["view_description_string"] + ': </label>';
-        html += '<input type="text" usable value="' + escapeHtml(values[1]) + '" id="' + elemId + '-description" class="input-creation listRecordingSection"></input>';
-        html += '<label class="label-creation listRecordingSection">' + languages[browserLang]["view_recording_string"] + ': </label>';
-        html += '<select usable id="' + elemId + '-recording" class="input-creation listRecordingSection">' + htmlSelect + '</select>';
-        
+        html += '<form class="form-horizontal">';
+        html += '<div class="form-group">';
+        html += '<label class="col-sm-4 control-label label-creation listRecordingSection">' + languages[browserLang]["view_name_string"] + ': </label>';
+        html += '<div class="col-sm-7">';
+        html += '<input type="text" autofocus value="' + escapeHtml(values[0]) + '" usable id="' + elemId + '-name" class="form-control input-creation listRecordingSection"></input>';
+        html += '</div>';
+        html += '</div>';
+        html += '<div class="form-group">';
+        html += '<label class="col-sm-4 control-label label-creation listRecordingSection">' + languages[browserLang]["view_description_string"] + ': </label>';
+        html += '<div class="col-sm-7">';
+        html += '<input type="text" usable value="' + escapeHtml(values[1]) + '" id="' + elemId + '-description" class="form-control input-creation listRecordingSection"></input>';
+        html += '</div>';
+        html += '</div>';
+        html += '<div class="form-group">';
+        html += '<label class="col-sm-4 control-label label-creation listRecordingSection">' + languages[browserLang]["view_recording_string"] + ': </label>';
+        html += '<div class="col-sm-7">';
+        html += '<select usable id="' + elemId + '-recording" class="form-control input-creation listRecordingSection">' + htmlSelect + '</select>';
+        html += '</div>';
+        html += '</div>';
+        html += '</form>';
         $.ajax({
             url: "./plugins.php?getType=tools&rest=getvoices&lang=it",
             context: document.body
         }).done(function(res) {
-
             $('#loader').hide();
             $( this ).addClass( "done" );
             html += getHtmlRecordings(elemId, res);
-
             $("#modalCreation").html(html);
             if (nameValue) {
                 $("#" + elemId + "-name").val(nameValue);

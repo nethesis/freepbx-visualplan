@@ -44,7 +44,7 @@ example.Toolbar = Class.extend({
 			this.view.setZoom(this.view.getZoom() * 1.25, true);
 		}, this));
 
-		this.delimiter = $("<span class='toolbar_delimiter'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>");
+		this.delimiter = $("<span class='toolbar_delimiter'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>");
 		this.html.append(this.delimiter);
 
 		this.panButton = $("<button id='canvasPolicy' currentBtn='pan' class='mainmenu_btns'><i class='fa fa-arrows-alt fa-lg'></i></button>");
@@ -194,7 +194,6 @@ example.Toolbar = Class.extend({
 						delete json[item].target.decoration;
 					}
 				}
-
 				if (jQuery.isEmptyObject(json)) {
 					$('#emptier').fadeIn("slow");
 					$('#emptier').children().html("&nbsp;&nbsp;" + languages[browserLang]["toolbar_empty_string"]);
@@ -244,7 +243,6 @@ example.Toolbar = Class.extend({
 							$('#errorer').children().eq(1).html("&nbsp;&nbsp;" + languages[browserLang]["toolbar_not_save_log_string"]);
 							$('#errorer').fadeIn("slow");
 							console.clear();
-							console.log(c);
 							setTimeout(function () {
 								$('#errorer').fadeOut("slow");
 							}, 5000);
@@ -431,6 +429,7 @@ example.Toolbar = Class.extend({
 			case "ivr":
 				var id = node.getUserData().id;
 				node.setUserData({
+					"id": id,
 					"name": elems[0].value,
 					"description": elems[1].value,
 					"announcement": elems[2].selectedOptions[0].attributes["annid"].value
@@ -446,6 +445,7 @@ example.Toolbar = Class.extend({
 			case "cqr":
 				var id = node.getUserData().id;
 				node.setUserData({
+					"id": id,
 					"name": elems[0].value,
 					"description": elems[1].value,
 					"announcement": elems[2].selectedOptions[0].attributes["annid"].value
@@ -461,6 +461,7 @@ example.Toolbar = Class.extend({
 			case "app-announcement":
 				var id = node.getUserData().id;
 				node.setUserData({
+					"id": id,
 					"description": elems[0].value,
 					"announcement": elems[1].selectedOptions[0].attributes["annid"].value
 				});
@@ -475,6 +476,7 @@ example.Toolbar = Class.extend({
 			case "timeconditions":
 				var id = node.getUserData().id;
 				node.setUserData({
+					"id": id,
 					"name": elems[0].value,
 					"time": elems[1].selectedOptions[0].attributes["timeid"].value
 				});
