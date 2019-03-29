@@ -247,5 +247,7 @@ languages.it = {
     "view_name_googlekey_label" : "API Key Google",
     "view_tts_button_set_key": "Imposta chiave",
     "view_tts_error_1": "Errore durante la creazione del file audio, controllare la chiave API e la connessione a internet",
-    "view_tts_error_2": "Errore durante l'ascolto dell'audio"
+    "view_tts_error_2": "Errore durante l'ascolto dell'audio",
+    "view_tts_save_key": "Salva chiave",
+    "view_text_sendtts_string": "Invia"
 };

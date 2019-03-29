@@ -158,7 +158,7 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                                             position: 'center',
                                             autoOpen: false,
                                             resizable: false,
-                                            width: 250,
+                                            width: 500,
                                             modal: true,
                                             close: function (ev, ui) {
                                                 $(this).dialog('destroy').remove();
@@ -181,11 +181,15 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                                             title: languages[browserLang]["base_ivr_option_string"]
                                         });
                                     $(".ui-dialog-titlebar").css("background", "#7f8c8d");
-
                                     // inject html
                                     var html = "";
-                                    html += '<label class="label-creation-mini">' + languages[browserLang]["view_number_string"] + ': </label>';
-                                    html += '<input autofocus type="number" value="" usable id="ivr-option" class="input-creation-mini"></input>';
+                                    html += '<form class="form-horizontal">';
+                                    html += '<div class="form-group">';
+                                    html += '<label class="col-sm-4 control-label label-creation">' + languages[browserLang]["view_number_string"] + ': </label>';
+                                    html += '<div class="col-sm-7">';
+                                    html += '<input autofocus type="number" value="" usable id="ivr-option" class="form-control input-creation"></input>';
+                                    html += '</div>';
+                                    html += '</div>';
                                     dialog.html(html);
 
                                     // show dialog
@@ -194,13 +198,11 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                                         dialog.dialog('destroy').remove();
                                     });
                                     break;
-
                                 case "delete":
                                     if (table.children.data.length > 5) {
                                         var cmd = new draw2d.command.CommandDelete(emitter);
                                         emitter.getCanvas().getCommandStack().execute(cmd);
                                     }
-
                                     break;
                                 default:
                                     break;
@@ -250,7 +252,7 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                                             position: 'center',
                                             autoOpen: false,
                                             resizable: false,
-                                            width: 250,
+                                            width: 500,
                                             modal: true,
                                             close: function (ev, ui) {
                                                 $(this).dialog('destroy').remove();
@@ -273,11 +275,15 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                                             title: languages[browserLang]["base_cqr_option_string"]
                                         });
                                     $(".ui-dialog-titlebar").css("background", "#7f8c8d");
-
                                     // inject html
                                     var html = "";
-                                    html += '<label class="label-creation-mini">' + languages[browserLang]["view_number_string"] + ': </label>';
-                                    html += '<input autofocus type="number" value="" usable id="cqr-option" class="input-creation-mini"></input>';
+                                    html += '<form class="form-horizontal">';
+                                    html += '<div class="form-group">';
+                                    html += '<label class="col-sm-4 control-label label-creation">' + languages[browserLang]["view_number_string"] + ': </label>';
+                                    html += '<div class="col-sm-7">';
+                                    html += '<input autofocus type="number" value="" usable id="cqr-option" class="form-control input-creation"></input>';
+                                    html += '</div>';
+                                    html += '</div>';
                                     dialog.html(html);
 
                                     // show dialog
@@ -286,7 +292,6 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                                         dialog.dialog('destroy').remove();
                                     });
                                     break;
-
                                 case "delete":
                                     if (table.children.data.length > 5) {
                                         var cmd = new draw2d.command.CommandDelete(emitter);
@@ -690,9 +695,7 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
 
     setPersistentAttributes: function (memento, type) {
         this._super(memento);
-
         this.setName(memento.name);
-
         if (typeof memento.entities !== "undefined") {
             $.each(memento.entities, $.proxy(function (i, e) {
                 var entity = this.addEntity(e.text, e.type, type);
@@ -726,7 +729,6 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
 
             }, this));
         }
-
         return this;
     }
 });

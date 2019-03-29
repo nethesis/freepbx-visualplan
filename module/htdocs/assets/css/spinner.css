@@ -46,15 +46,15 @@
   color: #333;
   font-family: 'FontAwesome';
   content: "\f110";
-  font-size: 70px;
+  font-size: 67px;
   display: block;
   width: 1em;
   margin: -0.5em 0 0 -0.5em;
-  -webkit-animation: spinner 1500ms infinite linear;
-  -moz-animation: spinner 1500ms infinite linear;
-  -ms-animation: spinner 1500ms infinite linear;
-  -o-animation: spinner 1500ms infinite linear;
-  animation: spinner 1500ms infinite linear;
+  -webkit-animation: spinner 1150ms infinite linear;
+  -moz-animation: spinner 1150ms infinite linear;
+  -ms-animation: spinner 1150ms infinite linear;
+  -o-animation: spinner 1150ms infinite linear;
+  animation: spinner 1150ms infinite linear;
 }
 
 /* Animation */

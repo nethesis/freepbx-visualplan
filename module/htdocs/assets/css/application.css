@@ -15,6 +15,37 @@
   transition: left 200ms linear;
 }
 
+::-webkit-scrollbar {
+  width: 13px;
+  height: 18px;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+::-webkit-scrollbar-thumb {
+  height: 6px;
+  border-left: 2px solid rgba(0, 0, 0, 0);
+  border-right: 2px solid rgba(0, 0, 0, 0);
+  border-top: 2px solid rgba(0, 0, 0, 0);
+  background-clip: padding-box;
+  background-color: rgba(0, 0, 0, 0.15);
+  -webkit-box-shadow: inset -1px -1px 0px rgba(0, 0, 0, 0.05), inset 1px 1px 0px rgba(0, 0, 0, 0.05);
+  box-shadow: inset -1px -1px 0px rgba(0, 0, 0, 0.05), inset 1px 1px 0px rgba(0, 0, 0, 0.05);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.25);
+}
+
+::-webkit-scrollbar-button {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+::-webkit-scrollbar-corner {
+  background-color: transparent;
+}
+
 button {
   cursor: pointer;
 }
@@ -72,7 +103,7 @@ textarea {
   height: 60px;
   right: 0px;
   overflow: hidden !important;
-  z-index: 1000 !important;
+  z-index: 1022 !important;
   background-color: #030303 !important;
   border-top: 2px solid #3f9c35;
 }
@@ -90,7 +121,7 @@ textarea {
   text-align: center;
   color: #fff;
   font-weight: 600;
-  line-height: 58px;
+  line-height: 60px;
   font-size: 19px;
 }
 
@@ -136,6 +167,11 @@ button.mainmenu_btns {
   margin-top: -10px;
 }
 
+.ui-button.mainmenu_btns.ui-state-default,
+button.mainmenu_btns i {
+  font-size: 17px !important;
+}
+
 .ui-button.mainmenu_btns.ui-state-default:hover,
 button.mainmenu_btns:hover,
 .ui-button.mainmenu_btns.ui-state-default:active {
@@ -163,13 +199,13 @@ button.mainmenu_btns:focus {
 
 #side-nav {
   bottom: 37px;
-  background: #282828;
+  background: #030303;
   color: #fff;
   display: block;
   left: 0;
   position: fixed;
   top: 60px;
-  z-index: 4;
+  z-index: 1021;
   overflow-y: auto;
   overflow-x: hidden;
   max-width: 220px;
@@ -183,10 +219,10 @@ button.mainmenu_btns:focus {
 /*---- draggable elements ----*/
 
 .palette_node_element {
-  padding: 10px 9px;
+  padding: 12px 9px;
   cursor: move;
   width: 190px;
-  margin: 8px 13px 8px 12px;
+  margin: 8px 13px 7px 12px;
   font-size: 14px;
   font-weight: 600;
   display: inline-flex;
@@ -512,12 +548,12 @@ button.mainmenu_btns:focus {
 /*content div*/
 
 .ui-dialog {
-  border: 1px solid rgba(0, 0, 0, 0.3);
+  /* border: 1px solid rgba(0, 0, 0, 0.3); */
   border-radius: 0;
-  -webkit-box-shadow: 0 5px 15px rgba(0, 0, 0, .5);
-  -moz-box-shadow: 0 5px 15px rgba(0, 0, 0, .5);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, .5);
-  top: 40px !important;
+  -webkit-box-shadow: 0px 0 15px 0px rgba(0, 0, 0, .4);
+  -moz-box-shadow: 0px 0 15px 0px rgba(0, 0, 0, .4);
+  box-shadow: 0px 0 15px 0px rgba(0, 0, 0, .4);
+  top: 67px !important;
   left: calc(50% - 350px) !important;
   margin-left: 210px;
   -webkit-transition: margin-left 200ms linear;
@@ -531,7 +567,7 @@ button.mainmenu_btns:focus {
 
 .ui-dialog .ui-dialog-title {
   position: absolute !important;
-  top: -22px;
+  top: -24px;
   color: #333;
   padding-left: 15px;
 }
@@ -543,15 +579,16 @@ button.mainmenu_btns:focus {
 .ui-draggable .ui-dialog-titlebar {
   position: absolute !important;
   width: 100%;
-  top: 35px;
-  padding: 2px !important;
+  top: 36px;
+  opacity: 0.9;
+  padding: 1.5px !important;
 }
 
 /*content*/
 
 .ui-dialog .ui-dialog-content {
   padding: 1em !important;
-  margin-top: 45px;
+  margin-top: 56px;
 }
 
 .button-elem-list {
@@ -671,7 +708,7 @@ footer p {
 }
 
 footer a {
-  font-size: 11px;
+  font-size: 11.5px;
   color: #6ec664;
 }
 
@@ -868,13 +905,13 @@ footer a:hover {
 }
 
 .addButtons {
-  margin-left: 5px;
-  height: 24px;
+  margin-left: 0px !important;
+  height: 25px;
   width: 28px;
   padding: 2px 5.4px 2px 6px;
   -webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, .1);
   box-shadow: 0 2px 3px rgba(0, 0, 0, .1);
-  color: #6b6b6b;
+  color: #828282;
 }
 
 .label-title {
@@ -922,7 +959,7 @@ footer a:hover {
 }
 
 #checkRecordingBtn {
-  margin-right: 5px;
+  margin-right: 10px;
 }
 
 .vmiddle {
@@ -973,10 +1010,11 @@ hr {
   -webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, .1);
   box-shadow: 0 2px 3px rgba(0, 0, 0, .1);
   color: #ffffff;
+  float: right;
 }
 
 audio {
-  max-width: 258px;
+  max-width: 214px;
 }
 
 .no-margins {
@@ -995,12 +1033,22 @@ audio {
   margin-left: 5px;
 }
 
+#cancelTempGroup {
+  margin-right: 10px;
+}
+
+#addTimeGroupButton {
+  float: right !important;
+}
+
 #addRecordingBtn {
   margin-left: 10px;
 }
 
 #removeTimeGroupForm {
   margin-left: 5px;
+  margin-bottom: 13px;
+  float: right;
 }
 
 #timeconditions-title {
@@ -1011,17 +1059,13 @@ audio {
   margin-top: 20px;
 }
 
-#newRecordingLangSelect,
-#newRecordingLangSelect2,
-#newRecordingLangSelect3,
-#newRecordingLangSelect4,
-#recFilename {
-  width: 176px;
-}
-
 #submitFileUpload2,
 .addRecordingBtn {
   margin-left: 5px;
+}
+
+.addRecordingBtn {
+  float: right !important;
 }
 
 #submitFileUpload2 {
@@ -1036,6 +1080,7 @@ audio {
 
 .label-rec-filename {
   margin-left: 10px;
+  font-weight: 100 !important;
 }
 
 .input-width {
@@ -1044,6 +1089,7 @@ audio {
 
 #sendTextTtsButton {
   vertical-align: top;
+  float: right;
 }
 
 #audioPlayer {
@@ -1054,14 +1100,59 @@ audio {
   vertical-align: top;
 }
 
-#setKeyTtsButton {
-  height: 22px;
-}
-
 .bottom-small {
   margin-bottom: 17px;
 }
 
 .error-border {
   border: 1px solid rgb(255, 97, 97);
+}
+
+.ui-dialog .ui-dialog-content {
+  overflow-x: hidden !important;
+}
+
+.form-group {
+  margin-bottom: 0px !important;
+}
+
+textarea {
+  resize: none;
+}
+
+.col7-newann-btn {
+  margin-top: -12px;
+}
+
+.simplehide {
+  display: none;
+}
+
+.margin-top-six {
+  margin-top: 6px;
+}
+
+.margin-top-tf {
+  margin-top: 25px;
+}
+
+.ann-section-record {
+  margin-top: 28px !important;
+  margin-bottom: 19px !important;
+}
+
+.last-tts-comtainer {
+  margin-bottom: 30px !important;
+}
+
+.bottom-twenty-two {
+  margin-bottom: 22px;
+}
+
+.full-width {
+  width: 100% !important;
+}
+
+#layer_header>div {
+  font-size: 14px !important;
 }
