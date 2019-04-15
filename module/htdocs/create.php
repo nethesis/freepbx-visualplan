@@ -102,13 +102,9 @@ function nethvplan_switchCreate($wType, $value, $connectionArray)
             $cidnum = trim($extensionParts[1]);
             $descriptionParts = explode(")", $partsNum[1]);
             $description = trim($descriptionParts[0]);
-
             $destinations = nethvplan_getDestination($value, $connectionArray);
             $destination = trim($destinations["output_".$value['entities'][0]['id']]);
-
             $exists = core_did_get($extension, $cidnum);
-
-            // check night service
             $did = $extension."/".$cidnum;
 
             if ($exists) {
@@ -116,10 +112,21 @@ function nethvplan_switchCreate($wType, $value, $connectionArray)
                 core_did_add(array(
                     "extension" => $extension,
                     "cidnum" => $cidnum,
-                    "alertinfo" => "<http://www.notused >\;info=ring2",
+                    "alertinfo" => $exists["alertinfo"],
                     "description" => $description,
                     "destination" => $destination,
-                    "mohclass" => "default"
+                    "mohclass" => $exists["mohclass"],
+                    "rvolume" => $exists["rvolume"],
+                    "privacyman" => $exists["privacyman"],
+                    "pmmaxretries" => $exists["pmmaxretries"],
+                    "pmminlength" => $exists["pmminlength"],
+                    "ringing" => $exists["ringing"],
+                    "fanswer" => $exists["fanswer"],
+                    "reversal" => $exists["reversal"],
+                    "grppre" => $exists["grppre"],
+                    "delay_answer" => $exists["delay_answer"],
+                    "pricid" => $exists["pricid"],
+                    "indication_zone" => $exists["indication_zone"]
                 ), $destination);
             } else {
                 core_did_add(array(
@@ -302,6 +309,16 @@ function nethvplan_switchCreate($wType, $value, $connectionArray)
                 $_REQUEST['recording'] = $exists['recording'];
                 $_REQUEST['rvolume'] = $exists['rvolume'];
                 $_REQUEST['rvol_mode'] = $exists['rvol_mode'];
+                $_REQUEST['rtone'] = $exists['rtone'];
+                $_REQUEST['skip_joinannounce'] = $exists['skip_joinannounce'];
+                $_REQUEST['answered_elsewhere'] = $exists['answered_elsewhere'];
+                $_REQUEST['timeoutpriority'] = $exists['timeoutpriority'];
+                $_REQUEST['autopausebusy'] = $exists['autopausebusy'];
+                $_REQUEST['autopauseunavail'] = $exists['autopauseunavail'];
+                $_REQUEST['autopausedelay'] = $exists['autopausedelay'];
+                $_REQUEST['penaltymemberslimit'] = $exists['penaltymemberslimit'];
+                $_REQUEST['min-announce'] = $exists['min-announce'];
+                $_REQUEST['announcemenu'] = $exists['announcemenu'];
                 queues_add(
                     $extension,
                     $name,
