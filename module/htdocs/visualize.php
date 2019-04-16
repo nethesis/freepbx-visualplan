@@ -864,15 +864,18 @@ function nethvplan_bindData($data, $dest, $id)
                 "type"=> "text",
                 "destination"=> ""
             );
+            $staticExt = preg_replace("/Local\//", "\n", implode(",", $data[$dest][$id]['members']));
+            $staticExt = preg_replace("/@from-queue\/n/", "", $staticExt);
+            $staticExt = preg_replace("/,\n/", "\n", $staticExt);
+            $staticExt = preg_replace("/^\n/", "", $staticExt);
             $widget['userData'] = array(
                 "name"=> html_entity_decode($data[$dest][$id]['descr']),
                 "extension"=> $data[$dest][$id]['num'],
-                "staticExt"=> implode(",", $data[$dest][$id]['members']),
+                "staticExt"=> $staticExt,
                 "dynamicExt"=> $data[$dest][$id]['dynmembers'],
                 "strategy"=> $data[$dest][$id]['strategy'],
                 "timeout"=> $data[$dest][$id]['timeout'],
                 "maxwait"=> $data[$dest][$id]['maxwait'],
-
             );
         break;
         
