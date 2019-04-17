@@ -317,8 +317,9 @@ function nethvplan_switchCreate($wType, $value, $connectionArray)
                 $_REQUEST['autopauseunavail'] = $exists['autopauseunavail'];
                 $_REQUEST['autopausedelay'] = $exists['autopausedelay'];
                 $_REQUEST['penaltymemberslimit'] = $exists['penaltymemberslimit'];
-                $_REQUEST['min-announce'] = $exists['min-announce'];
                 $_REQUEST['announcemenu'] = $exists['announcemenu'];
+                $_REQUEST['min-announce'] = $exists['min-announce-frequency'];
+
                 queues_add(
                     $extension,
                     $name,
