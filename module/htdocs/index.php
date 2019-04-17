@@ -160,7 +160,7 @@ if (!isset($_SESSION['AMP_user']) || !$_SESSION['AMP_user']->checkSection('visua
 
 						$('#loader').hide();
 
-						var zoomLevel = g.nodes().length / 5.9 > 1.2 ? g.nodes().length / 5.9 : 1.3;
+						var zoomLevel = g.nodes().length / 5.9 > 1.2 ? g.nodes().length / 5.9 : 1.1;
 						app.view.setZoom(zoomLevel, 0, 0, true);
 						$('tspan:contains("' + languages[browserLang]["base_details_string"] + '")').css('cursor','pointer').css('text-decoration','underline');
 

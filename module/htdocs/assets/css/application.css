@@ -1156,3 +1156,7 @@ textarea {
 #layer_header>div {
   font-size: 14px !important;
 }
+
+#modalCreation {
+  max-height: 408px !important;
+}

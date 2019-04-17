@@ -835,6 +835,10 @@ function nethvplan_getDestination($values, $connectionArray)
                 case "app-daynight":
                     $destAsterisk[$value['source']['port']] = trim($parts[0]).",".trim($parts[1]).",1";
                 break;
+
+                default:
+                    $destAsterisk[$value['source']['port']] = trim($parts[0]).",".trim($parts[1]).",1";
+
             }
         }
     }
