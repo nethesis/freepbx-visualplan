@@ -1,5 +1,5 @@
 Name: nethvoice-module-nethvplan14
-Version: 14.1.4
+Version: 14.2.0
 Release: 1%{?dist}
 Summary: Visualplan for NethVoice14
 Group: Network
@@ -39,6 +39,11 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
+* Mon Apr 29 2019 Stefano Fancello <stefano.fancello@nethesis.it> - 14.2.0-1
+- Accept same characters as FreePBX does in objects name nethesis/dev#5586
+- Restyle to work well with different browsers nethesis/dev#5606
+- Don't overwrite dialplan objects when editing them nethesis/dev#5606
+
 * Mon Jan 07 2019 Stefano Fancello <stefano.fancello@nethesis.it> - 14.1.4-1
 - Add tts fail if api returns 200 but false nethesis/dev#5529
 
