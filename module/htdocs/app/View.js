@@ -273,18 +273,30 @@ example.View = draw2d.Canvas.extend({
                     },
                     // save modal
                     Save: function () {
+                        var keywords = [
+                            "private",
+                            "blocked",
+                            "unknown",
+                            "restricted",
+                            "anonymous",
+                            "unavailable",
+                            "withheld"
+                        ];
                         var pattern = event.context.getElemByAttr("pattern");
                         var usableElem = event.context.getElemByAttr("usable");
                         var valid = true;
                         for (n in pattern) {
                             var val = pattern[n].value;
                             var patt = pattern[n].pattern;
+                            var id = pattern[n].id;
                             var reg = new RegExp(patt);
-                            if (!reg.test(val)) {
+                            if (reg.test(val) ||
+                             (id === 'incoming-cidnum' && val == '') ||
+                             (id === 'incoming-cidnum' && keywords.includes(val))) {
+                                $(pattern[n]).css("border", "1px solid #a9a9a9");
+                            } else {
                                 valid = false;
                                 $(pattern[n]).css("border", "1px solid rgb(255, 97, 97)");
-                            } else {
-                                $(pattern[n]).css("border", "1px solid #a9a9a9");
                             }
                         }
                         if (valid) {
@@ -503,13 +515,13 @@ example.View = draw2d.Canvas.extend({
                 html += '<div class="form-group">';
                 html += '<label class="col-sm-4 control-label label-creation">' + languages[browserLang]["view_number_string_did"] + ': </label>';
                 html += '<div class="col-sm-7">';
-                html += '<input class="form-control" pattern="^(_[\\dNXZ\\.\\-\\[\\]]*|[\\d]*)$" ' + isDisabled + ' autofocus value="' + values[0] + '" usable id="' + elem.id + '-number"></input>';
+                html += '<input class="form-control" pattern="(^[\+|_]?[0-9a-dA-D#\*]*$)" placeholder="' + languages[browserLang]["view_any_string"] + '" ' + isDisabled + ' autofocus value="' + values[0] + '" usable id="' + elem.id + '-number"></input>';
                 html += '</div>';
                 html += '</div>';
                 html += '<div class="form-group">';
                 html += '<label class="col-sm-4 control-label label-creation">' + languages[browserLang]["view_number_string_cid"] + ': </label>';
                 html += '<div class="col-sm-7">';
-                html += '<input class="form-control" pattern="^(_[\\dNXZ\\.\\-\\[\\]]*|[\\d]*)$" placeholder="' + languages[browserLang]["view_any_string"] + '" ' + isDisabled + ' value="' + values[1] + '" usable id="' + elem.id + '-cidnum"></input>';
+                html += '<input class="form-control" pattern="(^[\+|_]?[-0-9\[\]\+\.\|ZzXxNn\*\#_!\/]*$)" placeholder="' + languages[browserLang]["view_any_string"] + '" ' + isDisabled + ' value="' + values[1] + '" usable id="' + elem.id + '-cidnum"></input>';
                 html += '</div>';
                 html += '</div>';
                 html += '<div class="form-group">';
