@@ -292,7 +292,8 @@ example.View = draw2d.Canvas.extend({
                             var reg = new RegExp(patt);
                             if (reg.test(val) ||
                              (id === 'incoming-cidnum' && val == '') ||
-                             (id === 'incoming-cidnum' && keywords.includes(val))) {
+                             (id === 'incoming-cidnum' && keywords.includes(val)) ||
+                             (id === 'incoming-number' && val.indexOf('_') === 0)) {
                                 $(pattern[n]).css("border", "1px solid #a9a9a9");
                             } else {
                                 valid = false;
