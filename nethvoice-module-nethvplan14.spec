@@ -1,5 +1,5 @@
 Name: nethvoice-module-nethvplan14
-Version: 14.2.0
+Version: 14.2.1
 Release: 1%{?dist}
 Summary: Visualplan for NethVoice14
 Group: Network
@@ -39,6 +39,10 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
+* Mon Jul 15 2019 Stefano Fancello <stefano.fancello@nethesis.it> - 14.2.1-1
+- Fix advanced links for routes with symbols nethesis/dev#5674
+- Make inbound routes numbers validation like FreePBX does
+
 * Mon Apr 29 2019 Stefano Fancello <stefano.fancello@nethesis.it> - 14.2.0-1
 - Accept same characters as FreePBX does in objects name nethesis/dev#5586
 - Restyle to work well with different browsers nethesis/dev#5606
