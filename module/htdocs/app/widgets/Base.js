@@ -715,7 +715,7 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                         window.open(location.origin + '/freepbx/admin/config.php?display=timeconditions&view=form&itemid=' + e.id, '_blank');
                     } else if (event.userData.name === 'app-daynight' && !isNaN(e.id)) {
                         window.open(location.origin + '/freepbx/admin/config.php?display=daynight&view=form&itemid=' + e.id + '&extdisplay=' + e.id, '_blank');
-                    } else if (event.userData.name === 'incoming' && !isNaN(e.id.split(' ')[0])) {
+                    } else if (event.userData.name === 'incoming') {
                         window.open(location.origin + '/freepbx/admin/config.php?display=did&view=form&extdisplay=' + encodeURIComponent(e.id.replace(/ /g,"")), '_blank');
                     } else if (event.userData.name === 'ext-meetme' && !isNaN(e.id.split(' ')[0])) {
                         window.open(location.origin + '/freepbx/admin/config.php?display=conferences&view=form&extdisplay=' + e.id, '_blank');
