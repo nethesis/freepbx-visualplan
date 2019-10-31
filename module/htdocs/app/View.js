@@ -1861,7 +1861,8 @@ function initRecordingListeners() {
                 type: "POST",
                 contentType: "application/x-www-form-urlencoded; charset=UTF-8",
                 data: "module=recordings&command=save&id=&playback%5B%5D=custom/" + encodeURIComponent(filename) + "&name=" +
-                    encodeURIComponent(newRecName) + "&description=&fcode=0&fcode_pass=&remove%5B%5D=" + encodeURIComponent(tempFilename)
+                    encodeURIComponent(newRecName) + "&description=&fcode=0&fcode_pass=&remove%5B%5D=" + encodeURIComponent(tempFilename) +
+                    "&language=" + encodeURIComponent(lang)
             }).done(function (c) {
                 $($(".ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix button")[1]).button('enable');
                 $('#addRecordingSection').toggle();
@@ -1896,7 +1897,8 @@ function initRecordingListeners() {
                 type: "POST",
                 contentType: "application/x-www-form-urlencoded; charset=UTF-8",
                 data: "module=recordings&command=save&id=&playback%5B%5D=custom/" + encodeURIComponent(filename) + "&name=" +
-                    encodeURIComponent(newRecName) + "&description=&fcode=0&fcode_pass=&remove%5B%5D=" + encodeURIComponent(tempFilename)
+                    encodeURIComponent(newRecName) + "&description=&fcode=0&fcode_pass=&remove%5B%5D=" + encodeURIComponent(tempFilename) +
+                    "&language=" + encodeURIComponent(lang)
             }).done(function (c) {
                 $($(".ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix button")[1]).button('enable');
                 $('#addRecordingSection').toggle();
