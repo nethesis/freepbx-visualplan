@@ -1,5 +1,5 @@
 Name: nethvoice-module-nethvplan14
-Version: 14.2.1
+Version: 14.2.2
 Release: 1%{?dist}
 Summary: Visualplan for NethVoice14
 Group: Network
@@ -39,6 +39,9 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
+* Mon Nov 11 2019 Stefano Fancello <stefano.fancello@nethesis.it> - 14.2.2-1
+- Fix audio upload saving nethesis/dev#5730
+
 * Mon Jul 15 2019 Stefano Fancello <stefano.fancello@nethesis.it> - 14.2.1-1
 - Fix advanced links for routes with symbols nethesis/dev#5674
 - Make inbound routes numbers validation like FreePBX does
