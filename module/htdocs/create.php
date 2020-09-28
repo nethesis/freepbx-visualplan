@@ -165,10 +165,7 @@ function nethvplan_switchCreate($wType, $value, $connectionArray)
                     ""
                 );
             } else {
-                core_users_edit($extension, array(
-                    "extension" => $extension,
-                    "name" => $name
-                ));
+                core_users_edit($extension, $exists);
             }
         break;
 
