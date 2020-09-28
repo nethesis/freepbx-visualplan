@@ -135,7 +135,9 @@ function nethvplan_switchCreate($wType, $value, $connectionArray)
                     "alertinfo" => "<http://www.notused >\;info=ring2",
                     "description" => $description,
                     "destination" => $destination,
-                    "mohclass" => "default"
+                    "mohclass" => "default",
+                    "ringing" => "CHECKED",
+                    "fanswer" => "CHECKED"
                 ), $destination);
             }
         break;
