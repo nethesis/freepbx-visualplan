@@ -96,28 +96,27 @@ if ($reqGet && ($reqGet === "tools")) {
                     if ($final) {
     
                         foreach ($final as $key => $value) {
-    
                             $explode = explode("|", $value["time"]);
-    
+
                             $times = explode("-", $explode[0]);
                             $wdays = explode("-", $explode[1]);
                             $mdays = explode("-", $explode[2]);
                             $months = explode("-", $explode[3]);
-                            
+
                             $times_start = explode(":", $times[0]);
-    
+
                             $final[$key]["hour_start"] = trim($times_start[0], " ");
                             $spliths = str_split($final[$key]["hour_start"]); 
                             if ($spliths[0] == "0") {
                                 $final[$key]["hour_start"] = $spliths[1];
                             }
-                            
+
                             $final[$key]["minute_start"] = trim($times_start[1], " ");
                             $splitms = str_split($final[$key]["minute_start"]); 
                             if ($splitms[0] == "0") {
                                 $final[$key]["minute_start"] = $splitms[1];
                             }
-    
+
                             if ($times[1]) {
                                 $times_finish = explode(":", $times[1]);
                                 $final[$key]["hour_finish"] = trim($times_finish[0], " ");
@@ -126,7 +125,7 @@ if ($reqGet && ($reqGet === "tools")) {
                                 $final[$key]["hour_finish"] = trim($times_start[0], " ");
                                 $final[$key]["minute_finish"] = trim($times_start[1], " ");
                             }
-    
+
                             $splithf = str_split($final[$key]["hour_finish"]); 
                             if ($splithf[0] == "0") {
                                 $final[$key]["hour_finish"] = $splithf[1];
@@ -135,27 +134,15 @@ if ($reqGet && ($reqGet === "tools")) {
                             if ($splitmf[0] == "0") {
                                 $final[$key]["minute_finish"] = $splitmf[1];
                             }
+                            
+                            $final[$key]["wday_start"] = isset($wdays[0]) ? trim($wdays[0], " ") : "-";
+                            $final[$key]["wday_finish"] = isset($wdays[1]) ? trim($wdays[1], " ") : (isset($wdays[0]) ? trim($wdays[0], " ") : "-");
     
-                            $final[$key]["wday_start"] = trim($wdays[0], " ");
-                            if ($wdays[1]) {
-                                $final[$key]["wday_finish"] = trim($wdays[1], " ");
-                            } else {
-                                $final[$key]["wday_finish"] = trim($wdays[0], " ");
-                            }
+                            $final[$key]["mday_start"] = isset($mdays[0]) ? trim($mdays[0], " ") : "-";
+                            $final[$key]["mday_finish"] = isset($mdays[1]) ? trim($mdays[1], " ") : (isset($mdays[0]) ? trim($mdays[0], " ") : "-");
     
-                            $final[$key]["mday_start"] = trim($mdays[0], " ");
-                            if ($wdays[1]) {
-                                $final[$key]["mday_finish"] = trim($mdays[1], " ");
-                            } else {
-                                $final[$key]["mday_finish"] = trim($mdays[0], " ");
-                            }
-    
-                            $final[$key]["month_start"] = trim($months[0], " ");
-                            if ($wdays[1]) {
-                                $final[$key]["month_finish"] = trim($months[1], " ");
-                            } else {
-                                $final[$key]["month_finish"] = trim($months[0], " ");
-                            }
+                            $final[$key]["month_start"] = isset($months[0]) ? trim($months[0], " ") : "-";
+                            $final[$key]["month_finish"] = isset($months[1]) ? trim($months[1], " ") : (isset($months[0]) ? trim($months[0], " ") : "-");
                         }
                     }
     
