@@ -218,7 +218,30 @@ function nethvplan_switchCreate($wType, $value, $connectionArray)
             $exists = ringgroups_get($extension);
 
             if (count($exists) <= 5) {
-                ringgroups_add($extension, $strategy, $grpTime, $list, $destination, $name, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '');
+                ringgroups_add(
+                    $extension,
+                    $strategy,
+                    $grpTime,
+                    $list,
+                    $destination,
+                    $name,
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    'CHECKED', // enable Enable Call Pickup
+                    '',
+                    '',
+                    'yes', // enable Mark Answered Elsewhere
+                    ''
+                );
             } else {
                 ringgroups_del($extension);
                 ringgroups_add(
@@ -274,7 +297,36 @@ function nethvplan_switchCreate($wType, $value, $connectionArray)
             if (empty($exists)) {
                 $_REQUEST['strategy'] = $strategy;
                 $_REQUEST['timeout'] = $timeout;
-                queues_add($extension, $name, "", "", $destination, "", $listStatic, "", $maxwait, "", "", "", "", "0", $listDynamic, "", "", "", "", "", "", "", "", "", "", "", "");
+                queues_add(
+                    $extension,
+                    $name,
+                    "",
+                    "",
+                    $destination,
+                    "",
+                    $listStatic,
+                    "",
+                    $maxwait,
+                    "",
+                    "",
+                    "",
+                    "",
+                    "0",
+                    $listDynamic,
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "1", // enable Mark calls answered elsewhere
+                    "",
+                    "",
+                    ""
+                );
+                    
             } else {
                 queues_del($extension);
                 $_REQUEST['maxlen'] = $exists['maxlen'];
