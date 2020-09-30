@@ -183,7 +183,7 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                                     $(".ui-dialog-titlebar").css("background", "#7f8c8d");
                                     // inject html
                                     var html = "";
-                                    html += '<form class="form-horizontal">';
+                                    html += '<div class="form-horizontal">';
                                     html += '<div class="form-group">';
                                     html += '<label class="col-sm-4 control-label label-creation">' + languages[browserLang]["view_number_string"] + ': </label>';
                                     html += '<div class="col-sm-7">';
@@ -277,7 +277,7 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                                     $(".ui-dialog-titlebar").css("background", "#7f8c8d");
                                     // inject html
                                     var html = "";
-                                    html += '<form class="form-horizontal">';
+                                    html += '<div class="form-horizontal">';
                                     html += '<div class="form-group">';
                                     html += '<label class="col-sm-4 control-label label-creation">' + languages[browserLang]["view_number_string"] + ': </label>';
                                     html += '<div class="col-sm-7">';
