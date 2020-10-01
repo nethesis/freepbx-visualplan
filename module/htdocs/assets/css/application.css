@@ -1160,3 +1160,16 @@ textarea {
 #modalCreation {
   max-height: 408px !important;
 }
+
+.ui-widget button {
+  font-size: 12px !important;
+}
+
+.bootstrap-select .dropdown-toggle .caret {
+  right: 9px !important;
+  margin-top: -5px !important;
+}
+
+.bootstrap-select {
+  width: 100% !important;
+}
