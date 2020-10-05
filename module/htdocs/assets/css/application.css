@@ -1173,3 +1173,41 @@ textarea {
 .bootstrap-select {
   width: 100% !important;
 }
+
+#container > .ui-dialog > .ui-dialog-buttonpane .ui-dialog-buttonset button:nth-child(2) {
+  box-shadow: 0 2px 3px rgba(3,3,3,.1);
+  background-color: #3f9c35;
+  background-image: linear-gradient(to bottom, #6ec664 0%, #3f9c35 100%);
+  border: 1px solid #3f9c35;
+  color: #fff;
+  padding-left: 10px;
+  padding-right: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: "Open Sans",Helvetica,Arial,sans-serif;
+}
+
+#container > .ui-dialog > .ui-dialog-buttonpane .ui-dialog-buttonset button:nth-child(2):hover {
+  background: #6ec664;
+}
+
+#container > .ui-dialog > .ui-dialog-buttonpane .ui-dialog-buttonset button:nth-child(1) {
+  border: 1px solid #bbb;
+  font-family: "Open Sans",Helvetica,Arial,sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  box-shadow: 0 2px 3px rgba(3,3,3,.1);
+  background-color: #f1f1f1;
+  background-image: linear-gradient(to bottom,#fafafa 0,#ededed 100%);
+  color: #4d5258;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+#container > .ui-dialog > .ui-dialog-buttonpane .ui-dialog-buttonset button:nth-child(1):hover {
+  background: #f1f1f1;
+}
+
+.bootstrap-select > .dropdown-menu.open {
+  width: 100%;
+}
