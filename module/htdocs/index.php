@@ -21,6 +21,7 @@ if (!isset($_SESSION['AMP_user']) || !$_SESSION['AMP_user']->checkSection('visua
 	<link type="text/css" rel="stylesheet" href="assets/css/font-awesome.css" />
 	<link type="text/css" rel="stylesheet" href="assets/css/jquery-ui.css" />
 	<link rel="stylesheet" type="text/css" href="assets/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="assets/css/bootstrap-select.min.css">
 	<link rel="stylesheet" type="text/css" href="assets/css/patternfly.min.css">
 	<link rel="stylesheet" type="text/css" href="assets/css/patternfly-additions.min.css">
 	<!-- languages -->
@@ -48,7 +49,9 @@ if (!isset($_SESSION['AMP_user']) || !$_SESSION['AMP_user']->checkSection('visua
 	<script src="lib/draw2d.js"></script>
 	<script src="lib/dagre.min.js"></script>
 	<script src="lib/svg-pan-zoom.min.js"></script>
+	<script src="lib/bootstrap.min.js"></script>
 	<script src="lib/patternfly.min.js"></script>
+	<script src="lib/bootstrap-select.min.js"></script>
 	<!-- application js -->
 	<script src="app/Application.js"></script>
 	<script src="app/View.js"></script>

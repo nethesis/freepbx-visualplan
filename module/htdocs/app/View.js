@@ -255,7 +255,22 @@ example.View = draw2d.Canvas.extend({
         });
     },
 
+    clearEventsHandler: function (id) {
+        switch (id) {
+            case "ext-queues":
+                $("#selectExtQueue1").unbind()
+                $("#selectExtQueue2").unbind()
+                break;
+            case "ext-group":
+                $("#selectExtGroup").unbind()
+                break;
+            default:
+                break;
+        }
+    },
+
     createDialog: function (event) {
+        var thisApp = this;
         var dialog = $('<div id="modalCreation"></div>')
             .dialog({
                 position: 'center',
@@ -265,10 +280,12 @@ example.View = draw2d.Canvas.extend({
                 width: 500,
                 modal: true,
                 close: function (ev, ui) {
+                    thisApp.clearEventsHandler(event.dropped.context.id)
                     $(this).dialog('destroy').remove();
                 },
                 buttons: {
                     Cancel: function () {
+                        thisApp.clearEventsHandler(event.dropped.context.id)
                         $(this).dialog('destroy').remove();
                     },
                     // save modal
@@ -336,21 +353,20 @@ example.View = draw2d.Canvas.extend({
         return matchingElements;
     },
 
-    bindExtSelect: function (obj, htmlSelect, regex) {
+    bindExtSelect: function (obj, regex) {
         for (n in obj) {
             $.each(obj[n], function (i) {
                 $(obj[n][i].selId).bind("change", function () {
-                    var select = $(this);
+                    let select = $(this);
                     $(obj[n][i].textId).val(function () {
-                        var res = $(this).val() + "\n" + select.val();
-                        return res.match(regex).join("\n");
+                        let val = select.val();
+                        if (val != null) {
+                            let res = obj[n][i].saved + "\n" + val;
+                            return res.match(regex).join("\n");
+                        } else {
+                            return obj[n][i].saved || "";
+                        }
                     });
-                    $(select).find("option:selected").remove();
-                });
-                $(obj[n][i].textId).bind("input propertychange", function () {
-                    if (this.value == "") {
-                        $(obj[n][i].selId).html(htmlSelect);
-                    }
                 });
             })
         }
@@ -572,7 +588,7 @@ example.View = draw2d.Canvas.extend({
                 }).done(function (c) {
                     $('#loader').hide();
                     var data = JSON.parse(c);
-                    var htmlSelect = "<option>-</option>";
+                    var htmlSelect = "";
                     var htmlStrategy = "";
                     if (values[4] == "") {
                         values[4] = 20;
@@ -602,7 +618,7 @@ example.View = draw2d.Canvas.extend({
                     html += '<div class="form-group">';
                     html += '<label class="col-sm-4 control-label label-creation">' + languages[browserLang]["base_ext_list_string"] + ': </label>';
                     html += '<div class="col-sm-7">';
-                    html += '<select id="selectExtGroup" class="form-control input-creation">' + htmlSelect + '</select>';
+                    html += '<select id="selectExtGroup" class="selectpicker" data-size="7" title="-" multiple>' + htmlSelect + '</select>';
                     html += '</div>';
                     html += '</div>';
                     html += '<div class="form-group">';
@@ -625,6 +641,8 @@ example.View = draw2d.Canvas.extend({
                     html += '</div>';
                     html += '</form>';
                     $("#modalCreation").html(html);
+                    $('#selectExtGroup').selectpicker();
+
                     if (strategy) {
                         $('#opt-' + strategy).attr("selected", "selected");
                     } else {
@@ -634,10 +652,11 @@ example.View = draw2d.Canvas.extend({
                         "group": {
                             0: {
                                 "selId": "#selectExtGroup",
-                                "textId": "#textareaExtGroup"
+                                "textId": "#textareaExtGroup",
+                                "saved": values[2] || ""
                             }
                         }
-                    }, htmlSelect, /\d+(#|)/g);
+                    }, /\d+(#|)/g);
                 });
                 break;
 
@@ -655,7 +674,7 @@ example.View = draw2d.Canvas.extend({
                     var strategy = values[4];
                     var timeout = values[5];
                     var maxwait = values[6];
-                    var htmlSelect = "<option>-</option>";
+                    var htmlSelect = "";
                     var htmlMaxWait = "<option value=''>" + languages[browserLang]["view_queuesTimeString_unlimited"] + "</option>";
                     var agentTimeout = "<option value='0'>" + languages[browserLang]["view_queuesTimeString_unlimited"] + "</option>";
 
@@ -714,7 +733,7 @@ example.View = draw2d.Canvas.extend({
                     html += '<div class="form-group">';
                     html += '<label class="col-sm-4 control-label label-creation">' + languages[browserLang]["base_static_memb_string"] + ': </label>';
                     html += '<div class="col-sm-7">';
-                    html += '<select id="selectExtQueue1" class="form-control input-creation">' + htmlSelect + '</select>';
+                    html += '<select id="selectExtQueue1" class="selectpicker" data-size="7" title="-" multiple>' + htmlSelect + '</select>';
                     html += '</div>';
                     html += '</div>';
                     html += '<div class="form-group">';
@@ -726,7 +745,7 @@ example.View = draw2d.Canvas.extend({
                     html += '<div class="form-group">';
                     html += '<label class="col-sm-4 control-label label-creation">' + languages[browserLang]["base_dyn_memb_string"] + ': </label>';
                     html += '<div class="col-sm-7">';
-                    html += '<select id="selectExtQueue2" class="form-control input-creation">' + htmlSelect + '</select>';
+                    html += '<select id="selectExtQueue2" class="selectpicker" data-size="7" title="-" multiple>' + htmlSelect + '</select>';
                     html += '</div>';
                     html += '</div>';
                     html += '<div class="form-group">';
@@ -755,6 +774,9 @@ example.View = draw2d.Canvas.extend({
                     html += '</div>';
                     html += '</form>';
                     $("#modalCreation").html(html);
+                    $('#selectExtQueue1').selectpicker();
+                    $('#selectExtQueue2').selectpicker();
+                    
                     //select default
                     if (strategy) {
                         $('#qus-' + strategy).attr("selected", "selected");
@@ -776,14 +798,16 @@ example.View = draw2d.Canvas.extend({
                         "queues": {
                             0: {
                                 "selId": "#selectExtQueue1",
-                                "textId": "#textareaExtQueue1"
+                                "textId": "#textareaExtQueue1",
+                                "saved": values[2] || ""
                             },
                             1: {
                                 "selId": "#selectExtQueue2",
-                                "textId": "#textareaExtQueue2"
+                                "textId": "#textareaExtQueue2",
+                                "saved": values[3] || ""
                             }
                         }
-                    }, htmlSelect, /\d+(,\d+|)/g);
+                    }, /\d+(,\d+|)/g);
                 });
                 break;
 
