@@ -297,6 +297,7 @@ function nethvplan_switchCreate($wType, $value, $connectionArray)
             if (empty($exists)) {
                 $_REQUEST['strategy'] = $strategy;
                 $_REQUEST['timeout'] = $timeout;
+                $_REQUEST['answered_elsewhere'] = "1";
                 queues_add(
                     $extension,
                     $name,
@@ -321,7 +322,7 @@ function nethvplan_switchCreate($wType, $value, $connectionArray)
                     "",
                     "",
                     "",
-                    "1", // enable Mark calls answered elsewhere
+                    "1", // mark calls answered elsewhere
                     "",
                     "",
                     ""
