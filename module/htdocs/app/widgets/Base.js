@@ -709,6 +709,8 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                         window.open(location.origin + '/freepbx/admin/config.php?display=ringgroups&view=form&extdisplay=GRP-' + e.id, '_blank');
                     } else if (event.userData.name === 'ivr' && !isNaN(e.id)) {
                         window.open(location.origin + '/freepbx/admin/config.php?display=ivr&action=edit&id=' + e.id, '_blank');
+                    } else if (event.userData.name === 'cqr' && !isNaN(e.id)) {
+                        window.open(location.origin + '/freepbx/admin/config.php?display=nethcqr&action=edit&id_cqr=' + e.id, '_blank');
                     } else if (event.userData.name === 'app-announcement' && !isNaN(e.id)) {
                         window.open(location.origin + '/freepbx/admin/config.php?display=announcement&view=form&extdisplay=' + e.id, '_blank');
                     } else if (event.userData.name === 'timeconditions' && !isNaN(e.id)) {

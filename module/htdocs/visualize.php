@@ -766,6 +766,13 @@ function nethvplan_bindData($data, $dest, $id)
                 "id"=> "suggest-".$dest."%".$id,
                 "type"=> "text"
             );
+            $widget['entities'][] = array(
+                "text"=> $langArray["base_details_string"],
+                "id"=> $id,
+                "type"=> "text",
+                "destination"=> "",
+                "cssClass"=> "link"
+            );
             $widget['userData'] = array(
                 "id"=> html_entity_decode($data[$dest][$id]['id']),
                 "name"=> html_entity_decode($data[$dest][$id]['name']),

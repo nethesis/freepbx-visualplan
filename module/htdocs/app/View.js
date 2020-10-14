@@ -1073,7 +1073,7 @@ example.View = draw2d.Canvas.extend({
                                 if (i != 0) {
                                     $(this).find("#removeTimeGroupForm").unbind();
                                     $(this).find("#removeTimeGroupForm").removeClass("hide").click(function () {
-                                        $(this).parents().eq(0).remove();
+                                        $(this).parents().eq(2).remove();
                                     });
                                 }
                             });
