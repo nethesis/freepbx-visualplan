@@ -462,12 +462,16 @@ example.View = draw2d.Canvas.extend({
             case "ext-queues":
                 var v1 = userData.extension;
                 var v2 = userData.name;
-                var v3 = userData.staticExt
-                        .replace(/Local\//g, "\n")
-                        .replace(/@from-queue\/n/g, "")
-                        .replace(/-/g, " ")
-                        .match(/-?\d+(,\d+|#|)/g)
-                        .join("\n");
+                if (userData.staticExt != "") {
+                    var v3 = userData.staticExt
+                    .replace(/Local\//g, "\n")
+                    .replace(/@from-queue\/n/g, "")
+                    .replace(/-/g, " ")
+                    .match(/-?\d+(,\d+|#|)/g)
+                    .join("\n");
+                } else {
+                    var v3 = ""
+                }
                 var v4 = userData.dynamicExt;
                 var v5 = userData.strategy;
                 var v6 = userData.timeout;
