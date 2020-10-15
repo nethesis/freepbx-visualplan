@@ -706,7 +706,7 @@ function nethvplan_switchCreate($wType, $value, $connectionArray)
                 $cqrArray = array();
                 $position = 1;
                 foreach ($value['entities'] as $k => $v) {
-                    if ($k > 3) {
+                    if ($k > 3 && !is_numeric($v['id'])) {
                         $pos[] = $position;
                         $position += 1;
                         $cond[] = $v['text'];

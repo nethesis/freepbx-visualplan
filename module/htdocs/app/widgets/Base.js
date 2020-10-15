@@ -187,7 +187,7 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                                     html += '<div class="form-group">';
                                     html += '<label class="col-sm-4 control-label label-creation">' + languages[browserLang]["view_number_string"] + ': </label>';
                                     html += '<div class="col-sm-7">';
-                                    html += '<input autofocus type="number" value="" usable id="ivr-option" class="form-control input-creation"></input>';
+                                    html += '<input autofocus type="text" value="" usable id="ivr-option" class="form-control input-creation"></input>';
                                     html += '</div>';
                                     html += '</div>';
                                     dialog.html(html);
@@ -281,7 +281,7 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                                     html += '<div class="form-group">';
                                     html += '<label class="col-sm-4 control-label label-creation">' + languages[browserLang]["view_number_string"] + ': </label>';
                                     html += '<div class="col-sm-7">';
-                                    html += '<input autofocus type="number" value="" usable id="cqr-option" class="form-control input-creation"></input>';
+                                    html += '<input autofocus type="text" value="" usable id="cqr-option" class="form-control input-creation"></input>';
                                     html += '</div>';
                                     html += '</div>';
                                     dialog.html(html);
@@ -709,6 +709,8 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                         window.open(location.origin + '/freepbx/admin/config.php?display=ringgroups&view=form&extdisplay=GRP-' + e.id, '_blank');
                     } else if (event.userData.name === 'ivr' && !isNaN(e.id)) {
                         window.open(location.origin + '/freepbx/admin/config.php?display=ivr&action=edit&id=' + e.id, '_blank');
+                    } else if (event.userData.name === 'cqr' && !isNaN(e.id)) {
+                        window.open(location.origin + '/freepbx/admin/config.php?display=nethcqr&action=edit&id_cqr=' + e.id, '_blank');
                     } else if (event.userData.name === 'app-announcement' && !isNaN(e.id)) {
                         window.open(location.origin + '/freepbx/admin/config.php?display=announcement&view=form&extdisplay=' + e.id, '_blank');
                     } else if (event.userData.name === 'timeconditions' && !isNaN(e.id)) {

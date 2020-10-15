@@ -462,12 +462,16 @@ example.View = draw2d.Canvas.extend({
             case "ext-queues":
                 var v1 = userData.extension;
                 var v2 = userData.name;
-                var v3 = userData.staticExt
-                        .replace(/Local\//g, "\n")
-                        .replace(/@from-queue\/n/g, "")
-                        .replace(/-/g, " ")
-                        .match(/-?\d+(,\d+|#|)/g)
-                        .join("\n");
+                if (userData.staticExt != "") {
+                    var v3 = userData.staticExt
+                    .replace(/Local\//g, "\n")
+                    .replace(/@from-queue\/n/g, "")
+                    .replace(/-/g, " ")
+                    .match(/-?\d+(,\d+|#|)/g)
+                    .join("\n");
+                } else {
+                    var v3 = ""
+                }
                 var v4 = userData.dynamicExt;
                 var v5 = userData.strategy;
                 var v6 = userData.timeout;
@@ -1069,7 +1073,7 @@ example.View = draw2d.Canvas.extend({
                                 if (i != 0) {
                                     $(this).find("#removeTimeGroupForm").unbind();
                                     $(this).find("#removeTimeGroupForm").removeClass("hide").click(function () {
-                                        $(this).parents().eq(0).remove();
+                                        $(this).parents().eq(2).remove();
                                     });
                                 }
                             });
