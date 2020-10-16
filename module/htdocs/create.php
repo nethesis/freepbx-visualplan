@@ -235,14 +235,14 @@ function nethvplan_switchCreate($wType, $value, $connectionArray)
                     '',
                     '',
                     '',
-                    '',
+                    'Ring',
                     '',
                     '',
                     '',
                     '',
                     'CHECKED', // enable Enable Call Pickup
-                    '',
-                    '',
+                    'dontcare',
+                    'no',
                     'yes', // enable Mark Answered Elsewhere
                     ''
                 );
