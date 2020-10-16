@@ -187,7 +187,7 @@ Base = draw2d.shape.layout.VerticalLayout.extend({
                                     html += '<div class="form-group">';
                                     html += '<label class="col-sm-4 control-label label-creation">' + languages[browserLang]["view_number_string"] + ': </label>';
                                     html += '<div class="col-sm-7">';
-                                    html += '<input autofocus type="text" value="" usable id="ivr-option" class="form-control input-creation"></input>';
+                                    html += '<input autofocus type="number" value="" usable id="ivr-option" class="form-control input-creation"></input>';
                                     html += '</div>';
                                     html += '</div>';
                                     dialog.html(html);
