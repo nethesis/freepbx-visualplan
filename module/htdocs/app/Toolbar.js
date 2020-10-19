@@ -419,7 +419,11 @@ example.Toolbar = Class.extend({
 				node.children.data[8].figure['id'] = tmpidsec + "|" + elems[6].value;
 
 				node.children.data[1].figure.setText(elems[1].value + ' ( ' + elems[0].value + ' )');
-				node.children.data[3].figure.setText(elems[2].value.match(/\d+(,\d+|)/g).join("\n"));
+				if (elems[2].value != "") {
+					node.children.data[3].figure.setText(elems[2].value.match(/\d+(,\d+|)/g).join("\n"));
+				} else {
+					node.children.data[3].figure.setText("");
+				}
 				node.children.data[5].figure.setText(elems[3].value);
 				node.children.data[6].figure.setText(languages[browserLang]["view_strategy_string"] + " ( " + elems[4].value + " )");
 				node.children.data[7].figure.setText(languages[browserLang]["view_agenttimeout_string"] + " ( " + (elems[5].value == '0' ? languages[browserLang]["view_queuesTimeString_unlimited"] : timeout) + " )");
