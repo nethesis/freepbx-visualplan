@@ -1,5 +1,5 @@
 Name: nethvoice-module-nethvplan14
-Version: 14.2.2
+Version: 14.3.0
 Release: 1%{?dist}
 Summary: Visualplan for NethVoice14
 Group: Network
@@ -39,6 +39,18 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
+* Tue Oct 20 2020 SebastianMB-IT <sebastian.besel@nethesis.it> - 14.3.0-1
+- Dial Options switch is overwritten in extensions after saving - Bug nethesis/dev#5890
+- Modifying a temp group isn't possible to delete a temp interval - Bug nethesis/dev#5891
+- The link to the Advanced Settings is missing in the CQR - Bug nethesis/dev#5892
+- The input of the new option in the CQR and IVR isn't alphanumeric - Bug nethesis/dev#5893
+- Convert users's select type to a multiple select in groups and queues - nethesis/dev#5879
+- Pressing ENTER on IVR option input reloads the window - Bug nethesis/dev#5878
+- Enable "Enable Call Pickup" and "Mark Answered Elsewhere" by default in groups and queues - nethesis/dev#5877
+- Dates mismatch in Visual Plan during Temporal Groups creation and edit - Bug nethesis/dev#5863
+- Set yes as default of Force Answer and Signal RINGING in the new Incoming Routes - nethesis/dev#5876
+- Unmanaged parameters are reset to default values in the Visual Plan - Bug nethesis/dev#5864
+
 * Mon Nov 11 2019 Stefano Fancello <stefano.fancello@nethesis.it> - 14.2.2-1
 - Fix audio upload saving nethesis/dev#5730
 
