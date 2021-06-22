@@ -132,7 +132,7 @@ function nethvplan_switchCreate($wType, $value, $connectionArray)
                 core_did_add(array(
                     "extension" => $extension,
                     "cidnum" => $cidnum,
-                    "alertinfo" => "<http://www.notused >\;info=ring2",
+                    "alertinfo" => "<http://www.notused.com>\;info=ring2",
                     "description" => $description,
                     "destination" => $destination,
                     "mohclass" => "default",
