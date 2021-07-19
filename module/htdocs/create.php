@@ -465,7 +465,7 @@ function nethvplan_switchCreate($wType, $value, $connectionArray)
                         "invalid_append_announce" => 0,
                         "timeout_ivr_ret" => 0,
                         "invalid_ivr_ret" => 0,
-                        "alertinfo" => 0,
+                        "alertinfo" => null,
                         "rvolume" => 0
                     ));
                     $idReturn = $idIVR;
@@ -493,7 +493,7 @@ function nethvplan_switchCreate($wType, $value, $connectionArray)
                         "invalid_append_announce" => 0,
                         "timeout_ivr_ret" => 0,
                         "invalid_ivr_ret" => 0,
-                        "alertinfo" => 0,
+                        "alertinfo" => null,
                         "rvolume" => 0
                     ));
                 } else {
