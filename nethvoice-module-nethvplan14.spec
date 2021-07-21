@@ -9,6 +9,7 @@ Source1: visualplan.tar.gz
 BuildRequires: nethserver-devtools
 Buildarch: noarch
 Conflicts: nethserver-nethvoice
+Requires: nethserver-freepbx
 
 %description
 Visualplan for NethVoice14
