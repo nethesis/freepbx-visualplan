@@ -1,5 +1,5 @@
 Name: nethvoice-module-nethvplan14
-Version: 14.3.0
+Version: 14.3.1
 Release: 1%{?dist}
 Summary: Visualplan for NethVoice14
 Group: Network
@@ -40,6 +40,10 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
+* Thu Jul 22 2021 Stefano Fancello <stefano.fancello@nethesis.it> - 14.3.1-1
+- Some packages aren't correctly removed with NethVoice - Bug nethesis/dev#6044
+- Wrong alertinfo string - Bug nethesis/dev#6036
+
 * Tue Oct 20 2020 SebastianMB-IT <sebastian.besel@nethesis.it> - 14.3.0-1
 - Dial Options switch is overwritten in extensions after saving - Bug nethesis/dev#5890
 - Modifying a temp group isn't possible to delete a temp interval - Bug nethesis/dev#5891
