@@ -356,7 +356,7 @@ function nethvplan_switchCreate($wType, $value, $connectionArray)
                 $_REQUEST['eventmemberstatus'] = $exists['eventmemberstatus'];
                 $_REQUEST['music'] = $exists['music'];
                 $_REQUEST['weight'] = $exists['weight'];
-                $_REQUEST['autofill'] = $exists['autofill'];
+                $_REQUEST['autofill'] = ($exists['autofill']==='yes')?$exists['autofill']:'';
                 $_REQUEST['ringinuse'] = $exists['ringinuse'];
                 $_REQUEST['reportholdtime'] = $exists['reportholdtime'];
                 $_REQUEST['servicelevel'] = $exists['servicelevel'];
