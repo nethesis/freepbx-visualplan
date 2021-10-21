@@ -1,5 +1,5 @@
 Name: nethvoice-module-nethvplan14
-Version: 14.3.1
+Version: 14.3.2
 Release: 1%{?dist}
 Summary: Visualplan for NethVoice14
 Group: Network
@@ -40,6 +40,9 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
+* Thu Oct 21 2021 Stefano Fancello <stefano.fancello@nethesis.it> - 14.3.2-1
+- Visual Plan: Queue Join Announcement is deleted by Visual Plan save action - Bug nethesis/dev#5997
+
 * Thu Jul 22 2021 Stefano Fancello <stefano.fancello@nethesis.it> - 14.3.1-1
 - Some packages aren't correctly removed with NethVoice - Bug nethesis/dev#6044
 - Wrong alertinfo string - Bug nethesis/dev#6036
