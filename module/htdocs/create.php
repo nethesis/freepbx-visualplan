@@ -375,6 +375,14 @@ function nethvplan_switchCreate($wType, $value, $connectionArray)
                 $_REQUEST['penaltymemberslimit'] = $exists['penaltymemberslimit'];
                 $_REQUEST['announcemenu'] = $exists['announcemenu'];
                 $_REQUEST['min-announce'] = $exists['min-announce-frequency'];
+                $_REQUEST['lazymembers'] = ($exists['lazymembers'] === 'yes') ? $exists['lazymembers'] : '';
+                $_REQUEST['cron_schedule'] = (isset($exists['cron_schedule'])) ? $exists['cron_schedule'] : '';
+                $_REQUEST['cron_random'] = (isset($exists['cron_random'])) ? $exists['cron_random'] : '';
+                $_REQUEST['cron_month'] = (isset($exists['cron_month'])) ? $exists['cron_month'] : '';
+                $_REQUEST['cron_minute'] = (isset($exists['cron_minute'])) ? $exists['cron_minute'] : '';
+                $_REQUEST['cron_hour'] = (isset($exists['cron_hour'])) ? $exists['cron_hour'] : '';
+                $_REQUEST['cron_dow'] = (isset($exists['cron_dow'])) ? $exists['cron_dow'] : '';
+                $_REQUEST['cron_dom'] = (isset($exists['cron_dom'])) ? $exists['cron_dom'] : '';
 
                 queues_add(
                     $extension,
