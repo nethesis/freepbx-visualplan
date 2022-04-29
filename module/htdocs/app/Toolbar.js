@@ -159,6 +159,22 @@ example.Toolbar = Class.extend({
 		this.delimiter = $("<span class='toolbar_delimiter'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>");
 		this.html.append(this.delimiter);
 
+		// Inject the Print Button
+		//
+		this.printButton = $("<button id='printButton' class='mainmenu_btns' download='image.png'><i class='fa fa-print fa-lg'></i></button>");
+		this.html.append(this.printButton);
+		this.printButton.click($.proxy(function () {
+
+			const svg = document.getElementById('canvas').innerHTML;
+			const blob = new Blob([svg.toString()]);
+			const element = document.createElement("a");
+			element.download = "visualPlan.svg";
+			element.href = window.URL.createObjectURL(blob);
+			element.click();
+			element.remove();
+
+		}, this));
+
 		// Inject the Save Button
 		//
 		this.saveButton = $("<button class='mainmenu_btns'><i class='fa fa-check fa-lg'></i></button>");
