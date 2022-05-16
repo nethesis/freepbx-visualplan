@@ -1,5 +1,5 @@
 Name: nethvoice-module-nethvplan14
-Version: 14.3.3
+Version: 14.3.4
 Release: 1%{?dist}
 Summary: Visualplan for NethVoice14
 Group: Network
@@ -40,6 +40,9 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
+* Mon May 16 2022 Sebastian <sebastian.besel@nethesis.it> - 14.3.4-1
+- New button for capturing the visual plan section - nethesis/dev#6126
+
 * Fri Mar 11 2022 Stefano Fancello <stefano.fancello@nethesis.it> - 14.3.3-1
 - Visual Plan - stat reset on queue always set to no - Bug nethesis/dev#6078
 - Visualplan - Enable lazy mebers on queue always set to no - Bug nethesis/dev#6079
