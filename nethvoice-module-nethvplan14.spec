@@ -1,5 +1,5 @@
 Name: nethvoice-module-nethvplan14
-Version: 14.3.4
+Version: 14.3.5
 Release: 1%{?dist}
 Summary: Visualplan for NethVoice14
 Group: Network
@@ -40,6 +40,9 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
+* Wed Jun 01 2022 Sebastian <sebastian.besel@nethesis.it> - 14.3.5-1
+- Error with file audio upload - Bug nethesis/dev#6158
+
 * Mon May 16 2022 Sebastian <sebastian.besel@nethesis.it> - 14.3.4-1
 - New button for capturing the visual plan section - nethesis/dev#6126
 
