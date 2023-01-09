@@ -313,7 +313,7 @@ function nethvplan_switchCreate($wType, $value, $connectionArray)
                     "",
                     $maxwait,
                     "",
-                    "",
+                    "1", //cwignore - skip busy agents
                     "",
                     "",
                     "0",
