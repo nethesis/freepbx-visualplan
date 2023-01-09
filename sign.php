@@ -90,7 +90,7 @@ print "\tGenerating file list...";
 @unlink($sig);
 $files = $gpg->getHashes($loc);
 print "\n\tSigning $sig..";
-$fh = popen("gpg --default-key $key --clearsign > $sig", "w");
+$fh = popen("gpg --batch --pinentry-mode loopback --default-key $key --passphrase " . getenv("GPG_PASSPHRASE") . " --clearsign > $sig", "w");
 
 fwrite($fh, ";################################################
 ;#        FreePBX Module Signature File         #
@@ -121,14 +121,14 @@ foreach ($files as $f => $h) {
 	}
 	fwrite($fh, "$f = $h\n");
 }
-fwrite ($fh, ";# End\n");
+fwrite($fh, ";# End\n");
 pclose($fh);
 
 print "\nDone\n";
 
 if ($local) {
 	print "Tagging module for local signing...";
-	$fh = popen("gpg --default-key $key --clearsign > $loc/module.sig", "w");
+	$fh = popen("gpg --batch --pinentry-mode loopback --default-key $key --passphrase " . getenv("GPG_PASSPHRASE") . " --clearsign > $loc/module.sig", "w");
 
 	fwrite($fh, ";################################################
 ;#        FreePBX Module Signature File         #
