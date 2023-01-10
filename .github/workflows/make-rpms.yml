@@ -42,9 +42,9 @@ jobs:
           gpg --batch --import module_key_sec.gpg
           gpg --batch --import freepbx_key_pub.gpg
           if [[ -n "${{ secrets.module_keypass }}" ]]; then
-            ./retrieve_modules.sh ${{ env.module_keyid }} "${{ secrets.module_keypass }}" "${{ secrets.gh_user }}" "${{ secrets.gh_token }}"
+            ./retrieve_modules.sh ${{ env.module_keyid }} "${{ secrets.module_keypass }}"
           else
-            ./retrieve_modules.sh ${{ env.module_keyid }} '' "${{ secrets.gh_user }}" "${{ secrets.gh_token }}"
+            ./retrieve_modules.sh ${{ env.module_keyid }} ''
           fi ;
           echo "Starting build..."
           docker run --name makerpms \

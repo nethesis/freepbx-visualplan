@@ -12,7 +12,7 @@ rm -fr visualplan.tar.gz
 
 # Sign the module
 if [[ -n "${PASSPHRASE}" ]]; then
-	export GPG_PASSPHRASE=${PASSPHRASE}\
+	export GPG_PASSPHRASE=${PASSPHRASE}
 	./sign.php module/ $GPGASH
 else
     echo "Missing passphrase, not signing the module"
