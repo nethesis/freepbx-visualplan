@@ -1,5 +1,5 @@
 Name: nethvoice-module-nethvplan14
-Version: 14.3.5
+Version: 14.3.6
 Release: 1%{?dist}
 Summary: Visualplan for NethVoice14
 Group: Network
@@ -40,6 +40,9 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
+* Wed Jan 11 2023 Stefano Fancello <stefano.fancello@nethesis.it> - 14.3.6-1
+- NethVoice Visual Plan: add new queue with skip busy ON - Bug nethesis/dev#6192
+
 * Wed Jun 01 2022 Sebastian <sebastian.besel@nethesis.it> - 14.3.5-1
 - Error with file audio upload - Bug nethesis/dev#6158
 
