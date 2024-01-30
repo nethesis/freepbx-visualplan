@@ -305,31 +305,31 @@ function nethvplan_switchCreate($wType, $value, $connectionArray)
                 queues_add(
                     $extension,
                     $name,
-                    "",
-                    "",
-                    $destination,
-                    "",
-                    $listStatic,
-                    "",
-                    $maxwait,
-                    "",
-                    "1", //cwignore - skip busy agents
-                    "",
-                    "",
-                    "0",
-                    $listDynamic,
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    "1", // mark calls answered elsewhere
-                    "",
-                    "",
-                    ""
+                    "",             //password
+                    "",             //prefix
+                    $destination,   //goto
+                    "",             //agentannounce_id
+                    $listStatic,    //members
+                    "",             //joinannounce_id
+                    $maxwait,       //maxwait
+                    "",             //alertinfo
+                    "1",            //cwignore - skip busy agents
+                    "",             //qregex
+                    "0",            //queuewait
+                    "0",            //use_queue_context
+                    $listDynamic,   //dynmembers
+                    "no",           //dynmemberonly
+                    "0",            //togglehint
+                    "0",            //qnoanswer
+                    "0",            //callconfirm
+                    "",             //callconfirm_id
+                    "",             //monitor_type
+                    "0",            //monitor_heard
+                    "0",            //monitor_spoken
+                    "1",            //mark calls answered elsewhere
+                    "dontcare",     //recording
+                    "",             //rvolume
+                    ""              //rvol_mode
                 );
                     
             } else {
