@@ -1,3 +1,6 @@
+# READ ONLY
+NS8 module moved here https://github.com/nethesis/ns8-nethvoice/tree/main/freepbx/var/www/html/freepbx/admin/modules/visualplan
+
 # visualplan
 
 Visual Plan is intuitive graphic mode to create new route
